@@ -2,54 +2,61 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { NgOptimizedImage, CommonModule } from '@angular/common';
 
 @Component({
-    selector: 'app-product-card-vertical',
-    standalone: true,
-    imports: [NgOptimizedImage, CommonModule],
+  selector: 'app-product-card-vertical',
+  standalone: true,
+  imports: [NgOptimizedImage, CommonModule],
   template: `
     @if (product(); as player) {
-      <div class="liquid-glass-card group relative flex flex-col overflow-hidden active:scale-[0.98] transition-all duration-300 border border-white/10 hover:border-amber-500/30">
+      <article class="group liquid-glass-card rounded-3xl p-3 flex flex-col gap-3 border border-white/10 hover:border-amber-500/40 active:scale-[0.98] transition-all duration-300 cursor-pointer">
+        
+        <!-- Badge VIP -->
+        <div class="absolute top-3 right-3 z-10">
+          <span class="px-2 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-[7px] font-bold text-amber-400 uppercase tracking-wider">
+            VIP
+          </span>
+        </div>
+
+        <!-- Imagen del jugador -->
+        <div class="relative w-full aspect-square rounded-2xl overflow-hidden bg-gradient-to-b from-amber-500/10 to-transparent">
+          <img [ngSrc]="player.imageUrl" [alt]="player.name"
+               class="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
+               width="120" height="120">
+        </div>
+
+        <!-- Info del jugador -->
+        <div class="flex flex-col gap-1">
+          <span class="text-[7px] font-bold text-amber-400/60 uppercase tracking-widest">Élite</span>
+          <h3 class="text-[12px] font-black text-white tracking-tight truncate">{{ player.name }}</h3>
           
-          <div class="absolute top-4 right-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 backdrop-blur-md border border-amber-400/20">
-              <span class="w-1.5 h-1.5 rounded-full bg-amber-400/80 animate-pulse"></span>
-              <span class="text-[8px] font-black text-amber-400 uppercase tracking-[0.2em]">VIP</span>
+          <!-- Earnings -->
+          <div class="flex items-center gap-1.5 mt-1">
+            <div class="w-4 h-4 rounded-full bg-amber-500/20 flex items-center justify-center">
+              <img ngSrc="balance-coin/coin.png" alt="coin" width="10" height="10" class="object-contain">
+            </div>
+            <span class="text-[10px] font-bold text-white/80">+{{ player.earning || 0 }}</span>
+            <span class="text-[8px] text-white/40 font-medium">/hora</span>
           </div>
+        </div>
 
-          <div class="relative w-full aspect-square flex items-center justify-center p-8">
-              <img ngSrc="{{player.imageUrl}}" alt="{{player.name}}"
-                  class="relative z-10 w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] group-hover:scale-105 transition-transform duration-500"
-                  width="130" height="130">
-          </div>
-
-          <div class="px-5 pb-5 flex flex-col gap-3">
-              <div class="flex flex-col">
-                  <span class="text-[8px] font-black text-amber-400/60 uppercase tracking-[0.3em] mb-1">Élite</span>
-                  <h3 class="text-[15px] font-black text-white tracking-tight truncate">{{player.name}}</h3>
-                  <p class="text-[9px] text-white/40 font-bold uppercase tracking-[0.2em] truncate mt-2">{{player.description}}</p>
-              </div>
-
-              <button (click)="onBuy()"
-                  class="liquid-glass-button !rounded-xl w-full py-3 active:scale-95 text-[9px] font-black uppercase tracking-[0.2em] text-amber-400 border border-amber-400/30">
-                  Fichar VIP
-              </button>
-          </div>
-      </div>
+        <!-- Botón -->
+        <button (click)="onBuy($event)" 
+                class="w-full py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-[9px] font-bold text-amber-400 uppercase tracking-wider active:scale-95 transition-all">
+          Fichar VIP
+        </button>
+      </article>
     }
   `,
   styles: [`
     :host { display: block; }
   `],
-    changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCardVerticalComponent {
-    modalOpened = output<any>();
-    buy = output<any>();
-    product = input<any>();
+  buy = output<any>();
+  product = input<any>();
 
-    openModal() {
-        this.modalOpened.emit(this.product());
-    }
-
-    onBuy() {
-        this.buy.emit(this.product());
-    }
+  onBuy(event: Event) {
+    event.stopPropagation();
+    this.buy.emit(this.product());
+  }
 }
