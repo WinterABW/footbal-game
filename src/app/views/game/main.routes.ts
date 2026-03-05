@@ -12,13 +12,13 @@ export const MAIN_ROUTES: Routes = [
             import('./components/energy-boost/boost/boost.component').then((c) => c.BoostComponent),
     },
     {
-        path: 'lucky-wheel',
+        path: 'wheel',
         loadComponent: () =>
             import('./components/lucky-wheel/lucky-wheel.component').then((c) => c.LuckyWheelComponent),
     },
     {
-        path: 'rank',
+        path: 'ruleta',
         loadComponent: () =>
-            import('./components/rank/rank.component'),
+            import('./components/ruleta/ruleta-futbol-elite.component').then((c) => c.RuletaFutbolEliteComponent),
     },
 ];
