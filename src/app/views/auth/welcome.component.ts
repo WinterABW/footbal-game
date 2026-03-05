@@ -130,7 +130,7 @@ export default class WelcomeComponent {
   }
 
   goToGuest() {
-    this.router.navigate(['/guest']);
+    this.router.navigate(['/main']);
   }
 
   goBack() {
