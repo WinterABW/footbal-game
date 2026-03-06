@@ -11,7 +11,7 @@ import { LocalApiService } from '../../services/local-api.service';
       
       <!-- COP Balance -->
       <div class="flex items-center gap-2.5 py-1 px-1.5 pr-4 rounded-full liquid-glass-card bg-amber-500/[0.08] border-amber-500/30 shadow-lg">
-         <img ngSrc="balance-coin/coin.webp" alt="COP" width="28" height="28" class="object-contain" />
+          <img ngSrc="balance-coin/coin.webp" alt="COP" width="32" height="32" class="object-contain" />
         <span class="text-[11px] font-black text-white tracking-wide text-glow-amber">{{ formattedCop() }}</span>
       </div>
 

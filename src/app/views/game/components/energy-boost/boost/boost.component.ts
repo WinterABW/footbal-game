@@ -234,13 +234,13 @@ interface BoostDisplay {
         type="button"
         aria-label="Confirmar mejora"
       >
-        <img
+         <img
            ngSrc="balance-coin/coin.webp"
-          alt="moneda"
-          width="20"
-          height="20"
-          class="flex-shrink-0"
-        >
+           alt="moneda"
+           width="24"
+           height="24"
+           class="flex-shrink-0"
+         >
         <span>{{ +boost.cost | number }} monedas</span>
       </button>
     }

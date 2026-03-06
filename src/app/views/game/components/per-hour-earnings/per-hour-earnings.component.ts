@@ -9,7 +9,7 @@ import { LocalApiService } from '../../../../services/local-api.service';
   template: `
     <div class="flex items-center gap-1.5 py-1.5 px-3.5 rounded-full liquid-glass-card bg-white/[0.03] border-white/5 transition-all active:scale-95 cursor-default h-[44px]">
       <div class="w-[22px] h-[22px] flex items-center justify-center drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">
-         <img ngSrc="balance-coin/coin.webp" alt="COP" width="22" height="22" class="object-contain" />
+         <img ngSrc="balance-coin/coin.webp" alt="COP" width="26" height="26" class="object-contain" />
       </div>
       <div class="flex flex-col">
         <span class="text-[9px] font-black text-white/50 uppercase tracking-widest leading-none mb-[2px]">Earnings</span>

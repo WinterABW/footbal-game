@@ -31,7 +31,7 @@ import { NgOptimizedImage, CommonModule } from '@angular/common';
           <!-- Earnings -->
           <div class="flex items-center gap-1 mt-0.5">
             <div class="w-3.5 h-3.5 rounded-full bg-amber-500/20 flex items-center justify-center">
-               <img ngSrc="balance-coin/coin.webp" alt="coin" width="8" height="8" class="object-contain">
+               <img ngSrc="balance-coin/coin.webp" alt="coin" width="10" height="10" class="object-contain">
             </div>
             <span class="text-[8px] font-bold text-white/80">+{{ player.earning || 0 }}</span>
             <span class="text-[6px] text-white/40 font-medium">/hora</span>

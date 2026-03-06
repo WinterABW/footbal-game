@@ -8,7 +8,7 @@ import { TapService } from '../../services/tap.service';
   template: `
     <section class="flex flex-row justify-center items-center z-20 relative px-6 py-3 liquid-glass-card bg-amber-500/[0.03] border-amber-500/10 rounded-full shadow-[0_20px_60px_rgba(251,191,36,0.1)] mx-auto w-fit active:scale-95 transition-all cursor-pointer">
       <div class="relative w-10 h-10 mr-3 drop-shadow-[0_0_30px_rgba(251,191,36,0.5)]">
-         <img ngSrc="balance-coin/coin.webp" alt="coin" class="w-full h-full object-contain animate-float" width="40" height="40">
+         <img ngSrc="balance-coin/coin.webp" alt="coin" class="w-full h-full object-contain animate-float" width="48" height="48">
       </div>
       <p class="text-4xl font-black text-white tracking-tighter text-glow-amber">
         {{ coins() | number }}
