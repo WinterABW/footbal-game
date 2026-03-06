@@ -10,15 +10,14 @@ import { Player } from '../../../../services/players.service';
       <div class="fixed inset-0 z-[150] bg-black/60 backdrop-blur-sm animate-fade-in" (click)="onClose()"></div>
       
       <div class="fixed inset-0 z-[160] flex items-end justify-center" role="dialog" aria-modal="true" aria-labelledby="player-title" [attr.tabindex]="-1" #modalWrapper>
-        <div class="w-full bg-[#16143f] rounded-t-[32px] flex flex-col shadow-[0_-8px_30px_rgb(0,0,0,0.6)] relative overflow-hidden ring-1 ring-white/10 animate-slide-up max-h-[95vh]">
-          
+        <div class="w-full bg-white/5 backdrop-blur-xl border-t border-white/10 shadow-2xl relative overflow-hidden max-h-[95vh]">
           <!-- Handle indicator -->
           <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mt-3 mb-1"></div>
 
           <!-- Header -->
           <div class="flex items-center justify-between px-6 pt-3 pb-2 flex-shrink-0">
-            <h2 id="player-title" class="m-0 p-0 text-xl font-bold text-[#a79cf1]">{{ player().name }}</h2>
-            <button #closeBtn (click)="onClose()" class="w-8 h-8 flex items-center justify-center rounded-full border border-white/20 text-white/70 hover:bg-white/10 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-[#5b51ff]" aria-label="Cerrar">
+            <h2 id="player-title" class="m-0 p-0 text-xl font-bold text-white drop-shadow-sm">{{ player().name }}</h2>
+            <button #closeBtn (click)="onClose()" class="w-8 h-8 flex items-center justify-center rounded-full border border-white/20 text-white/80 hover:bg-white/10 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white/50" aria-label="Cerrar">
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -35,20 +34,20 @@ import { Player } from '../../../../services/players.service';
 
               <!-- Basic Parameters (50%) -->
               <div class="w-1/2 flex flex-col gap-2">
-                <div class="flex justify-between items-center bg-[#0d0b26]/60 rounded-xl px-3 py-2">
-                  <span class="text-white/60 text-xs font-medium">Edad:</span>
+                <div class="flex justify-between items-center bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/5">
+                  <span class="text-white/70 text-xs font-medium">Edad:</span>
                   <span class="text-white font-bold text-sm">{{ player().age || 'N/A' }}</span>
                 </div>
-                <div class="flex justify-between items-center bg-[#0d0b26]/60 rounded-xl px-3 py-2">
-                  <span class="text-white/60 text-xs font-medium">Altura:</span>
+                <div class="flex justify-between items-center bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/5">
+                  <span class="text-white/70 text-xs font-medium">Altura:</span>
                   <span class="text-white font-bold text-sm">{{ player().height || 'N/A' }} cm</span>
                 </div>
-                <div class="flex justify-between items-center bg-[#0d0b26]/60 rounded-xl px-3 py-2">
-                  <span class="text-white/60 text-xs font-medium">Lesiones:</span>
+                <div class="flex justify-between items-center bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/5">
+                  <span class="text-white/70 text-xs font-medium">Lesiones:</span>
                   <span class="text-white font-bold text-sm">{{ player().injuries || 0 }}</span>
                 </div>
-                <div class="flex justify-between items-center bg-[#0d0b26]/60 rounded-xl px-3 py-2">
-                  <span class="text-white/60 text-xs font-medium">Goles:</span>
+                <div class="flex justify-between items-center bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/5">
+                  <span class="text-white/70 text-xs font-medium">Goles:</span>
                   <span class="text-white font-bold text-sm">{{ totalGoals() | number }}</span>
                 </div>
               </div>
@@ -59,32 +58,32 @@ import { Player } from '../../../../services/players.service';
 
             <!-- Stats List -->
             <div class="flex flex-col gap-2 mb-6 flex-shrink-0">
-              <div class="flex justify-between items-center bg-[#0d0b26] rounded-xl px-4 py-3">
-                <span class="text-white/60 text-sm font-medium">Valor:</span>
-                <span class="text-[#ffc107] font-bold text-sm">{{ player().price | number }} COP</span>
+              <div class="flex justify-between items-center bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/5">
+                <span class="text-white/70 text-sm font-medium">Valor:</span>
+                <span class="text-amber-300 font-bold text-sm">{{ player().price | number }} COP</span>
               </div>
-              <div class="flex justify-between items-center bg-[#0d0b26] rounded-xl px-4 py-3">
-                <span class="text-white/60 text-sm font-medium">Ganancias por hora:</span>
+              <div class="flex justify-between items-center bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/5">
+                <span class="text-white/70 text-sm font-medium">Ganancias por hora:</span>
                 <span class="text-white font-bold text-sm">{{ player().earning | number }} COP</span>
               </div>
-              <div class="flex justify-between items-center bg-[#0d0b26] rounded-xl px-4 py-3">
-                <span class="text-white/60 text-sm font-medium">Ganancias por día:</span>
+              <div class="flex justify-between items-center bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/5">
+                <span class="text-white/70 text-sm font-medium">Ganancias por día:</span>
                 <span class="text-white font-bold text-sm">{{ (player().earning * 24) | number }} COP</span>
               </div>
-              <div class="flex justify-between items-center bg-[#0d0b26] rounded-xl px-4 py-3">
-                <span class="text-white/60 text-sm font-medium">Ganancias totales:</span>
+              <div class="flex justify-between items-center bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/5">
+                <span class="text-white/70 text-sm font-medium">Ganancias totales:</span>
                 <span class="text-white font-bold text-sm">{{ (player().earning * 24 * player().contract_days) | number }} COP</span>
               </div>
-              <div class="flex justify-between items-center bg-[#0d0b26] rounded-xl px-4 py-3">
-                <span class="text-white/60 text-sm font-medium">Tiempo del contrato:</span>
+              <div class="flex justify-between items-center bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/5">
+                <span class="text-white/70 text-sm font-medium">Tiempo del contrato:</span>
                 <span class="text-white font-bold text-sm">{{ player().contract_days }} Días</span>
               </div>
             </div>
 
             <!-- Action buttons -->
             <div class="grid grid-cols-2 gap-3 mt-auto flex-shrink-0">
-              <button (click)="onClose()" class="py-3 px-4 text-sm font-bold text-white/90 bg-[#24214f] border border-[#3b367d] rounded-xl hover:bg-[#2e2a69] active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-[#5b51ff]">Cancelar</button>
-              <button (click)="onConfirm()" class="py-3 px-4 text-sm font-bold text-white bg-[#5b51ff] rounded-xl hover:bg-[#4a41cc] active:scale-95 transition-all shadow-lg shadow-[#5b51ff]/20 focus:outline-none focus:ring-2 focus:ring-[#a79cf1]">Confirmar</button>
+              <button (click)="onClose()" class="py-3 px-4 text-sm font-bold text-white/90 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-white/50">Cancelar</button>
+              <button (click)="onConfirm()" class="py-3 px-4 text-sm font-bold text-white bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl hover:from-blue-600 hover:to-purple-600 active:scale-95 transition-all shadow-lg shadow-blue-500/20 focus:outline-none focus:ring-2 focus:ring-blue-400">Confirmar</button>
             </div>
           </div>
         </div>
