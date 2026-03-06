@@ -32,8 +32,8 @@ import { AuthService } from '../../services/auth.service';
         <div class="flex flex-col items-center gap-2.5 md:gap-3.5 animate-fade-in-up animation-delay-200 w-full max-w-md px-1">
           
           <!-- Promo Card - Liquid Glass Compact -->
-          <div class="w-full liquid-glass-card p-3 md:p-4 rounded-2xl">
-            <div class="flex items-start justify-between gap-3">
+          <div class="w-full liquid-glass-card p-4 md:p-5 rounded-2xl">
+            <div class="flex items-center justify-between gap-3">
               <div class="flex-1">
                 <h2 class="text-sm md:text-lg font-bold text-white mb-0.5">
                   Bono de Bienvenida
@@ -42,13 +42,13 @@ import { AuthService } from '../../services/auth.service';
                   Obtén recompensas al registrarte
                 </p>
                 <div class="flex items-center gap-1.5 text-slate-300 text-[10px]">
-                  <svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                   </svg>
                   <span class="font-semibold">+500 Monedas</span>
                 </div>
               </div>
-              <div class="text-3xl md:text-4xl">🎁</div>
+              <div class="text-4xl md:text-5xl">🎁</div>
             </div>
           </div>
 
@@ -77,8 +77,8 @@ import { AuthService } from '../../services/auth.service';
           </div>
         </div>
 
-        <!-- Bottom Section - CTA Buttons - Compact Glass Style -->
-        <div class="w-full flex flex-col gap-2 animate-fade-in-up animation-delay-400 max-w-md mb-2 md:mb-4 px-1">
+        <!-- Bottom Section - CTA Buttons -->
+        <div class="w-full flex flex-col gap-2.5 animate-fade-in-up animation-delay-400 max-w-md mb-6 md:mb-8 px-1">
           <button
             (click)="goToRegister()"
             class="w-full py-2.5 md:py-3 lg-btn-primary text-sm md:text-base"
