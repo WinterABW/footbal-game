@@ -21,7 +21,7 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
         </div>
 
         <!-- Master Invitation Card (iOS 26 Liquid Reference) -->
-        <article class="relative rounded-xl group active:scale-[0.98] transition-all duration-300">
+        <article class="relative rounded-xs group active:scale-[0.98] transition-all duration-300">
            <div class="lg-panel p-3.5 flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden relative shadow-inner">
@@ -42,29 +42,20 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
  
         <!-- Quick Actions Row -->
         <div class="flex gap-2">
-          <button class="flex-1 lg-module-card p-3 flex items-center justify-center gap-3 active:scale-[0.98] transition-all duration-300 group">
-            <div class="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shadow-inner group-hover:bg-indigo-500/20 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <line x1="19" y1="8" x2="19" y2="14"></line>
-                <line x1="22" y1="11" x2="16" y2="11"></line>
-              </svg>
-            </div>
-            <span class="text-[11px] font-black text-white uppercase tracking-widest">Invitar un amigo</span>
-          </button>
-          
-          <button class="w-14 lg-module-card p-3 flex items-center justify-center active:scale-[0.98] transition-all duration-300 group">
-             <div class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 transition-colors">
-               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
+           <button class="flex-1 lg-module-card p-2 flex items-center justify-center gap-3 active:scale-[0.98] transition-all duration-300 group">
+             <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shadow-inner group-hover:bg-indigo-500/20 transition-colors">
+               <img ngSrc="icons/add-friend.png" alt="reward" width="32" height="32"
+                     class="relative z-10 opacity-90 group-hover:scale-110 transition-transform duration-500 drop-shadow-lg">
              </div>
-          </button>
+             <span class="text-[11px] font-black text-white uppercase tracking-widest">Invitar un amigo</span>
+           </button>
+          
+           <button class="w-14 lg-module-card p-0.5 flex items-center justify-center active:scale-[0.98] transition-all duration-300 group">
+              <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+                <img ngSrc="icons/copy.png" alt="reward" width="32" height="32"
+                     class="relative z-10 opacity-90 group-hover:scale-110 transition-transform duration-500 drop-shadow-lg">
+              </div>
+           </button>
         </div>
 
         <!-- Redes / Tabs -->
