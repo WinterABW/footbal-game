@@ -11,14 +11,19 @@ export const MAIN_ROUTES: Routes = [
         loadComponent: () =>
             import('./components/energy-boost/boost/boost.component').then((c) => c.BoostComponent),
     },
-    {
-        path: 'wheel',
-        loadComponent: () =>
-            import('./components/lucky-wheel/lucky-wheel.component').then((c) => c.LuckyWheelComponent),
-    },
-    {
+   /*  {
         path: 'ruleta',
         loadComponent: () =>
-            import('./components/ruleta/ruleta-futbol-elite.component').then((c) => c.RuletaFutbolEliteComponent),
+            import('./components/lucky-wheel/lucky-wheel.component').then((c) => c.LuckyWheelComponent),
+    }, */
+    {
+        path: 'box',
+        loadComponent: () =>
+            import('../../mini-games/juego.component').then((c) => c.Game1Component),
+    },
+    {
+        path: 'ticket',
+        loadComponent: () =>
+            import('../../mini-games/ticket-roulette.component').then((c) => c.TicketRouletteComponent),
     },
 ];

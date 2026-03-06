@@ -115,6 +115,16 @@ export interface Player {
     exclusive?: boolean;
     boughtAt?: string;
     contract_days: number;
+    /**
+     * Additional player details for the player details view:
+     * - age: Player's age in years
+     * - injuries: Number of current injuries (0 if none)
+     * - height: Player's height in centimeters
+     * Note: totalGoals is computed as earning * 24 * contract_days (not stored)
+     */
+    age?: number;
+    injuries?: number;
+    height?: number;
 }
 
 export interface PlayersData {
@@ -331,17 +341,17 @@ const DEFAULT_GAME_STATE: GameState = {
 
 const DEFAULT_PLAYERS: PlayersData = {
     availablePlayers: [
-        { id: 1, name: 'Ronaldo CR7', price: 500, imageUrl: 'players/image-removebg-preview.png', description: 'Leyenda del fútbol', earning: 15, level: 1, contract_days: 19 },
-        { id: 2, name: 'Messi', price: 600, imageUrl: 'players/image-removebg-preview.png', description: 'El mejor del mundo', earning: 15, level: 1, contract_days: 19 },
-        { id: 3, name: 'Neymar Jr', price: 700, imageUrl: 'players/image-removebg-preview.png', description: 'Magia brasileña', earning: 15, level: 2, contract_days: 19 },
-        { id: 4, name: 'Mbappé', price: 800, imageUrl: 'players/image-removebg-preview.png', description: 'Velocidad pura', earning: 15, level: 2, contract_days: 19 },
-        { id: 5, name: 'Haaland', price: 900, imageUrl: 'players/image-removebg-preview.png', description: 'Goleador nato', earning: 15, level: 3, contract_days: 19 },
-        { id: 6, name: 'Vinicius Jr', price: 1000, imageUrl: 'players/image-removebg-preview.png', description: 'Futuro del fútbol', earning: 15, level: 3, contract_days: 19 },
+        { id: 1, name: 'Ronaldo CR7', price: 500, imageUrl: 'players/image-removebg-preview.webp', description: 'Leyenda del fútbol', earning: 15, level: 1, contract_days: 19, age: 39, injuries: 0, height: 187 },
+        { id: 2, name: 'Messi', price: 600, imageUrl: 'players/image-removebg-preview.webp', description: 'El mejor del mundo', earning: 15, level: 1, contract_days: 19, age: 37, injuries: 0, height: 170 },
+        { id: 3, name: 'Neymar Jr', price: 700, imageUrl: 'players/image-removebg-preview.webp', description: 'Magia brasileña', earning: 15, level: 2, contract_days: 19, age: 33, injuries: 1, height: 175 },
+        { id: 4, name: 'Mbappé', price: 800, imageUrl: 'players/image-removebg-preview.webp', description: 'Velocidad pura', earning: 15, level: 2, contract_days: 19, age: 25, injuries: 0, height: 178 },
+        { id: 5, name: 'Haaland', price: 900, imageUrl: 'players/image-removebg-preview.webp', description: 'Goleador nato', earning: 15, level: 3, contract_days: 19, age: 24, injuries: 0, height: 194 },
+        { id: 6, name: 'Vinicius Jr', price: 1000, imageUrl: 'players/image-removebg-preview.webp', description: 'Futuro del fútbol', earning: 15, level: 3, contract_days: 19, age: 23, injuries: 0, height: 176 },
     ],
     vipPlayers: [
-        { id: 101, name: 'Messi VIP', price: 2000, imageUrl: 'players/image-removebg-preview.png', description: 'Edición legendaria', earning: 100, level: 5, exclusive: true, contract_days: 19 },
-        { id: 102, name: 'CR7 VIP', price: 2500, imageUrl: 'players/image-removebg-preview.png', description: 'El comandante', earning: 100, level: 5, exclusive: true, contract_days: 19 },
-        { id: 103, name: 'Mbappé VIP', price: 3000, imageUrl: 'players/image-removebg-preview.png', description: 'Estrella exclusiva', earning: 100, level: 6, exclusive: true, contract_days: 19 },
+        { id: 101, name: 'Messi VIP', price: 2000, imageUrl: 'players/image-removebg-preview.webp', description: 'Edición legendaria', earning: 100, level: 5, exclusive: true, contract_days: 19, age: 37, injuries: 0, height: 170 },
+        { id: 102, name: 'CR7 VIP', price: 2500, imageUrl: 'players/image-removebg-preview.webp', description: 'El comandante', earning: 100, level: 5, exclusive: true, contract_days: 19, age: 39, injuries: 0, height: 187 },
+        { id: 103, name: 'Mbappé VIP', price: 3000, imageUrl: 'players/image-removebg-preview.webp', description: 'Estrella exclusiva', earning: 100, level: 6, exclusive: true, contract_days: 19, age: 25, injuries: 0, height: 178 },
     ],
     ownedPlayers: [],
 };
@@ -564,17 +574,17 @@ export class LocalApiService {
                 const migratedPlayers: PlayersData = {
                     availablePlayers: storedPlayers.regularPlayers.map((p: any) => ({
                         ...p,
-                        imageUrl: 'players/image-removebg-preview.png',
+                        imageUrl: 'players/image-removebg-preview.webp',
                         earning: 15,
                     })),
                     vipPlayers: (storedPlayers.vipPlayers || []).map((p: any) => ({
                         ...p,
-                        imageUrl: 'players/image-removebg-preview.png',
+                        imageUrl: 'players/image-removebg-preview.webp',
                         earning: 100,
                     })),
                     ownedPlayers: (storedPlayers.myPlayers || []).map((p: any) => ({
                         ...p,
-                        imageUrl: 'players/image-removebg-preview.png',
+                        imageUrl: 'players/image-removebg-preview.webp',
                     })),
                 };
                 this.storage.set(STORAGE_KEYS.PLAYERS, migratedPlayers);
