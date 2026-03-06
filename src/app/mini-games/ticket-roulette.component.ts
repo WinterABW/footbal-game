@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 interface Ticket {
   id: number;
@@ -11,8 +12,14 @@ interface Ticket {
   selector: 'app-ticket-roulette',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="game-wrapper">
+   template: `
+     <div class="game-wrapper hide-nav">
+       <!-- Botón Atrás -->
+       <button class="back-btn absolute top-3 left-3 w-12 h-12 flex items-center justify-center rounded-full bg-white/5 backdrop-blur border border-white/10 z-50 transition-transform hover:-translate-x-0.5" (click)="goBack()" aria-label="Volver">
+         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-6 h-6">
+           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+         </svg>
+       </button>
       <div class="glass-board shadow-glow">
         
         <div class="selector-arrow left"></div>
@@ -48,35 +55,40 @@ interface Ticket {
     </div>
   `,
   styles: [`
-    .game-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
-      overflow: hidden;
-      padding: 20px;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
+     .game-wrapper {
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       min-height: 100vh;
+       background: transparent;
+       overflow: hidden;
+       padding: 20px;
+       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+     }
 
-    .glass-board {
-      position: relative;
-      width: 100%;
-      max-width: 380px;
-      height: 500px; /* 5 tickets visibles de 100px */
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 30px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05);
-      margin-bottom: 40px;
-    }
+     .glass-board {
+       position: relative;
+       width: 100%;
+       max-width: 380px;
+       height: 500px; /* 5 tickets visibles de 100px */
+       background: rgba(255, 255, 255, 0.08);
+       backdrop-filter: blur(24px);
+       -webkit-backdrop-filter: blur(24px);
+       border: 1px solid rgba(255, 255, 255, 0.15);
+       border-radius: 30px;
+       box-shadow: 
+         0 20px 60px rgba(0, 0, 0, 0.6),
+         inset 0 0 30px rgba(255, 255, 255, 0.08);
+       margin-bottom: 40px;
+     }
 
-    .glass-board.shadow-glow {
-      box-shadow: 0 0 30px rgba(0, 210, 255, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.05);
-    }
+     .glass-board.shadow-glow {
+       box-shadow: 
+         0 0 40px rgba(0, 210, 255, 0.2),
+         0 20px 60px rgba(0, 0, 0, 0.6),
+         inset 0 0 30px rgba(255, 255, 255, 0.08);
+     }
 
     .reel-window {
       width: 100%;
@@ -172,40 +184,73 @@ interface Ticket {
       border-right: 20px solid #00d2ff;
     }
 
-    .spin-btn {
-      background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-      border: none;
-      border-radius: 50px;
-      padding: 18px 60px;
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: white;
-      letter-spacing: 2px;
-      cursor: pointer;
-      transition: transform 0.1s, filter 0.3s;
-      box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.4);
-    }
+     .spin-btn {
+       background: rgba(255, 255, 255, 0.1);
+       backdrop-filter: blur(20px);
+       -webkit-backdrop-filter: blur(20px);
+       border: 1px solid rgba(255, 255, 255, 0.2);
+       border-radius: 50px;
+       padding: 16px 50px;
+       font-size: 1.35rem;
+       font-weight: 800;
+       color: white;
+       letter-spacing: 2px;
+       cursor: pointer;
+       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+       box-shadow: 
+         0 10px 40px rgba(0, 210, 255, 0.3),
+         inset 0 2px 0 rgba(255, 255, 255, 0.3),
+         inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+       position: relative;
+       overflow: hidden;
+       animation: neonPulse 2s ease-in-out infinite;
+     }
 
-    .spin-btn.action-glow {
-      animation: pulse-glow 2s infinite alternate;
-    }
+     .spin-btn.action-glow {
+       animation: neonPulse 1.5s ease-in-out infinite;
+     }
 
-    .spin-btn:active:not(.disabled) {
-      transform: scale(0.95) translateY(4px);
-      box-shadow: 0 5px 10px rgba(0, 210, 255, 0.3);
-    }
+     .spin-btn:not([disabled]):hover {
+       transform: translateY(-3px) scale(1.05);
+       box-shadow: 
+         0 15px 50px rgba(0, 210, 255, 0.5),
+         0 0 30px rgba(0, 210, 255, 0.4),
+         inset 0 2px 0 rgba(255, 255, 255, 0.4),
+         inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+       background: rgba(255, 255, 255, 0.15);
+     }
 
-    .spin-btn.disabled {
-      filter: grayscale(100%);
-      cursor: not-allowed;
-      animation: none;
-      opacity: 0.7;
-    }
+     .spin-btn:not([disabled]):active {
+       transform: translateY(1px) scale(0.98);
+       box-shadow: 
+         0 5px 20px rgba(0, 210, 255, 0.3),
+         inset 0 2px 0 rgba(255, 255, 255, 0.3);
+     }
 
-    @keyframes pulse-glow {
-      0% { box-shadow: 0 0 15px rgba(0, 210, 255, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.4); }
-      100% { box-shadow: 0 0 35px rgba(0, 210, 255, 0.8), inset 0 2px 0 rgba(255, 255, 255, 0.4); }
-    }
+     .spin-btn.disabled {
+       filter: grayscale(100%) brightness(0.6);
+       cursor: not-allowed;
+       animation: none;
+       transform: none;
+       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+     }
+
+     @keyframes neonPulse {
+       0%, 100% {
+         box-shadow: 
+           0 0 20px rgba(0, 210, 255, 0.4),
+           0 0 40px rgba(0, 210, 255, 0.2),
+           0 10px 40px rgba(0, 210, 255, 0.3),
+           inset 0 2px 0 rgba(255, 255, 255, 0.3);
+       }
+       50% {
+         box-shadow: 
+           0 0 30px rgba(0, 210, 255, 0.6),
+           0 0 60px rgba(0, 210, 255, 0.3),
+           0 10px 50px rgba(0, 210, 255, 0.4),
+           inset 0 2px 0 rgba(255, 255, 255, 0.4);
+       }
+     }
   `]
 })
 export class TicketRouletteComponent {
@@ -235,10 +280,10 @@ export class TicketRouletteComponent {
   audioTick = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
   audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
 
-  constructor() {
-    this.audioTick.volume = 0.3; // Volumen suave para el tick
-    this.generateReel();
-  }
+   constructor(private router: Router) {
+     this.audioTick.volume = 0.3; // Volumen suave para el tick
+     this.generateReel();
+   }
 
   generateReel() {
     let tempReel: Ticket[] = [];
@@ -310,14 +355,17 @@ export class TicketRouletteComponent {
     requestAnimationFrame(checkTick);
   }
 
-  finishSpin(winningIndex: number) {
-    this.isSpinning.set(false);
-    this.audioWin.play();
-    
-    const wonTicket = this.reelTickets()[winningIndex];
-    console.log(`¡Ganaste ${wonTicket.value}!`);
+   finishSpin(winningIndex: number) {
+     this.isSpinning.set(false);
+     this.audioWin.play();
+     
+     const wonTicket = this.reelTickets()[winningIndex];
+     console.log(`¡Ganaste ${wonTicket.value}!`);
+   }
 
-  }
+   goBack() {
+     this.router.navigate(['/main']);
+   }
 
   
 }

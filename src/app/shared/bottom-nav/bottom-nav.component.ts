@@ -89,6 +89,6 @@ export class BottomNavComponent {
 
   isHidden = computed(() => {
     const url = this.currentUrl();
-    return url.startsWith('/transaccion') || url.startsWith('/main/box');
+    return url.startsWith('/transaccion') || url.startsWith('/main/box') || url.startsWith('/main/ticket');
   });
 }
