@@ -125,13 +125,8 @@ interface Mission {
 
                   <!-- Main Action Area -->
                   <button (click)="openHistoryModal()" class="lg-btn-primary w-full h-12 flex items-center justify-center gap-3 px-4 active:scale-[0.98] transition-all">
-                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                      </svg>
-                    </div>
-                    <span class="text-[12px] font-semibold tracking-wide">INVITAR</span>
+                    
+                    <span class="text-[12px] font-semibold tracking-wide">Ver historial completo</span>
                   </button>
                 </div>
               }

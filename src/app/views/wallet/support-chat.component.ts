@@ -19,7 +19,7 @@ interface Message {
           <div class="flex items-center gap-3 min-w-0">
             <div class="relative flex-shrink-0">
               <div class="w-10 h-10 rounded-full overflow-hidden border border-white/15 p-0.5">
-                <img ngSrc="icons/support.png" alt="Soporte" width="40" height="40" class="rounded-full object-cover w-full h-full" />
+                <img ngSrc="icons/support.webp" alt="Soporte" width="40" height="40" class="rounded-full object-cover w-full h-full" />
               </div>
               <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#0e0228]"></div>
             </div>

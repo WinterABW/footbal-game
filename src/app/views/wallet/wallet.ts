@@ -19,10 +19,8 @@ interface Deposit {
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
 
       <!-- Support button (floating top-right) -->
-      <button (click)="navigateToSupport()" class="absolute top-0 right-5 mt-[calc(env(safe-area-inset-top,0px)+1.5rem)] z-20 w-12 h-12 lg-icon-btn flex items-center justify-center active:scale-90 transition-transform">
-        <svg class="w-5 h-5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
+      <button (click)="navigateToSupport()" class="absolute top-0 right-5 mt-[calc(env(safe-area-inset-top,0px)+1.5rem)] z-20 w-12 h-12 lg-icon-btn flex items-center justify-center active:scale-90 transition-transform p-0.5">
+        <img ngSrc="icons/support.webp" alt="Soporte" width="32" height="32" class="rounded-full object-cover w-full h-full" />
       </button>
 
       <div class="flex-1 w-full relative z-10 flex flex-col overflow-y-auto no-scrollbar pt-safe-top pb-24 px-5 gap-2">

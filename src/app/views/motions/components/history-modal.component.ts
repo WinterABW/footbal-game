@@ -19,7 +19,6 @@ interface Mission {
           <!-- Header Section -->
           <header class="flex items-center justify-between z-10 relative">
             <div class="flex flex-col">
-              <span class="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] mb-0.5">Registro</span>
               <h2 class="text-xl font-black text-white tracking-tight uppercase">Historial</h2>
             </div>
             <button (click)="onClose()" class="lg-icon-btn w-10 h-10 active:scale-90 transition-transform">
