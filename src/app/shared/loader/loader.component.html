@@ -1,17 +1,26 @@
 <div class="loader-container">
-  <div class="background-image"></div>
-  <div
-    class="relative z-10 flex flex-col items-center justify-center p-12 rounded-[40px] bg-black/40 backdrop-blur-2xl border border-white/20 shadow-[0_0_60px_rgba(0,0,0,0.8)]">
-    <div
-      class="relative w-[120px] h-[120px] flex items-center justify-center rounded-3xl bg-white/10 shadow-inner border border-white/20 backdrop-blur-md mb-8 logo-container">
-      <img ngSrc="favicon.svg" alt="FIFA Logo" class="logo drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]" width="80"
-        height="80">
+  <!-- Animated gradient background -->
+  <div class="animated-bg"></div>
+  
+  <!-- Main loader card with premium glass effect -->
+  <div class="loader-card">
+    <!-- Crystal spinner -->
+    <div class="spinner-container">
+      <div class="spinner-ring"></div>
+      <div class="spinner-ring"></div>
+      <div class="spinner-ring"></div>
+      <img ngSrc="favicon.svg" alt="Logo" width="48" height="48" class="logo-icon">
     </div>
-    <div class="welcome-text space-y-2">
-      <h1
-        class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 tracking-tight text-glow">
-        Cargando...</h1>
-      <p class="text-sm font-medium text-white/70 uppercase tracking-[0.2em] font-light">Preparando interfaz</p>
+    
+    <!-- Loading text with animated dots -->
+    <div class="text-container">
+      <h1 class="loading-title">
+        <span class="gradient-text">Cargando</span>
+        <span class="dots">
+          <span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+        </span>
+      </h1>
+      <p class="loading-subtitle">Iniciando experiencia</p>
     </div>
   </div>
 </div>
