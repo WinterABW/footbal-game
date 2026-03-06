@@ -19,7 +19,7 @@ export const MAIN_ROUTES: Routes = [
     {
         path: 'box',
         loadComponent: () =>
-            import('../../mini-games/juego.component').then((c) => c.Game1Component),
+            import('../../mini-games/box.component').then((c) => c.BoxComponent),
     },
     {
         path: 'ticket',
