@@ -22,7 +22,7 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
 
         <!-- Master Invitation Card (iOS 26 Liquid Reference) -->
         <article class="relative group active:scale-[0.98] transition-all duration-300">
-           <div class="lg-panel rounded-xl px-4 py-2 flex items-center justify-between">
+           <div class="lg-panel rounded-lg px-5 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden relative shadow-inner">
                 <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
@@ -34,8 +34,9 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
                 <p class="text-[8px] font-bold text-white/30 uppercase tracking-widest leading-none">Gana con cada referido</p>
               </div>
             </div>
-            <div class="text-right pr-1">
-              <span class="text-base font-black text-white tracking-tighter text-glow">+5K</span>
+            <div class="flex flex-col items-center justify-center pr-1 leading-tight">
+              <span class="text-sm font-black text-white tracking-tighter text-glow">💵 + 500 COP</span>
+              <span class="text-sm font-black text-white tracking-tighter text-glow">🎟 + 5 Ticket</span>
             </div>
           </div>
         </article>
