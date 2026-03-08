@@ -2,9 +2,16 @@ import { ChangeDetectionStrategy, Component, signal, computed } from '@angular/c
 import { NgOptimizedImage, DecimalPipe } from '@angular/common';
 import { HistoryModalComponent } from './components';
 import { GlassModalComponent } from '../../shared/ui';
+import confetti from 'canvas-confetti';
 
 interface Mission {
   id: string; title: string; description: string; reward: number; currency: string; icon: string; completed: boolean;
+}
+
+interface DailyReward {
+  day: number;
+  state: 'claimed' | 'available' | 'upcoming';
+  icon: string;
 }
 
 @Component({
@@ -52,13 +59,26 @@ interface Mission {
           <div class="bg-white/5 border border-white/5 rounded-[32px] p-1 overflow-hidden backdrop-blur-sm">
             @switch (activeTab()) {
               @case ('Daily') {
-                <div class="flex flex-col gap-4 p-6">
-                  <div class="grid grid-cols-4 gap-3">
-                    @for (day of [1,2,3,4,5,6,7]; track day) {
-                      <div class="bg-white/5 p-4 flex flex-col items-center gap-3 rounded-2xl border border-white/5 active:scale-95 transition-all cursor-pointer">
-                        <span class="text-[10px] font-bold text-white/40 uppercase">D{{ day }}</span>
-                        <div class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                           <div class="w-2 h-2 bg-indigo-400 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
+                <div class="flex flex-col gap-4 p-4">
+                  <div class="grid grid-cols-4 gap-2 md:gap-4">
+                    @for (reward of dailyRewards(); track reward.day) {
+                      <div (click)="claimDailyReward(reward)" 
+                        class="group relative flex flex-col items-center justify-center p-2 sm:p-4 aspect-square rounded-2xl sm:rounded-[32px] border transition-all duration-300 cursor-pointer active:scale-95"
+                        [class]="reward.state === 'available' 
+                          ? 'bg-white/10 border-white/30 shadow-2xl' 
+                          : reward.state === 'claimed' 
+                            ? 'bg-white/5 border-white/10 opacity-90' 
+                            : 'bg-white/[0.02] border-white/5 opacity-40'">
+                        
+                        <!-- Header: Día Label -->
+                        <span class="text-[10px] md:text-[13px] font-extrabold text-white mb-1 sm:mb-2 tracking-wide drop-shadow-md whitespace-nowrap">
+                          Día {{ reward.day }}
+                        </span>
+
+                        <!-- Main Icon Area -->
+                        <div class="relative w-full flex-1 flex items-center justify-center p-1 sm:p-2">
+                          <img [ngSrc]="reward.icon" [alt]="reward.state" width="100" height="100" 
+                            class="relative z-10 w-full h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-110">
                         </div>
                       </div>
                     }
@@ -191,14 +211,30 @@ interface Mission {
         }
       </app-glass-modal>
 
-      <app-history-modal [isOpen]="showHistoryModal()" [completedMissions]="completedMissions()" [failedMissions]="failedMissions()" (close)="closeHistoryModal()" />
+      <!-- Toast Notification (Centered & Glassy) -->
+      @if (toastMessage()) {
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+          <div class="bg-black/80 text-white px-6 py-4 rounded-3xl flex items-center gap-4 shadow-[0_20px_40px_rgba(0,0,0,0.5)] backdrop-blur-3xl border border-white/10 animate-slide-up-toast w-full max-w-[320px]">
+            <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 border border-white/5 relative overflow-hidden">
+               <div class="absolute inset-0 bg-indigo-500/20 blur-md"></div>
+               <svg class="w-5 h-5 text-indigo-300 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <span class="text-[13px] font-bold tracking-tight leading-snug">{{ toastMessage() }}</span>
+          </div>
+        </div>
+      }
     </section>
   `,
   styles: [`
     :host { display: block; }
     .pt-safe-top { padding-top: env(safe-area-inset-top, 1.5rem); }
     .animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+    .animate-slide-up-toast { animation: slideUpToast 0.4s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+    .animate-pulse-subtle { animation: pulseSubtle 3s ease-in-out infinite; }
     @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes slideUpToast { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes pulseSubtle { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.02); opacity: 0.9; } }
+
     .text-glow-emerald { text-shadow: 0 0 20px rgba(52, 211, 153, 0.3); }
     .text-glow { text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -233,5 +269,60 @@ export default class MotionsComponent {
       Youtube: 'YouTube_23392.png'
     };
     return icons[tab] || '';
+  }
+
+  dailyRewards = signal<DailyReward[]>([
+    { day: 1, state: 'claimed', icon: 'mociones/icons-daily/reclamed.webp' },
+    { day: 2, state: 'claimed', icon: 'mociones/icons-daily/reclamed.webp' },
+    { day: 3, state: 'available', icon: 'mociones/icons-daily/current.webp' },
+    { day: 4, state: 'upcoming', icon: 'mociones/icons-daily/comingsoon.webp' },
+    { day: 5, state: 'upcoming', icon: 'mociones/icons-daily/comingsoon.webp' },
+    { day: 6, state: 'upcoming', icon: 'mociones/icons-daily/comingsoon.webp' },
+    { day: 7, state: 'upcoming', icon: 'mociones/icons-daily/comingsoon.webp' },
+  ]);
+
+  toastMessage = signal<string | null>(null);
+
+  claimDailyReward(reward: DailyReward) {
+    if (reward.state === 'upcoming') {
+      this.showToast('Disponible próximamente, regresa en 24:00:00');
+    } else if (reward.state === 'available') {
+      this.triggerConfetti();
+      this.dailyRewards.update(rewards => rewards.map(r =>
+        r.day === reward.day ? { ...r, state: 'claimed', icon: 'mociones/icons-daily/reclamed.webp' } : r
+      ));
+    }
+  }
+
+  showToast(msg: string) {
+    this.toastMessage.set(msg);
+    setTimeout(() => this.toastMessage.set(null), 3000);
+  }
+
+  triggerConfetti() {
+    const duration = 2000;
+    const end = Date.now() + duration;
+
+    const frame = () => {
+      confetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.8 },
+        colors: ['#FFD700', '#FFA500', '#FF4500', '#10B981', '#3B82F6']
+      });
+      confetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.8 },
+        colors: ['#FFD700', '#FFA500', '#FF4500', '#10B981', '#3B82F6']
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+    frame();
   }
 }

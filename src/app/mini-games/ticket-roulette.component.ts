@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 
 interface Ticket {
@@ -11,8 +11,8 @@ interface Ticket {
 @Component({
   selector: 'app-ticket-roulette',
   standalone: true,
-  imports: [CommonModule],
-   template: `
+  imports: [CommonModule,NgOptimizedImage],
+  template: `
      <div class="game-wrapper hide-nav">
        <!-- Botón Atrás -->
        <button class="back-btn absolute top-3 left-3 w-12 h-12 flex items-center justify-center rounded-full bg-white/5 backdrop-blur border border-white/10 z-50 transition-transform hover:-translate-x-0.5" (click)="goBack()" aria-label="Volver">
@@ -20,6 +20,12 @@ interface Ticket {
            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
          </svg>
        </button>
+
+<div class="header glass !py-2 px-4! !mb-4 inline-flex! items-center gap-3">
+        <img ngSrc="tickets/tickets.webp" alt="Jugadores" class="w-12 h-12 object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 drop-shadow-md transition-all" width="48" height="48">
+        <h1>Tickets: <span> {{ 5 }}</span></h1>
+      </div>
+
       <div class="glass-board shadow-glow">
         
         <div class="selector-arrow left"></div>
@@ -55,6 +61,35 @@ interface Ticket {
     </div>
   `,
   styles: [`
+
+ .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 
+        inset 0 0 20px rgba(255, 255, 255, 0.05),
+        0 8px 32px rgba(0, 0, 0, 0.3);
+      border-radius: 24px;
+    }
+
+     .header {
+       padding: 1rem 2rem;
+       margin-bottom: 1rem;
+       border-radius: 40px;
+     }
+     .header h1 {
+       margin: 0;
+       font-size: 1.5rem;
+       letter-spacing: 1.5px;
+       font-weight: 400;
+     }
+    .header span {
+      color: #00ffcc;
+      font-weight: 700;
+      text-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
+    }
+
      .game-wrapper {
        display: flex;
        flex-direction: column;
@@ -258,11 +293,11 @@ export class TicketRouletteComponent {
   isSpinning = signal(false);
   currentOffset = signal(0);
   transitionDuration = signal(0);
-  
+
   // Configuración de la ruleta
   ticketHeight = 100; // 80px alto + 20px gap
   visibleTickets = 5;
-  
+
   baseTickets: Ticket[] = [
     { id: 1, value: 0.15, colorClass: 'ticket-teal' },
     { id: 2, value: 2, colorClass: 'ticket-blue' },
@@ -280,10 +315,10 @@ export class TicketRouletteComponent {
   audioTick = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
   audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
 
-   constructor(private router: Router) {
-     this.audioTick.volume = 0.3; // Volumen suave para el tick
-     this.generateReel();
-   }
+  constructor(private router: Router) {
+    this.audioTick.volume = 0.3; // Volumen suave para el tick
+    this.generateReel();
+  }
 
   generateReel() {
     let tempReel: Ticket[] = [];
@@ -309,10 +344,10 @@ export class TicketRouletteComponent {
     const winningIndex = Math.floor(Math.random() * (maxSpins - minSpins + 1)) + minSpins;
 
     const targetOffset = this.calculateOffset(winningIndex);
-    const durationMs = 5000; 
-    
+    const durationMs = 5000;
+
     this.transitionDuration.set(durationMs);
-    
+
     setTimeout(() => {
       this.currentOffset.set(targetOffset);
       this.trackTicks(winningIndex, durationMs);
@@ -343,7 +378,7 @@ export class TicketRouletteComponent {
 
       if (currentIndex !== lastTickIndex && currentIndex > 0) {
         lastTickIndex = currentIndex;
-        this.audioTick.currentTime = 0; 
+        this.audioTick.currentTime = 0;
         this.audioTick.play().catch(e => console.log('Esperando interacción para audio...'));
       }
 
@@ -355,17 +390,17 @@ export class TicketRouletteComponent {
     requestAnimationFrame(checkTick);
   }
 
-   finishSpin(winningIndex: number) {
-     this.isSpinning.set(false);
-     this.audioWin.play();
-     
-     const wonTicket = this.reelTickets()[winningIndex];
-     console.log(`¡Ganaste ${wonTicket.value}!`);
-   }
+  finishSpin(winningIndex: number) {
+    this.isSpinning.set(false);
+    this.audioWin.play();
 
-   goBack() {
-     this.router.navigate(['/main']);
-   }
+    const wonTicket = this.reelTickets()[winningIndex];
+    console.log(`¡Ganaste ${wonTicket.value}!`);
+  }
 
-  
+  goBack() {
+    this.router.navigate(['/main']);
+  }
+
+
 }

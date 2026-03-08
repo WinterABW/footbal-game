@@ -21,8 +21,9 @@ interface Box {
          </svg>
        </button>
 
-      <div class="header glass !p-4 !mb-4">
-        <h1>SALDO: <span>$ {{ balance }}</span></h1>
+      <div class="header glass !p-2 !mb-4 inline-flex! items-center gap-3">
+        <img ngSrc="tickets/tickets.webp" alt="Jugadores" class="w-12 h-12 object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 drop-shadow-md transition-all" width="48" height="48">
+        <h1>Tickets: <span> {{ balance }}</span></h1>
       </div>
 
       <div class="grid-container !gap-4 !mb-6">
