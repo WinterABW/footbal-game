@@ -24,10 +24,10 @@ interface DailyReward {
         
         <!-- Hero Section -->
         <div class="flex flex-col items-center py-0 -mb-1.5">
-          <div class="relative w-32 h-32 group">
+          <div class="relative w-24 h-32 group">
              <!-- Deep Aura Glow -->
             <div class="absolute inset-[-20px] bg-indigo-500/20 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-1000 animate-pulse"></div>
-            <img ngSrc="mociones/mociones.png" alt="Misiones" width="128" height="128" 
+            <img ngSrc="navegation-icons/mociones.webp" alt="Misiones" width="128" height="128" 
                 class="relative z-10 w-full h-full object-contain filter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] lg-float">
           </div>
         </div>

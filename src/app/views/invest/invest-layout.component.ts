@@ -15,27 +15,29 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
   template: `
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
         
+        <!-- Floating Header Controls -->
+        <div class="absolute top-0 left-0 right-0 z-20 px-5 mt-[calc(env(safe-area-inset-top,0px)+1rem)] flex flex-row justify-between items-center pointer-events-none">
+            <a routerLink="/main"
+                class="w-10 h-10 lg-module-card flex items-center justify-center active:scale-90 transition-transform pointer-events-auto"
+                aria-label="Volver">
+                <svg class="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+            </a>
+            <div class="pointer-events-auto">
+                <app-per-hour-earnings />
+            </div>
+        </div>
+
         <div class="flex-1 w-full relative z-10 flex flex-col overflow-y-auto no-scrollbar pt-safe-top pb-32 px-5 gap-2" #scrollContainer
             (scroll)="onSectionScroll($event)">
             
-            <!-- Header Controls (Moved inside scroll) -->
-            <div class="w-full flex flex-row justify-between items-center py-2">
-                <a routerLink="/main"
-                    class="w-10 h-10 lg-module-card flex items-center justify-center active:scale-90 transition-transform"
-                    aria-label="Volver">
-                    <svg class="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </a>
-                <app-per-hour-earnings />
-            </div>
-
             <!-- Hero Section -->
-            <div class="flex flex-col items-center py-0 -mb-1.5">
+            <div class="flex flex-col items-center py-0 -mb-1.5 mt-2">
                 <div class="relative w-32 h-32 group">
                     <!-- Deep Aura Glow -->
                     <div class="absolute inset-[-20px] bg-teal-500/20 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-1000 animate-pulse"></div>
-                    <img ngSrc="icons/tshirt.png" alt="invest icon" width="128" height="128"
+                    <img ngSrc="navegation-icons/inversion.webp" alt="invest icon" width="128" height="128"
                         class="relative z-10 w-full h-full object-contain filter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] lg-float">
                 </div>
             </div>
