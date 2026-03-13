@@ -287,9 +287,52 @@ export class MotionsComponent {
       this.showToast('Disponible próximamente, regresa en 24:00:00');
     } else if (reward.state === 'available') {
       this.triggerConfetti();
+      this.playVictorySound();
       this.dailyRewards.update(rewards => rewards.map(r =>
         r.day === reward.day ? { ...r, state: 'claimed', icon: 'motions/daily/reclamed.webp' } : r
       ));
+    }
+  }
+
+  playVictorySound() {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+    
+    const createClap = (delay: number, volume: number) => {
+      const noise = audioContext.createBufferSource();
+      const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.15, audioContext.sampleRate);
+      const data = buffer.getChannelData(0);
+      
+      for (let i = 0; i < buffer.length; i++) {
+        const envelope = Math.exp(-i / (audioContext.sampleRate * 0.05));
+        data[i] = (Math.random() * 2 - 1) * envelope;
+      }
+      
+      noise.buffer = buffer;
+      
+      const filter = audioContext.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 800 + Math.random() * 400;
+      filter.Q.value = 1;
+      
+      const gain = audioContext.createGain();
+      gain.gain.setValueAtTime(0, audioContext.currentTime + delay);
+      gain.gain.linearRampToValueAtTime(volume, audioContext.currentTime + delay + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + delay + 0.15);
+      
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioContext.destination);
+      
+      noise.start(audioContext.currentTime + delay);
+      noise.stop(audioContext.currentTime + delay + 0.2);
+    };
+
+    for (let i = 0; i < 6; i++) {
+      createClap(i * 0.08, 0.3 - i * 0.03);
     }
   }
 
