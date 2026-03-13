@@ -8,35 +8,34 @@ export const routes: Routes = [
   },
   {
     path: 'welcome',
-    loadComponent: () => import('./views/auth/welcome.component'),
+    loadComponent: () => import('./features/auth/welcome.component').then((m) => m.WelcomeComponent),
   },
   {
     path: 'login',
-    loadComponent: () => import('./views/auth/login.component'),
+    loadComponent: () => import('./features/auth/login.component').then((m) => m.LoginComponent),
   },
   {
     path: 'main',
-    loadChildren: () => import('./views/game/main.routes').then((m) => m.MAIN_ROUTES),
+    loadChildren: () => import('./features/game/game.routes').then((m) => m.GAME_ROUTES),
   },
   {
     path: 'mining',
-    loadComponent: () =>
-      import('./views/invest/invest-layout.component').then((c) => c.InvestLayoutComponent),
+    loadComponent: () => import('./features/invest/invest-layout.component').then((c) => c.InvestLayoutComponent),
   },
   {
     path: 'social',
-    loadComponent: () => import('./views/social/social'),
+    loadComponent: () => import('./features/social/social.component').then((c) => c.SocialComponent),
   },
   {
     path: 'wallet',
-    loadComponent: () => import('./views/wallet/wallet'),
+    loadComponent: () => import('./features/wallet/wallet.component').then((c) => c.WalletComponent),
   },
   {
     path: 'mociones',
-    loadComponent: () => import('./views/motions/motions'),
+    loadComponent: () => import('./features/motions/motions.component').then((c) => c.MotionsComponent),
   },
   {
     path: 'transaccion',
-    loadComponent: () => import('./views/wallet/transaction/transaction.component'),
+    loadComponent: () => import('./features/wallet/transaction/transaction.component').then((c) => c.TransactionComponent),
   },
 ];

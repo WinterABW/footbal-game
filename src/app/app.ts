@@ -2,9 +2,9 @@ import { afterNextRender, ChangeDetectionStrategy, Component, computed, inject, 
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
-import { LoaderComponent } from './shared/loader/loader.component';
-import { ParticlesBackgroundComponent } from './shared/particles-background/particles-background.component';
-import { BottomNavComponent } from './shared/bottom-nav/bottom-nav.component';
+import { LoaderComponent } from './shared/components/loader/loader.component';
+import { ParticlesBackgroundComponent } from './shared/components/particles-background/particles-background.component';
+import { BottomNavComponent } from './shared/components/bottom-nav/bottom-nav.component';
 
 @Component({
   selector: 'app-root',
