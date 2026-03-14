@@ -60,25 +60,48 @@ interface DailyReward {
               @case ('Daily') {
                 <div class="flex flex-col gap-4 p-4">
                   <div class="grid grid-cols-4 gap-2 md:gap-4">
-                    @for (reward of dailyRewards(); track reward.day) {
+                    @for (reward of dailyRewards(); track reward.day; let i = $index) {
                       <div (click)="claimDailyReward(reward)" 
-                        class="group relative flex flex-col items-center justify-center p-2 sm:p-4 aspect-square rounded-2xl sm:rounded-[32px] border transition-all duration-300 cursor-pointer active:scale-95"
+                        [style.animation-delay.ms]="i * 75"
+                        class="animate-pop-in group relative flex flex-col items-center justify-center p-2 sm:p-4 aspect-square rounded-2xl sm:rounded-[32px] border transition-all duration-500 cursor-pointer active:scale-95"
                         [class]="reward.state === 'available' 
-                          ? 'bg-white/10 border-white/30 shadow-2xl' 
+                          ? 'bg-gradient-to-b from-white/10 to-white/5 border-emerald-500/40 shadow-[0_10px_30px_rgba(16,185,129,0.2)] hover:shadow-[0_15px_40px_rgba(16,185,129,0.3)] -translate-y-1 hover:-translate-y-2' 
                           : reward.state === 'claimed' 
                             ? 'bg-white/5 border-white/10 opacity-90' 
-                            : 'bg-white/[0.02] border-white/5 opacity-40'">
+                            : 'bg-white/[0.02] border-white/5 opacity-40 hover:opacity-60'">
                         
+                        @if (reward.state === 'available') {
+                          <!-- Pulse Glow for Available Item -->
+                          <div class="absolute inset-0 bg-emerald-500/10 rounded-2xl sm:rounded-[32px] blur-xl animate-pulse-fast pointer-events-none"></div>
+                          
+                          <!-- Sparkles for Available Item -->
+                          <div class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-emerald-400 rounded-full blur-md opacity-60 animate-bounce" style="animation-duration: 2s;"></div>
+                          <div class="absolute -bottom-1 -left-1 w-3 h-3 bg-yellow-400 rounded-full blur-md opacity-60 animate-bounce" style="animation-duration: 3s; animation-delay: 0.5s;"></div>
+                        }
+
                         <!-- Header: Día Label -->
-                        <span class="text-[10px] md:text-[13px] font-extrabold text-white mb-1 sm:mb-2 tracking-wide drop-shadow-md whitespace-nowrap">
+                        <span class="relative z-10 text-[10px] md:text-[13px] font-extrabold text-white mb-1 sm:mb-2 tracking-wide drop-shadow-md whitespace-nowrap transition-colors duration-300"
+                              [class.text-emerald-300]="reward.state === 'available'">
                           Día {{ reward.day }}
                         </span>
 
                         <!-- Main Icon Area -->
                         <div class="relative w-full flex-1 flex items-center justify-center p-1 sm:p-2">
                           <img [ngSrc]="reward.icon" [alt]="reward.state" width="100" height="100" 
-                            class="relative z-10 w-full h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-110">
+                            class="relative z-10 w-full h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] transition-transform duration-500"
+                            [class.animate-float]="reward.state === 'available'"
+                            [class.group-hover:scale-110]="reward.state !== 'upcoming'"
+                            [class.opacity-70]="reward.state === 'upcoming'">
                         </div>
+
+                        <!-- Checkmark Overlay for Claimed -->
+                        @if (reward.state === 'claimed') {
+                          <div class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-2xl sm:rounded-[32px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px]">
+                            <svg class="w-8 h-8 text-emerald-400 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        }
                       </div>
                     }
                   </div>
@@ -210,15 +233,22 @@ interface DailyReward {
         }
       </app-glass-modal>
 
-      <!-- Toast Notification (Centered & Glassy) -->
-      @if (toastMessage()) {
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-          <div class="bg-black/80 text-white px-6 py-4 rounded-3xl flex items-center gap-4 shadow-[0_20px_40px_rgba(0,0,0,0.5)] backdrop-blur-3xl border border-white/10 animate-slide-up-toast w-full max-w-[320px]">
-            <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 border border-white/5 relative overflow-hidden">
-               <div class="absolute inset-0 bg-indigo-500/20 blur-md"></div>
-               <svg class="w-5 h-5 text-indigo-300 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <!-- Toast Notification (Professional Glass) -->
+      @if (toastData(); as toast) {
+        <div class="fixed top-[env(safe-area-inset-top,1.5rem)] inset-x-0 z-[100] flex justify-center p-4 pointer-events-none mt-2">
+          <div class="animate-slide-down-toast backdrop-blur-2xl border flex items-center gap-3.5 px-5 py-3.5 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] w-full max-w-[340px]"
+               [class]="toast.type === 'success' ? 'bg-emerald-950/60 border-emerald-500/20' : toast.type === 'error' ? 'bg-rose-950/60 border-rose-500/20' : 'bg-black/60 border-white/10'">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                 [class]="toast.type === 'success' ? 'bg-emerald-500/20 text-emerald-400' : toast.type === 'error' ? 'bg-rose-500/20 text-rose-400' : 'bg-white/20 text-white'">
+               @if (toast.type === 'success') {
+                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+               } @else if (toast.type === 'error') {
+                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+               } @else {
+                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+               }
             </div>
-            <span class="text-[13px] font-bold tracking-tight leading-snug">{{ toastMessage() }}</span>
+            <span class="text-[13px] font-medium tracking-wide text-white/95 leading-snug">{{ toast.message }}</span>
           </div>
         </div>
       }
@@ -228,11 +258,18 @@ interface DailyReward {
     :host { display: block; }
     .pt-safe-top { padding-top: env(safe-area-inset-top, 1.5rem); }
     .animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
-    .animate-slide-up-toast { animation: slideUpToast 0.4s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+    .animate-slide-down-toast { animation: slideDownToast 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .animate-pulse-subtle { animation: pulseSubtle 3s ease-in-out infinite; }
+    .animate-pop-in { animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .animate-pulse-fast { animation: pulseFast 1.5s ease-in-out infinite; }
+
     @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    @keyframes slideUpToast { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes slideDownToast { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     @keyframes pulseSubtle { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.02); opacity: 0.9; } }
+    @keyframes popIn { from { transform: scale(0.8) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    @keyframes pulseFast { 0%, 100% { opacity: 0.3; transform: scale(0.95); } 50% { opacity: 0.7; transform: scale(1.05); } }
 
     .text-glow-emerald { text-shadow: 0 0 20px rgba(52, 211, 153, 0.3); }
     .text-glow { text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
@@ -280,65 +317,81 @@ export class MotionsComponent {
     { day: 7, state: 'upcoming', icon: 'motions/daily/comingsoon.webp' },
   ]);
 
-  toastMessage = signal<string | null>(null);
+  toastData = signal<{ message: string, type: 'success' | 'error' | 'info' } | null>(null);
 
   claimDailyReward(reward: DailyReward) {
     if (reward.state === 'upcoming') {
-      this.showToast('Disponible próximamente, regresa en 24:00:00');
+      this.playErrorSound();
+      this.showToast('¡Aún no! Esta recompensa estará disponible pronto.', 'error');
+    } else if (reward.state === 'claimed') {
+      this.playErrorSound();
+      this.showToast('¡Ya reclamaste este premio! Vuelve mañana.', 'error');
     } else if (reward.state === 'available') {
       this.triggerConfetti();
-      this.playVictorySound();
+      this.playClaimSound();
       this.dailyRewards.update(rewards => rewards.map(r =>
         r.day === reward.day ? { ...r, state: 'claimed', icon: 'motions/daily/reclamed.webp' } : r
       ));
+      this.showToast(`¡Genial! Has reclamado tu recompensa del Día ${reward.day}.`, 'success');
     }
   }
 
-  playVictorySound() {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    
-    if (audioContext.state === 'suspended') {
-      audioContext.resume();
-    }
-    
-    const createClap = (delay: number, volume: number) => {
-      const noise = audioContext.createBufferSource();
-      const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.15, audioContext.sampleRate);
-      const data = buffer.getChannelData(0);
-      
-      for (let i = 0; i < buffer.length; i++) {
-        const envelope = Math.exp(-i / (audioContext.sampleRate * 0.05));
-        data[i] = (Math.random() * 2 - 1) * envelope;
-      }
-      
-      noise.buffer = buffer;
-      
-      const filter = audioContext.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.value = 800 + Math.random() * 400;
-      filter.Q.value = 1;
-      
-      const gain = audioContext.createGain();
-      gain.gain.setValueAtTime(0, audioContext.currentTime + delay);
-      gain.gain.linearRampToValueAtTime(volume, audioContext.currentTime + delay + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + delay + 0.15);
-      
-      noise.connect(filter);
-      filter.connect(gain);
-      gain.connect(audioContext.destination);
-      
-      noise.start(audioContext.currentTime + delay);
-      noise.stop(audioContext.currentTime + delay + 0.2);
+  playClaimSound() {
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const playNote = (freq: number, startTime: number, type: OscillatorType = 'sine', duration: number = 0.5) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, startTime);
+
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.linearRampToValueAtTime(0.15, startTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(startTime);
+      osc.stop(startTime + duration);
     };
 
-    for (let i = 0; i < 6; i++) {
-      createClap(i * 0.08, 0.3 - i * 0.03);
-    }
+    const now = ctx.currentTime;
+    // Magical chime chord (C Maj 7 Arpeggio)
+    playNote(523.25, now, 'sine', 0.6);       // C5
+    playNote(659.25, now + 0.1, 'sine', 0.6); // E5
+    playNote(783.99, now + 0.2, 'sine', 0.6); // G5
+    playNote(987.77, now + 0.3, 'sine', 0.6); // B5
+    playNote(1046.50, now + 0.4, 'triangle', 0.8); // C6 Sparkle
   }
 
-  showToast(msg: string) {
-    this.toastMessage.set(msg);
-    setTimeout(() => this.toastMessage.set(null), 3000);
+  playErrorSound() {
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(300, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.15);
+
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.2);
+  }
+
+  showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
+    this.toastData.set({ message, type });
+    setTimeout(() => this.toastData.set(null), 3000);
   }
 
   triggerConfetti() {
