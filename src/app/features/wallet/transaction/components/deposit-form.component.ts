@@ -78,15 +78,60 @@ import { PaymentScreenComponent } from '../payment-screen.component';
            </div>
         </div>
 
-        <!-- Method Detail (Simulated) -->
-        <div class="lg-module-card p-6 flex items-center justify-between">
-           <div class="flex flex-col">
-             <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Canal de Pago</span>
-             <span class="text-sm font-black text-white uppercase mt-1">{{ selectedMethod() }}</span>
-           </div>
-           <div class="w-10 h-10 rounded-xl bg-white/[0.025] flex items-center justify-center">
-              <svg class="w-5 h-5 text-indigo-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.82v-1.91c-.39-.07-.77-.17-1.14-.31l.43-1.13c.35.13.7.22 1.05.27.35.05.7.07 1.05.05.35-.02.69-.07 1.02-.16.33-.09.61-.24.84-.46.23-.22.34-.52.34-.89 0-.29-.07-.54-.22-.75s-.37-.38-.66-.52-.64-.26-1.04-.36-1.1-.21-1.1-.64c0-.28.11-.53.33-.74s.54-.31.97-.31c.36 0 .7.05 1.01.14.31.09.58.2.82.35l-.44 1.13c-.23-.13-.49-.24-.76-.32s-.55-.12-.83-.12c-.32 0-.61.07-.85.22-.24.15-.36.38-.36.69 0 .26.07.47.21.65.14.18.35.33.61.43s.58.19.95.27l.9.19c.31.07.63.17.94.3s.58.32.8.58c.22.26.33.6.33 1.02 0 .54-.21 1.02-.63 1.44-.42.42-1 .69-1.74.8z"/></svg>
-           </div>
+        <!-- Canal de Pago -->
+        <div class="flex flex-col gap-3">
+          <span class="text-[9px] font-black text-white/20 uppercase tracking-widest px-1">Canal de Pago</span>
+
+          @if (isNequi()) {
+            <!-- Nequi: 3 channel cards -->
+            <div class="grid grid-cols-3 gap-3">
+              @for (channel of paymentChannels(); track channel.id) {
+                <button
+                  (click)="selectedChannel.set(channel.id)"
+                  class="relative flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border backdrop-blur-2xl transition-all duration-300 active:scale-95 overflow-hidden"
+                  [style.background]="selectedChannel() === channel.id
+                    ? 'linear-gradient(to right, rgba(20,184,166,0.28) 0%, rgba(20,184,166,0.18) 25%, rgba(20,184,166,0.08) 55%, transparent 75%)'
+                    : 'rgba(255,255,255,0.04)'"
+                  [style.border-color]="selectedChannel() === channel.id ? 'rgba(20,184,166,0.40)' : 'rgba(255,255,255,0.08)'"
+                  [style.box-shadow]="selectedChannel() === channel.id ? '0 0 20px rgba(20,184,166,0.15), 0 0 40px rgba(20,184,166,0.08)' : 'none'">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center transition-colors duration-300"
+                    [style.background]="selectedChannel() === channel.id ? 'rgba(20,184,166,0.20)' : 'rgba(255,255,255,0.05)'">
+                    <svg class="w-5 h-5 transition-colors duration-300"
+                      [style.color]="selectedChannel() === channel.id ? 'rgb(20,184,166)' : 'rgba(255,255,255,0.25)'"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <span class="text-[9px] font-black uppercase tracking-widest leading-tight text-center transition-colors duration-300"
+                    [style.color]="selectedChannel() === channel.id ? 'rgb(204,251,241)' : 'rgba(255,255,255,0.35)'">
+                    {{ channel.label }}
+                  </span>
+                  @if (selectedChannel() === channel.id) {
+                    <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-teal-400 shadow-[0_0_6px_rgba(20,184,166,0.8)]"></span>
+                  }
+                </button>
+              }
+            </div>
+          } @else {
+            <!-- Other methods: single full-width card with logo -->
+            <div class="relative flex items-center justify-between p-5 rounded-2xl border backdrop-blur-2xl overflow-hidden"
+              style="background: linear-gradient(to right, rgba(20,184,166,0.20) 0%, rgba(20,184,166,0.18) 25%, rgba(20,184,166,0.08) 55%, transparent 75%);
+                     border-color: rgba(20,184,166,0.35);
+                     box-shadow: 0 0 20px rgba(20,184,166,0.12), 0 0 40px rgba(20,184,166,0.06);">
+              <div class="flex flex-col gap-1">
+                <span class="text-[8px] font-black text-teal-400/70 uppercase tracking-[0.25em]">Método activo</span>
+                <span class="text-sm font-black text-white uppercase tracking-widest">{{ selectedMethod() }}</span>
+              </div>
+              @if (methodLogo()) {
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+                  style="background: rgba(20,184,166,0.12); border: 1px solid rgba(20,184,166,0.25);">
+                  <img [src]="methodLogo()!" alt="logo" width="32" height="32" class="w-8 h-8 object-contain drop-shadow-lg" />
+                </div>
+              }
+              <!-- Glow dot -->
+              <span class="absolute top-3 right-3 w-2 h-2 rounded-full bg-teal-400 shadow-[0_0_8px_rgba(20,184,166,0.9)]"></span>
+            </div>
+          }
         </div>
       </main>
 
@@ -115,6 +160,16 @@ export class DepositFormComponent {
   network = input<string>('');
 
   amount = signal(0);
+  selectedChannel = signal<string>('nequi-1');
+
+  readonly paymentChannels = computed(() => {
+    const m = this.selectedMethod();
+    return [
+      { id: `${m}-1`, label: `${m} 1` },
+      { id: `${m}-2`, label: `${m} 2` },
+      { id: `${m}-3`, label: `${m} 3` },
+    ];
+  });
   transactionMessage = signal('');
   showSuccess = signal(false);
   showCryptoModal = signal(false);
@@ -124,6 +179,7 @@ export class DepositFormComponent {
   qrImage = signal('qr/deposit.PNG');
 
   selectedMethod = computed(() => this.currency() || 'NEQUI');
+  isNequi = computed(() => this.selectedMethod() === 'Nequi');
 
   methodLogo = computed(() => {
     const logoMap: Record<string, string> = {
