@@ -135,10 +135,26 @@ import { PaymentScreenComponent } from '../payment-screen.component';
         </div>
       </main>
 
-      <footer class="fixed bottom-0 left-0 right-0 p-8 z-50 bg-gradient-to-t from-[#010208] via-[#010208]/80 to-transparent flex flex-col gap-4">
-        <button class="lg-btn-primary w-full py-5 text-sm shadow-indigo-500/20" (click)="onDeposit()">
-          Confirmar Depósito
+      <footer class="fixed bottom-0 left-0 right-0 px-6 pb-10 pt-8 z-50 bg-gradient-to-t from-[#010208] via-[#010208]/90 to-transparent">
+        <button (click)="onDeposit()"
+          class="relative w-full overflow-hidden flex items-center justify-center gap-3 py-5 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 active:scale-[0.97] text-white btn-glass-cta">
+          <!-- Top highlight line -->
+          <span class="absolute top-0 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none"></span>
+          <!-- Shimmer sweep -->
+          <span class="absolute inset-0 shimmer-anim pointer-events-none"></span>
+          <!-- Lock icon -->
+          <svg class="relative z-10 w-5 h-5 opacity-70 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <span class="relative z-10">Confirmar Depósito</span>
+          <!-- Arrow -->
+          <svg class="relative z-10 w-5 h-5 opacity-60 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
         </button>
+        <p class="text-center text-[8px] text-white/15 font-black uppercase tracking-widest mt-3">
+          🔒 Transacción segura y encriptada
+        </p>
       </footer>
     </div>
   `,
@@ -149,6 +165,36 @@ import { PaymentScreenComponent } from '../payment-screen.component';
     @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .animate-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
     @keyframes shake { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }
+    .btn-glass-cta {
+      background: rgba(0, 212, 255, 0.13);
+      backdrop-filter: blur(32px) saturate(200%);
+      -webkit-backdrop-filter: blur(32px) saturate(200%);
+      border: 1px solid rgba(0, 212, 255, 0.28);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.15),
+        0 0 24px rgba(0, 212, 255, 0.18),
+        0 0 60px rgba(0, 212, 255, 0.08),
+        0 8px 32px rgba(0, 0, 0, 0.40);
+    }
+    .btn-glass-cta:hover {
+      background: rgba(0, 212, 255, 0.20);
+      border-color: rgba(0, 212, 255, 0.45);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 0 32px rgba(0, 212, 255, 0.28),
+        0 12px 40px rgba(0, 0, 0, 0.45);
+    }
+    .btn-glass-cta:active {
+      background: rgba(0, 212, 255, 0.10);
+      transform: scale(0.97);
+    }
+    .shimmer-anim {
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.10) 50%, transparent 60%);
+      background-size: 200% 100%;
+      animation: shimmer 2.4s infinite linear;
+    }
+    @keyframes shimmer { 0% { background-position: 200% center; } 100% { background-position: -200% center; } }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -183,7 +229,7 @@ export class DepositFormComponent {
 
   methodLogo = computed(() => {
     const logoMap: Record<string, string> = {
-      'Nequi': 'wallet/col/nequi.png', 'Daviplata': 'wallet/col/daviplata.png',
+      'Nequi': 'wallet/colombia/nequi.png', 'Daviplata': 'wallet/colombia/daviplata.png',
       'Plin': 'wallet/peru/plin.png', 'Yape': 'wallet/peru/yape.png',
       'USDT': 'wallet/crypto/usdt.png', 'TRX': 'wallet/crypto/trx.png',
       'BNB': 'wallet/crypto/bnb.png', 'BTC': 'wallet/crypto/btc.png',
