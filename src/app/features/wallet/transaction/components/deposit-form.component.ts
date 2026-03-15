@@ -134,19 +134,34 @@ import { PaymentScreenComponent } from '../payment-screen.component';
           }
 
           <!-- Security Labels -->
-          <div class="flex items-center justify-between px-1 mt-1">
-            <div class="flex items-center gap-1.5">
-              <span class="w-1 h-1 rounded-full bg-emerald-400/50"></span>
-              <span class="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">Depósito Seguro</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="w-1 h-1 rounded-full bg-emerald-400/50"></span>
-              <span class="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">Rápido</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="w-1 h-1 rounded-full bg-emerald-400/50"></span>
-              <span class="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">Cifrado de extremo a extremo</span>
-            </div>
+          <div class="px-1 mt-1">
+            @if (isCrypto()) {
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-1 h-1 rounded-full bg-emerald-400/50"></span>
+                  <span class="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">Depósito validado por Blockchain.com</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-1 h-1 rounded-full bg-emerald-400/50"></span>
+                  <span class="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">Protocolo Binance API</span>
+                </div>
+              </div>
+            } @else {
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-1 h-1 rounded-full bg-emerald-400/50"></span>
+                  <span class="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">Depósito Seguro</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-1 h-1 rounded-full bg-emerald-400/50"></span>
+                  <span class="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">Rápido</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-1 h-1 rounded-full bg-emerald-400/50"></span>
+                  <span class="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">Cifrado de extremo a extremo</span>
+                </div>
+              </div>
+            }
           </div>
         </div>
       </main>
@@ -253,6 +268,7 @@ export class DepositFormComponent {
 
   selectedMethod = computed(() => this.currency() || 'NEQUI');
   isNequi = computed(() => this.selectedMethod() === 'Nequi');
+  isCrypto = computed(() => ['USDT', 'BTC', 'TRX', 'BNB'].includes(this.selectedMethod()));
 
   methodLogo = computed(() => {
     const logoMap: Record<string, string> = {
