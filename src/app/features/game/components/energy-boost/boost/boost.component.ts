@@ -44,7 +44,7 @@ interface BoostDisplay {
   <!-- Hero section -->
   <div class="flex flex-col items-center gap-2 px-4 py-4 z-10">
     <img
-      [src]="'/game/energy/goal-keeper.png'"
+      [src]="'game/energy/goal-keeper.png'"
       alt="goal-keeper"
       width="80"
       height="80"
@@ -284,11 +284,11 @@ export class BoostComponent {
 
     getBoostIcon(id: number): string {
         const icons: Record<number, string> = {
-            1: '/game/energy/thunder.png',
-            4: '/game/energy/aumento.png',
-            5: '/game/energy/touch.png',
+            1: 'game/energy/thunder.png',
+            4: 'game/energy/aumento.png',
+            5: 'game/energy/touch.png',
         };
-        return icons[id] || '/game/energy/thunder.png';
+        return icons[id] || 'game/energy/thunder.png';
     }
 
     goBack(): void {

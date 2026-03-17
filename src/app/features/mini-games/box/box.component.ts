@@ -265,9 +265,9 @@ export class BoxComponent {
   }
 
   boxIcon(box: Box): string {
-    if (!box.opened) return '/box/init.webp';
-    if (box.hasPrize) return '/box/good.webp';
-    return '/box/empty.webp';
+    if (!box.opened) return 'mini-games/box/init.webp';
+    if (box.hasPrize) return 'mini-games/box/good.webp';
+    return 'mini-games/box/empty.webp';
   }
 
   initBoxes() {

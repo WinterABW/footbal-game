@@ -18,7 +18,7 @@ import { NgOptimizedImage, CommonModule } from '@angular/common';
 
         <!-- Imagen del jugador -->
         <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-gradient-to-b from-amber-500/10 to-transparent">
-          <img [ngSrc]="player.imageUrl" [alt]="player.name"
+          <img [src]="player.imageUrl" [alt]="player.name"
                class="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-110"
                width="120" height="120">
         </div>

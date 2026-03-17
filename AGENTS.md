@@ -151,3 +151,80 @@ src/app/
 - Variables: camelCase with descriptive names
 - Constants: UPPER_SNAKE_CASE
 - Files: kebab-case for consistency
+
+## Design Context
+
+### Users
+Football fans and casual mobile gamers interested in the World Cup theme. They're looking for entertainment with an investment/gambling overlay. Context: mobile-first gameplay, short sessions, quick feedback loops. Users range from 18-45, tech-savvy but not necessarily hardcore gamers.
+
+### Brand Personality
+**Sophisticated, Modern, Professional** (3-word personality)
+- **Trust**: Users need to feel the game is fair and secure with their "investments"
+- **Luxury**: Premium experience with high-end visual treatment
+- **Excitement**: The thrill of winning, but delivered with elegance not gaudiness
+
+**Emotional Goals**: Confidence in gameplay, premium enjoyment, aspirational status
+
+### Aesthetic Direction
+**iOS 26 Liquid Glass** - Deep, sophisticated glassmorphism with:
+- Base: Deep cobalt (#0d1b6e) to magenta (#b8186e) gradients
+- Accents: Electric cyan (#00d4ff) and solar gold (#ffd060)
+- Glass surfaces: Multi-layer with inner highlights, outer shadows, and backdrop blur
+- Motion: Smooth, organic float and pulse animations
+- Professional spacing and precise typography (Roboto)
+
+**Anti-references**: Cheap neon, cartoonish gradients, overly gamified/casino aesthetics, heavy drop shadows without subtlety, amateurish color combinations.
+
+### Design Principles
+
+#### 1. Luxury Through Subtlety
+Avoid obvious gamification cues. Use refined visual treatments where sophistication is in the details — delicate glass borders, subtle inner glows, precise border radii (22-32px). The "premium" feel comes from restraint, not ornamentation.
+
+#### 2. Trust Through Consistency
+All interactive elements must follow the same Liquid Glass language. Buttons, cards, inputs, sliders, and modals share the same material properties (blur amount, border opacity, shadow depth). Inconsistent treatment erodes trust.
+
+#### 3. Excitement Through Motion
+Animations should feel fluid and intentional. Use the established tokens:
+- Fast transitions: 150ms (micro-interactions)
+- Base transitions: 250ms (state changes)
+- Slow transitions: 400ms (page/modal moves)
+Easing: cubic-bezier(0.34, 1.56, 0.64, 1) for bouncy micro-interactions, ease-out for larger movements.
+
+#### 4. World Cup Sophistication
+Football theme expressed through imagery and color accents (emerald green, trophy gold) rather than literal football graphics. The sport is the context, not the interface. Use player/team imagery tastefully.
+
+#### 5. Mobile-First Luxury
+Design for thumb-zone ergonomics with generous touch targets (44px minimum). Glass components should have proper vibrancy on both light and dark surfaces. Respect safe-area insets. Animations should be smooth at 60fps on mid-range devices.
+
+### Component-Specific Guidelines for Mini-Games
+
+**Ticket & Box Games**:
+- Use `lg-card-module` or `lg-panel` instead of custom `.glass` classes
+- Accent colors: cyan for primary actions, gold for prizes/wins, green for success states
+- Ticket cards: elevated glass treatment with `lg-module-card` variant
+- Buttons: `lg-btn-primary` with hover lift animation
+- Background gradient: `var(--color-dark-background)` (existing deep radial)
+- Shimmer effects on winning moments (`lg-shimmer`)
+- Glow rings for highlighted tickets (`lg-accent-ring` or `lg-cyan-ring`)
+- Victory: Use `canvas-confetti` with gold, cyan, and emerald particles
+
+**Typography**:
+- Headlines: `text-slate-900` light mode / `text-white` dark mode (already set)
+- Weights: 700-900 for impact, 400-500 for body
+- Tracking: wide (tracking-wider) for numbers/values
+- Sizes: Responsive with Tailwind prefixes (text-sm, md:text-lg, etc.)
+
+**Spacing**:
+- Follow Tailwind standard scale: p-2, p-3, p-4, p-6, gap-2, gap-3, gap-4
+- Module cards: p-3 to p-6 depending on content density
+- Buttons: py-2.5 to py-3.5 for comfortable thumb tapping
+
+### Accessibility
+- All interactive elements focus-visible with `focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500`
+- Color contrast: Ensure text on glass backgrounds meets WCAG AA (≥4.5:1)
+- Reduced motion: Respect `prefers-reduced-motion` — disable non-essential shimmers/floats
+- ARIA labels on all icon buttons
+- Keyboard navigation fully supported
+
+### Implementation Notes
+The Liquid Glass system is already defined in `src/styles.scss`. Use the provided utility classes (`lg-card-module`, `lg-btn-primary`, `lg-bubble`, etc.) for consistency. Do not create new glass variations; extend the existing system only when absolutely necessary.
