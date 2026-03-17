@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 interface Ticket {
   id: number;
-  value: number;
+  value: any;
   colorClass: string;
 }
 
@@ -299,13 +299,13 @@ export class TicketRouletteComponent {
   visibleTickets = 5;
 
   baseTickets: Ticket[] = [
-    { id: 1, value: 0.15, colorClass: 'ticket-teal' },
-    { id: 2, value: 2, colorClass: 'ticket-blue' },
-    { id: 3, value: 4, colorClass: 'ticket-blue' },
-    { id: 4, value: 50, colorClass: 'ticket-pink' },
-    { id: 5, value: 100, colorClass: 'ticket-gold' },
-    { id: 6, value: 25, colorClass: 'ticket-pink' },
-    { id: 7, value: 0.05, colorClass: 'ticket-teal' },
+    { id: 1, value: "500 USD", colorClass: 'ticket-teal' },
+    { id: 2, value: "10,000 COP", colorClass: 'ticket-blue' },
+    { id: 3, value: "100 COP", colorClass: 'ticket-blue' },
+    { id: 4, value: "20 COP", colorClass: 'ticket-pink' },
+    { id: 5, value: "10 COP", colorClass: 'ticket-gold' },
+    { id: 6, value: "50,000 COP", colorClass: 'ticket-pink' },
+    { id: 7, value: "5 Energía  ", colorClass: 'ticket-teal' },
   ];
 
   reelTickets = signal<Ticket[]>([]);
