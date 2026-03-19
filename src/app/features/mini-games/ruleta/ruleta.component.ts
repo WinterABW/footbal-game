@@ -31,10 +31,10 @@ interface Prize {
         </svg>
       </button>
 
-      <header class="w-full max-w-md px-4 pt-14 pb-3 text-center">
-        <h1 class="mt-3 text-white text-4xl font-black tracking-[0.08em] leading-tight">SUPER LUCKY SPIN</h1>
-        <p class="mt-2 text-sm text-white/75">Gira la ruleta y gana una recompensa aleatoria</p>
-      </header>
+       <header class="w-full max-w-md px-4 pt-6 pb-3 text-center">
+         <h1 class="mt-2 text-white text-4xl font-black tracking-[0.08em] leading-tight">SUPER LUCKY SPIN</h1>
+         <p class="mt-1.5 text-sm text-white/75">Gira la ruleta y gana una recompensa aleatoria</p>
+       </header>
 
       <div class="roulette-shell lg-panel lg-shimmer lg-accent-ring" role="group" aria-label="Ruleta de premios">
         <div class="pointer" aria-hidden="true"></div>
@@ -102,12 +102,12 @@ interface Prize {
        display: flex;
        flex-direction: column;
        align-items: center;
-       justify-content: space-between;
+       justify-content: flex-start;
        min-height: 100vh;
-       padding: 0.25rem 0 1rem;
+       padding: 1rem 0 0.5rem;
        position: relative;
        overflow: hidden;
-       gap: 0.15rem;
+       gap: 0.5rem;
      }
 
     .roulette-shell {
