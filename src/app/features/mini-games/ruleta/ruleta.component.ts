@@ -75,7 +75,7 @@ interface Prize {
         </div>
       </div>
 
-      <section class="w-full max-w-md px-4 pb-6 pt-2">
+      <section class="w-full max-w-md px-4 pb-2 pt-8">
         <button
           type="button"
           class="w-full lg-btn-primary py-3.5 text-sm uppercase font-black tracking-[0.2em] disabled:opacity-50 disabled:cursor-not-allowed"
