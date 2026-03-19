@@ -10,13 +10,13 @@ import { LocalApiService } from '../../../core/services/local-api.service';
     <section class="flex flex-col gap-2 absolute top-6 left-6 z-10 animate-fade-in">
       
       <!-- COP Balance -->
-      <div class="flex items-center gap-2.5 py-1 px-1.5 pr-4 rounded-full liquid-glass-card border-amber-500/30 shadow-lg" style="background: linear-gradient(to right, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.18) 25%, rgba(245,158,11,0.08) 55%, transparent 75%);">
+      <div class="flex items-center gap-2.5 py-1 px-1.5 pr-4 rounded-full liquid-glass-card border-amber-500/30 shadow-lg accent-amber">
           <img ngSrc="shared/balance/coin.webp" alt="COP" width="32" height="32" class="object-contain" />
         <span class="text-[11px] font-black text-white tracking-wide text-glow-amber">{{ formattedCop() }}</span>
       </div>
 
       <!-- USDT Balance -->
-      <div class="flex items-center gap-2.5 py-1 px-1.5 pr-4 rounded-full liquid-glass-card border-teal-500/30 shadow-lg" style="background: linear-gradient(to right, rgba(20,184,166,0.20) 0%, rgba(20,184,166,0.18) 25%, rgba(20,184,166,0.08) 55%, transparent 75%);">
+      <div class="flex items-center gap-2.5 py-1 px-1.5 pr-4 rounded-full liquid-glass-card border-teal-500/30 shadow-lg accent-teal">
         <img ngSrc="wallet/crypto/usdt.png" alt="USDT" width="24" height="24" class="object-contain" />
         <span class="text-[11px] font-black text-white tracking-wide text-glow-cyan">{{ formattedUsdt() }}</span>
       </div>

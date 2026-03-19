@@ -22,8 +22,7 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
 
         <!-- Master Invitation Card (iOS 26 Liquid Reference) -->
         <article class="relative group active:scale-[0.98] transition-all duration-300">
-           <div class="lg-panel rounded-lg px-5 py-3 flex items-center justify-between border-amber-500/30"
-                style="background: linear-gradient(to right, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.18) 25%, rgba(245,158,11,0.08) 55%, transparent 75%);">
+           <div class="lg-panel rounded-lg px-5 py-3 flex items-center justify-between border-amber-500/30 accent-amber">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden relative shadow-inner">
                 <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
@@ -44,8 +43,7 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
  
          <!-- Quick Actions Row -->
          <div class="flex gap-2">
-            <button class="flex-1 lg-module-card p-2 flex items-center justify-center gap-3 active:scale-[0.98] transition-all duration-300 group border-indigo-500/30"
-                    style="background: linear-gradient(to right, rgba(139,92,246,0.20) 0%, rgba(139,92,246,0.18) 25%, rgba(139,92,246,0.08) 55%, transparent 75%);">
+            <button class="flex-1 lg-module-card p-2 flex items-center justify-center gap-3 active:scale-[0.98] transition-all duration-300 group border-indigo-500/30 accent-violet">
              <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shadow-inner group-hover:bg-indigo-500/20 transition-colors">
                <img ngSrc="shared/icons/add-friend.png" alt="reward" width="32" height="32"
                      class="relative z-10 opacity-90 group-hover:scale-110 transition-transform duration-500 drop-shadow-lg">
@@ -90,7 +88,7 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Total</span>
                     <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">--</span>
                   </div>
-                  <div class="lg-module-card p-3 border-emerald-500/30" style="background: linear-gradient(to right, rgba(16,185,129,0.20) 0%, rgba(16,185,129,0.18) 25%, rgba(16,185,129,0.08) 55%, transparent 75%);">
+                  <div class="lg-module-card p-3 border-emerald-500/30 accent-emerald">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Hoy</span>
                     <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">--</span>
                   </div>
@@ -160,7 +158,7 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Total</span>
                     <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">--</span>
                   </div>
-                  <div class="lg-module-card p-3 border-emerald-500/30" style="background: linear-gradient(to right, rgba(16,185,129,0.20) 0%, rgba(16,185,129,0.18) 25%, rgba(16,185,129,0.08) 55%, transparent 75%);">
+                  <div class="lg-module-card p-3 border-emerald-500/30 accent-emerald">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Hoy</span>
                     <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">--</span>
                   </div>

@@ -7,7 +7,7 @@ import { LocalApiService } from '../../../../core/services/local-api.service';
   standalone: true,
   imports: [NgOptimizedImage, CommonModule],
   template: `
-    <div class="flex items-center gap-1.5 py-1.5 px-3.5 rounded-full liquid-glass-card border-emerald-500/30 shadow-lg transition-all active:scale-95 cursor-default h-[44px]" style="background: linear-gradient(to right, rgba(16,185,129,0.20) 0%, rgba(16,185,129,0.18) 25%, rgba(16,185,129,0.08) 55%, transparent 75%);">
+    <div class="flex items-center gap-1.5 py-1.5 px-3.5 rounded-full liquid-glass-card border-emerald-500/30 shadow-lg transition-all active:scale-95 cursor-default h-[44px] accent-emerald">
       <div class="w-[22px] h-[22px] flex items-center justify-center drop-shadow-[0_0_8px_rgba(16,185,129,0.3)]">
          <img ngSrc="shared/balance/coin.webp" alt="COP" width="26" height="26" class="object-contain" />
       </div>

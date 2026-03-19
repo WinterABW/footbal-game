@@ -21,7 +21,7 @@ interface Box {
          </svg>
        </button>
 
-      <div class="header glass !p-2 !mb-4 inline-flex items-center gap-3 border-yellow-500/30 shadow-lg" style="background: linear-gradient(to right, rgba(250,204,21,0.20) 0%, rgba(250,204,21,0.18) 25%, rgba(250,204,21,0.08) 55%, transparent 75%);">
+      <div class="header glass !p-2 !mb-4 inline-flex items-center gap-3 border-yellow-500/30 shadow-lg accent-amber">
         <img ngSrc="mini-games/tickets/tickets.webp" alt="Jugadores" class="w-12 h-12 object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 drop-shadow-md transition-all" width="48" height="48">
         <h1>Tickets: <span class="text-glow-yellow"> {{ balance }}</span></h1>
       </div>

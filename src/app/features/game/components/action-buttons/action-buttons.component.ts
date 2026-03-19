@@ -8,8 +8,7 @@ import { RouterLink } from '@angular/router';
   template: `
     <nav class="flex justify-between items-center gap-3 px-1 py-1 z-20 relative">
       <div routerLink="/main/ruleta"
-        class="flex-1 liquid-glass-card py-1.5 px-1 flex flex-col items-center justify-center gap-0 cursor-pointer group active:scale-95 transition-all duration-300 bg-gradient-to-br from-white/[0.05] to-transparent hover:from-white/[0.08] hover:to-white/[0.02] border-yellow-500/30 hover:border-yellow-400/50 rounded-xl relative overflow-visible"
-        style="background: linear-gradient(to right, rgba(250,204,21,0.20) 0%, rgba(250,204,21,0.18) 25%, rgba(250,204,21,0.08) 55%, transparent 75%), linear-gradient(to bottom right, rgba(255,255,255,0.05), transparent);">
+        class="flex-1 liquid-glass-card py-1.5 px-1 flex flex-col items-center justify-center gap-0 cursor-pointer group active:scale-95 transition-all duration-300 bg-gradient-to-br from-white/[0.05] to-transparent hover:from-white/[0.08] hover:to-white/[0.02] border-yellow-500/30 hover:border-yellow-400/50 rounded-xl relative overflow-visible accent-amber-double">
         
         <!-- Neon Glow Halo (blurred layer behind the line) -->
         <div class="absolute left-[-4px] top-1/2 -translate-y-1/2 w-[15px] h-[50%] bg-yellow-400/30 rounded-full blur-sm group-hover:h-[75%] group-hover:w-[14px] group-hover:bg-yellow-400/50 group-hover:blur-md transition-all duration-300 z-[9] pointer-events-none"></div>
@@ -21,8 +20,7 @@ import { RouterLink } from '@angular/router';
       </div>
 
       <div routerLink="/main/box"
-        class="flex-1 liquid-glass-card py-1.5 px-1 flex flex-col items-center justify-center gap-0 cursor-pointer group active:scale-95 transition-all duration-300 bg-gradient-to-br from-white/[0.05] to-transparent hover:from-white/[0.08] hover:to-white/[0.02] border-fuchsia-500/30 hover:border-fuchsia-400/50 rounded-xl relative overflow-visible"
-        style="background: linear-gradient(to right, rgba(217,70,239,0.20) 0%, rgba(217,70,239,0.18) 25%, rgba(217,70,239,0.08) 55%, transparent 75%), linear-gradient(to bottom right, rgba(255,255,255,0.05), transparent);">
+        class="flex-1 liquid-glass-card py-1.5 px-1 flex flex-col items-center justify-center gap-0 cursor-pointer group active:scale-95 transition-all duration-300 bg-gradient-to-br from-white/[0.05] to-transparent hover:from-white/[0.08] hover:to-white/[0.02] border-fuchsia-500/30 hover:border-fuchsia-400/50 rounded-xl relative overflow-visible accent-fuchsia-double">
         
         <!-- Neon Glow Halo (blurred layer behind the line) -->
         <div class="absolute left-[-4px] top-1/2 -translate-y-1/2 w-[15px] h-[50%] bg-fuchsia-500/30 rounded-full blur-sm group-hover:h-[75%] group-hover:w-[14px] group-hover:bg-fuchsia-400/50 group-hover:blur-md transition-all duration-300 z-[9] pointer-events-none"></div>
@@ -34,8 +32,7 @@ import { RouterLink } from '@angular/router';
       </div>
 
       <div routerLink="/main/ticket"
-        class="flex-1 liquid-glass-card py-1.5 px-1 flex flex-col items-center justify-center gap-0 cursor-pointer group active:scale-95 transition-all duration-300 bg-gradient-to-br from-white/[0.05] to-transparent hover:from-white/[0.08] hover:to-white/[0.02] border-cyan-500/30 hover:border-cyan-400/50 rounded-xl relative overflow-visible"
-        style="background: linear-gradient(to right, rgba(34,211,238,0.20) 0%, rgba(34,211,238,0.18) 25%, rgba(34,211,238,0.08) 55%, transparent 75%), linear-gradient(to bottom right, rgba(255,255,255,0.05), transparent);">
+        class="flex-1 liquid-glass-card py-1.5 px-1 flex flex-col items-center justify-center gap-0 cursor-pointer group active:scale-95 transition-all duration-300 bg-gradient-to-br from-white/[0.05] to-transparent hover:from-white/[0.08] hover:to-white/[0.02] border-cyan-500/30 hover:border-cyan-400/50 rounded-xl relative overflow-visible accent-cyan-double">
         
         <!-- Neon Glow Halo (blurred layer behind the line) -->
         <div class="absolute left-[-4px] top-1/2 -translate-y-1/2 w-[15px] h-[50%] bg-cyan-400/30 rounded-full blur-sm group-hover:h-[75%] group-hover:w-[14px] group-hover:bg-cyan-400/50 group-hover:blur-md transition-all duration-300 z-[9] pointer-events-none"></div>

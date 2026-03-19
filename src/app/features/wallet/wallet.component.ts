@@ -147,8 +147,7 @@ interface Deposit {
                 <p class="text-[10px] text-white/50 font-black uppercase tracking-widest px-2 mb-1">Deposita dentro de alguno de estos métodos</p>
                 <div class="grid grid-cols-1 gap-3">
                   <article (click)="onSheetItemClick({title: 'Nequi', desc: '', icon: ''})"
-                    class="lg-module-card p-4 flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer backdrop-blur-2xl rounded-2xl"
-                    style="background: linear-gradient(to right, rgba(20,184,166,0.20) 0%, rgba(20,184,166,0.18) 25%, rgba(20,184,166,0.08) 55%, transparent 75%); border-color: rgba(20,184,166,0.30);">
+                    class="lg-module-card p-4 flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer backdrop-blur-2xl rounded-2xl accent-teal">
                     <div class="flex items-center gap-4">
                       <div class="w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden bg-white/5 flex items-center justify-center">
                         <img ngSrc="wallet/colombia/nequi.png" alt="Nequi" width="32" height="32" class="w-8 h-8 object-contain drop-shadow-lg group-hover:scale-110 transition-transform">

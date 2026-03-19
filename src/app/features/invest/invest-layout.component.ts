@@ -37,8 +37,7 @@ import { PlayersService } from '../../core/services/players.service';
             <div class="flex flex-col items-center py-0 -mb-1.5 mt-2">
                 <div class="relative w-32 h-32 group">
                     <!-- Deep Aura Glow with Cyan Theme -->
-                    <div class="absolute inset-[-20px] rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-1000 animate-pulse"
-                         style="background: linear-gradient(to right, rgba(34,211,238,0.20) 0%, rgba(34,211,238,0.18) 25%, rgba(34,211,238,0.08) 55%, transparent 75%);"></div>
+                    <div class="absolute inset-[-20px] rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-1000 animate-pulse accent-cyan-bg"></div>
                     <img ngSrc="shared/navigation/inversion.webp" alt="invest icon" width="128" height="128"
                         class="relative z-10 w-full h-full object-contain filter drop-shadow-[0_0_30px_rgba(34,211,238,0.3)] lg-float">
                 </div>

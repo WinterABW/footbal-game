@@ -79,8 +79,8 @@
   ───────────────────────────────────────────── */
   .liquid-glass-card {
     background: var(--lg-glass-fill);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--lg-glass-border);
     border-radius: 22px;
     box-shadow:
@@ -206,8 +206,8 @@
     position: relative;
     overflow: hidden;
     background: rgba(255, 255, 255, .055);
-    backdrop-filter: blur(50px) saturate(200%);
-    -webkit-backdrop-filter: blur(50px) saturate(200%);
+    backdrop-filter: blur(30px) saturate(200%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%);
     border: 1px solid rgba(255, 255, 255, .16);
     border-radius: 100px;
     box-shadow:
@@ -232,8 +232,8 @@
     position: relative;
     overflow: hidden;
     background: var(--lg-glass-fill);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--lg-glass-border);
     border-radius: 32px;
     box-shadow:
@@ -266,8 +266,8 @@
     position: relative;
     overflow: hidden;
     background: var(--lg-glass-fill);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--lg-glass-border);
     border-radius: 20px;
     box-shadow:
@@ -536,8 +536,8 @@
   ───────────────────────────────────────────── */
   .lg-card-module {
     background: var(--lg-glass-fill);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--lg-glass-border);
     border-radius: var(--lg-radius-card);
     box-shadow:
@@ -547,8 +547,8 @@
 
   .lg-card-panel {
     background: var(--lg-glass-fill);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--lg-glass-border);
     border-radius: 24px;
     box-shadow:
@@ -611,8 +611,8 @@
 
   .lg-btn-outline {
     background: var(--lg-glass-fill);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--lg-glass-border-hi);
     border-radius: 9999px;
     box-shadow: inset 0 1px 1px var(--lg-glass-inner-hi);
@@ -645,8 +645,8 @@
   /* Icon button */
   .lg-icon-btn {
     background: var(--lg-glass-fill);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--lg-glass-border);
     border-radius: 50%;
     box-shadow: inset 0 1px 0 var(--lg-glass-inner-hi);
@@ -716,8 +716,8 @@
   /* Tab bar */
   .lg-tab-bar {
     background: var(--lg-glass-fill);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--lg-glass-border);
     border-radius: 9999px;
     padding: 3px;
@@ -764,8 +764,8 @@
     left: 0;
     right: 0;
     background: var(--lg-glass-fill);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--lg-glass-border);
     border-radius: 2rem 2rem 0 0;
     border-bottom: none;
@@ -801,8 +801,8 @@
   }
   .lg-modal-panel {
     background: var(--lg-glass-fill);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--lg-glass-border);
     border-radius: 2rem;
     box-shadow:
@@ -856,6 +856,74 @@
     border-radius: 50%;
     background: currentColor;
     flex-shrink: 0;
+  }
+
+  /* ─────────────────────────────────────────────
+     ACCENT GRADIENT CLASSES (Performance)
+     Pre-compiled gradients replace inline styles
+  ───────────────────────────────────────────── */
+  .accent-cyan {
+    background: linear-gradient(to right, rgba(34,211,238,0.20) 0%, rgba(34,211,238,0.18) 25%, rgba(34,211,238,0.08) 55%, transparent 75%), rgba(255,255,255,0.1);
+  }
+  
+  .accent-emerald {
+    background: linear-gradient(to right, rgba(16,185,129,0.20) 0%, rgba(16,185,129,0.18) 25%, rgba(16,185,129,0.08) 55%, transparent 75%), rgba(255,255,255,0.08);
+  }
+  
+  .accent-amber {
+    background: linear-gradient(to right, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.18) 25%, rgba(245,158,11,0.08) 55%, transparent 75%), rgba(255,255,255,0.08);
+  }
+  
+  .accent-violet {
+    background: linear-gradient(to right, rgba(139,92,246,0.20) 0%, rgba(139,92,246,0.18) 25%, rgba(139,92,246,0.08) 55%, transparent 75%), rgba(30,27,75);
+  }
+  
+  .accent-fuchsia {
+    background: linear-gradient(to right, rgba(217,70,239,0.20) 0%, rgba(217,70,239,0.18) 25%, rgba(217,70,239,0.08) 55%, transparent 75%), rgba(255,255,255,0.05);
+  }
+  
+  .accent-teal {
+    background: linear-gradient(to right, rgba(20,184,166,0.20) 0%, rgba(20,184,166,0.18) 25%, rgba(20,184,166,0.08) 55%, transparent 75%);
+  }
+  
+  .accent-rose {
+    background: linear-gradient(to right, rgba(244,63,94,0.20) 0%, rgba(244,63,94,0.18) 25%, rgba(244,63,94,0.08) 55%, transparent 75%);
+  }
+  
+  .accent-cyan-alt {
+    background: linear-gradient(to right, rgba(6,182,212,0.20) 0%, rgba(6,182,212,0.18) 25%, rgba(6,182,212,0.08) 55%, transparent 75%);
+  }
+  
+  .accent-cyan-bg {
+    background: linear-gradient(to right, rgba(34,211,238,0.20) 0%, rgba(34,211,238,0.18) 25%, rgba(34,211,238,0.08) 55%, transparent 75%);
+  }
+  
+  .accent-amber-double {
+    background: linear-gradient(to right, rgba(250,204,21,0.20) 0%, rgba(250,204,21,0.18) 25%, rgba(250,204,21,0.08) 55%, transparent 75%), linear-gradient(to bottom right, rgba(255,255,255,0.05), transparent);
+  }
+  
+  .accent-fuchsia-double {
+    background: linear-gradient(to right, rgba(217,70,239,0.20) 0%, rgba(217,70,239,0.18) 25%, rgba(217,70,239,0.08) 55%, transparent 75%), linear-gradient(to bottom right, rgba(255,255,255,0.05), transparent);
+  }
+  
+  .accent-cyan-double {
+    background: linear-gradient(to right, rgba(34,211,238,0.20) 0%, rgba(34,211,238,0.18) 25%, rgba(34,211,238,0.08) 55%, transparent 75%), linear-gradient(to bottom right, rgba(255,255,255,0.05), transparent);
+  }
+  
+  .accent-cyan-bg-alt {
+    background: linear-gradient(to right, rgba(34,211,238,0.20) 0%, rgba(34,211,238,0.18) 25%, rgba(34,211,238,0.08) 55%, transparent 75%), rgba(255,255,255,0.05);
+  }
+  
+  .accent-rose {
+    background: linear-gradient(to right, rgba(244,63,94,0.20) 0%, rgba(244,63,94,0.18) 25%, rgba(244,63,94,0.08) 55%, transparent 75%);
+  }
+  
+  .accent-red {
+    background: linear-gradient(to right, rgba(239,68,68,0.20) 0%, rgba(239,68,68,0.18) 25%, rgba(239,68,68,0.08) 55%, transparent 75%);
+  }
+  
+  .accent-violet-alt {
+    background: linear-gradient(to right, rgba(168,85,247,0.20) 0%, rgba(168,85,247,0.18) 25%, rgba(168,85,247,0.08) 55%, transparent 75%);
   }
 }
 

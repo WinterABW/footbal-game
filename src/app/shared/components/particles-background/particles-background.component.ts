@@ -53,6 +53,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
       border-radius: 50%;
       filter: blur(90px);
       will-change: transform, opacity;
+      contain: layout style;
     }
 
     .orb-cobalt {
@@ -134,10 +135,12 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
       left: var(--x);
       top: 100%;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.20);
+      background: rgba(255, 255, 255, 0.25);
       animation: floatUp var(--duration) linear infinite;
       animation-delay: var(--delay);
+      contain: layout;
       will-change: transform, opacity;
+      transform: translate3d(0, 0, 0);
     }
 
     @keyframes floatUp {
@@ -154,7 +157,8 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ParticlesBackgroundComponent {
-  particles = Array.from({ length: 30 }, (_, i) => i);
+  // Reduced from 30 to 8 particles for better performance
+  particles = Array.from({ length: 8 }, (_, i) => i);
 
   getX(seed: number): string {
     return ((seed * 23 + 11) % 100) + '%';
@@ -165,14 +169,14 @@ export class ParticlesBackgroundComponent {
   }
 
   getSize(seed: number): number {
-    return 2 + (seed % 4); // Smaller particles (2px to 5px)
+    return 1 + (seed % 3);
   }
 
   getDuration(seed: number): number {
-    return 20 + (seed % 15); // Slower animation (20s to 34s)
+    return 18 + (seed % 12);
   }
 
   getDelay(seed: number): number {
-    return (seed % 15) * 0.8; // Wider delay distribution
+    return (seed % 10) * 0.5;
   }
 }

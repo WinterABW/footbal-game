@@ -13,8 +13,7 @@ import { GlassModalComponent } from '../../../../shared/ui';
         <div class="flex items-center justify-between mb-3 pb-3 border-b border-white/5">
            <div class="flex items-center gap-2">
                <div class="relative">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center relative z-10 shadow-2xl border border-amber-500/30"
-                     style="background: linear-gradient(to right, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.18) 25%, rgba(245,158,11,0.08) 55%, transparent 75%), linear-gradient(to bottom right, rgb(245,158,11), rgb(234,88,12));">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center relative z-10 shadow-2xl border border-amber-500/30 accent-amber">
                   <span class="text-xl font-black text-white text-glow-amber">{{ levelInfo().level }}</span>
                 </div>
                 <div class="absolute -inset-2 bg-amber-500/20 rounded-3xl blur-xl animate-pulse"></div>
@@ -48,8 +47,7 @@ import { GlassModalComponent } from '../../../../shared/ui';
 
           <!-- Progress Card -->
           @if (!levelInfo().isMaxLevel) {
-            <div class="liquid-glass-card p-4 bg-white/[0.02] border-indigo-500/30 flex flex-col gap-3"
-                 style="background: linear-gradient(to right, rgba(139,92,246,0.20) 0%, rgba(139,92,246,0.18) 25%, rgba(139,92,246,0.08) 55%, transparent 75%);">
+            <div class="liquid-glass-card p-4 bg-white/[0.02] border-indigo-500/30 flex flex-col gap-3 accent-violet">
                <div class="flex justify-between items-center">
                   <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">Progreso de Carrera</span>
                   <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest text-glow-violet">{{ ((levelInfo().currentTaps / levelInfo().tapsForNextLevel) * 100) | number:'1.0-0' }}%</span>

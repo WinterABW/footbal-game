@@ -20,8 +20,7 @@ import { LocalApiService } from '../../../../core/services/local-api.service';
                 <img ngSrc="game/header/user.png" alt="User" width="24" height="24" class="opacity-80 group-hover:scale-110 transition-transform" />
               </div>
               <!-- Level Badge -->
-              <div class="absolute -bottom-0.5 -right-0.5 w-[20px] h-[20px] bg-indigo-950 border border-indigo-500/30 rounded-full flex items-center justify-center text-[9px] font-black text-white shadow-xl text-glow-violet"
-                   style="background: linear-gradient(to right, rgba(139,92,246,0.20) 0%, rgba(139,92,246,0.18) 25%, rgba(139,92,246,0.08) 55%, transparent 75%), rgb(30, 27, 75);">
+              <div class="absolute -bottom-0.5 -right-0.5 w-[20px] h-[20px] border border-indigo-500/30 rounded-full flex items-center justify-center text-[9px] font-black text-white shadow-xl text-glow-violet accent-violet">
                 {{ level() }}
               </div>
             </div>
@@ -46,8 +45,7 @@ import { LocalApiService } from '../../../../core/services/local-api.service';
           <app-per-hour-earnings />
           <!-- Settings Trigger Button -->
           <button
-            class="w-[44px] h-[44px] rounded-full liquid-glass-card bg-white/[0.03] border-violet-500/30 flex items-center justify-center active:scale-90 transition-all group overflow-hidden mr-1"
-            style="background: linear-gradient(to right, rgba(139,92,246,0.20) 0%, rgba(139,92,246,0.18) 25%, rgba(139,92,246,0.08) 55%, transparent 75%);"
+            class="w-[44px] h-[44px] rounded-full liquid-glass-card bg-white/[0.03] border-violet-500/30 flex items-center justify-center active:scale-90 transition-all group overflow-hidden mr-1 accent-violet"
             (click)="toggleSettings()" type="button" aria-label="Ajustes">
             <svg class="w-[22px] h-[22px] text-white/70 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />

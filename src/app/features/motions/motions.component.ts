@@ -31,8 +31,7 @@ interface DailyReward {
           </div>
         </div>
 
-        <nav class="relative bg-white/5 backdrop-blur-3xl rounded-full p-1.5 flex items-center border border-cyan-500/30 shadow-2xl"
-             style="background: linear-gradient(to right, rgba(34,211,238,0.20) 0%, rgba(34,211,238,0.18) 25%, rgba(34,211,238,0.08) 55%, transparent 75%), rgba(255,255,255,0.05);">
+        <nav class="relative bg-white/5 backdrop-blur-3xl rounded-full p-1.5 flex items-center border border-cyan-500/30 shadow-2xl accent-cyan-bg-alt">
           <!-- Glass Sliding Indicator Container -->
           <div class="absolute inset-1.5 z-0 pointer-events-none">
             <div class="h-full bg-white/10 backdrop-blur-md rounded-full border border-white/20 shadow-[0_4px_15px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all duration-500 cubic-bezier(0.2, 1, 0.3, 1)"
@@ -152,7 +151,7 @@ interface DailyReward {
                       <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Completadas</span>
                       <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ completedMissions().length }}</span>
                     </div>
-                    <div class="lg-module-card p-3 border-emerald-500/30" style="background: linear-gradient(to right, rgba(16,185,129,0.20) 0%, rgba(16,185,129,0.18) 25%, rgba(16,185,129,0.08) 55%, transparent 75%);">
+                    <div class="lg-module-card p-3 border-emerald-500/30 accent-emerald">
                       <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Totales</span>
                       <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">16</span>
                     </div>
@@ -160,7 +159,7 @@ interface DailyReward {
                       <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Fallidas</span>
                       <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ failedMissions().length }}</span>
                     </div>
-                    <div class="lg-module-card p-3 border-rose-500/30" style="background: linear-gradient(to right, rgba(244,63,94,0.20) 0%, rgba(244,63,94,0.18) 25%, rgba(244,63,94,0.08) 55%, transparent 75%);">
+                    <div class="lg-module-card p-3 border-rose-500/30 accent-rose">
                       <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Dinero Perdido</span>
                       <span class="block text-lg font-black text-rose-400 tracking-tighter text-glow mt-1">0</span>
                     </div>
