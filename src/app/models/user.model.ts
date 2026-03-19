@@ -28,3 +28,11 @@ export interface AuthResponse {
 export interface ApiMessageResponse {
   message: string;
 }
+
+export interface ProfileResponse {
+  createdAt: string;
+  id: number | string;
+  isGuest: boolean;
+  phone: string | null;
+  username: string;
+}

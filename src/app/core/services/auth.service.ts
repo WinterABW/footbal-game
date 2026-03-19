@@ -2,7 +2,7 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, ApiMessageResponse } from '../../models/user.model';
+import { AuthResponse, ApiMessageResponse, ProfileResponse } from '../../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -165,5 +165,28 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.isAuthenticated();
+  }
+
+  async getProfile(username: string): Promise<{ success: boolean; profile?: ProfileResponse; error?: string }> {
+    try {
+      const url = `${this.getBaseUrl()}Auth/profile/${username}`;
+      const response = await this.http.get<ProfileResponse>(url, { responseType: 'json' }).toPromise();
+
+      if (response) {
+        return { success: true, profile: response };
+      }
+
+      return { success: false, error: 'Failed to get profile' };
+    } catch (error: unknown) {
+      const httpError = error as HttpErrorResponse;
+      if (httpError?.status === 404) {
+        return { success: false, error: 'Profile not found' };
+      }
+      if (httpError?.error && typeof httpError.error === 'object' && 'detail' in httpError.error) {
+        return { success: false, error: String((httpError.error as any).detail) };
+      }
+      console.error('Get profile failed:', error);
+      return { success: false, error: 'Failed to get profile' };
+    }
   }
 }
