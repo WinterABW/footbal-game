@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'http://74.208.227.214:443/',
+  apiBaseUrl: 'https://webdevelopment.neti.es/scalar/',
   apiTimeout: 30000,
 };
