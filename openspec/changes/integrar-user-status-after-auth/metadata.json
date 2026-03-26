@@ -1,0 +1,11 @@
+{
+  "archived_at": "2026-03-26T00:00:00Z",
+  "archived_by": "sdd-archive-subagent",
+  "change": "integrar-user-status-after-auth",
+  "project": "Football",
+  "specs_merged": [
+    "openspec/specs/auth/spec.md",
+    "openspec/specs/social/spec.md"
+  ],
+  "archive_path": "openspec/changes/archive/2026-03-26-integrar-user-status-after-auth/"
+}

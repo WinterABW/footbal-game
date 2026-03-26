@@ -54,9 +54,22 @@ import { PlayersService } from '../../core/services/players.service';
             <div class="w-full pb-12">
                 @if (activeTab() === 'jugadores') {
                   @if (isLoading()) {
-                    <div class="flex flex-col items-center py-24 gap-6">
-                        <div class="w-12 h-12 border-4 border-white/5 border-t-teal-500 rounded-full animate-spin"></div>
+                    <div class="flex flex-col items-center py-24 gap-6" role="status" aria-live="polite">
+                        <div class="w-12 h-12 border-4 border-white/5 border-t-teal-500 rounded-full animate-spin" aria-hidden="true"></div>
                         <p class="text-white/20 font-black text-[10px] uppercase tracking-[0.4em] text-glow-cyan">Scouting Talentos...</p>
+                    </div>
+                  } @else if (apiError()) {
+                    <div class="flex flex-col items-center py-20 gap-6" role="alert" aria-live="assertive">
+                        <div class="w-16 h-16 rounded-full bg-red-500/10 border border-red-400/20 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-red-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                            </svg>
+                        </div>
+                        <p class="text-white/40 font-black text-[10px] uppercase tracking-[0.4em] text-center leading-relaxed">Error al cargar jugadores</p>
+                        <button (click)="retryLoadPlayers()"
+                            class="px-6 py-2.5 lg-module-card text-white/70 font-black text-[10px] uppercase tracking-[0.3em] active:scale-95 transition-all duration-200 hover:text-white">
+                            Reintentar
+                        </button>
                     </div>
                   } @else if (player().length > 0) {
                     <div class="grid grid-cols-2 gap-4">
@@ -71,9 +84,22 @@ import { PlayersService } from '../../core/services/players.service';
                   }
                 } @else if(activeTab() === 'vip') {
                   @if (isLoading()) {
-                    <div class="flex flex-col items-center py-24 gap-6">
-                        <div class="w-12 h-12 border-4 border-white/5 border-t-amber-400 rounded-full animate-spin"></div>
+                    <div class="flex flex-col items-center py-24 gap-6" role="status" aria-live="polite">
+                        <div class="w-12 h-12 border-4 border-white/5 border-t-amber-400 rounded-full animate-spin" aria-hidden="true"></div>
                         <p class="text-white/20 font-black text-[10px] uppercase tracking-[0.4em] text-glow-amber">Acceso VIP...</p>
+                    </div>
+                  } @else if (apiError()) {
+                    <div class="flex flex-col items-center py-20 gap-6" role="alert" aria-live="assertive">
+                        <div class="w-16 h-16 rounded-full bg-red-500/10 border border-red-400/20 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-red-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                            </svg>
+                        </div>
+                        <p class="text-white/40 font-black text-[10px] uppercase tracking-[0.4em] text-center leading-relaxed">Error al cargar jugadores VIP</p>
+                        <button (click)="retryLoadPlayers()"
+                            class="px-6 py-2.5 lg-module-card text-white/70 font-black text-[10px] uppercase tracking-[0.3em] active:scale-95 transition-all duration-200 hover:text-white">
+                            Reintentar
+                        </button>
                     </div>
                   } @else if (vipPlayers().length > 0) {
                     <div class="grid grid-cols-2 gap-4">
@@ -88,8 +114,8 @@ import { PlayersService } from '../../core/services/players.service';
                   }
                 } @else if (activeTab() === 'misJugadores') {
                   @if (isLoading()) {
-                    <div class="flex flex-col items-center py-24 gap-6">
-                        <div class="w-12 h-12 border-4 border-white/5 border-t-blue-500 rounded-full animate-spin"></div>
+                    <div class="flex flex-col items-center py-24 gap-6" role="status" aria-live="polite">
+                        <div class="w-12 h-12 border-4 border-white/5 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
                         <p class="text-white/20 font-black text-[10px] uppercase tracking-[0.4em]">Revisando Plantilla...</p>
                     </div>
                   } @else if (myPlayers().length > 0) {
@@ -143,6 +169,7 @@ import { PlayersService } from '../../core/services/players.service';
 
         @if (purchaseMessage()) {
             <div class="fixed bottom-32 left-6 right-6 z-[100] px-6 py-5 lg-module-card flex items-center justify-center animate-fade-in shadow-2xl"
+                role="status" aria-live="polite"
                 [class.border-emerald-500/30]="purchaseSuccess()" [class.border-red-500/30]="!purchaseSuccess()"
                 [style]="purchaseSuccess() ? 'background: linear-gradient(to right, rgba(16,185,129,0.20) 0%, rgba(16,185,129,0.18) 25%, rgba(16,185,129,0.08) 55%, transparent 75%);' : 'background: linear-gradient(to right, rgba(239,68,68,0.20) 0%, rgba(239,68,68,0.18) 25%, rgba(239,68,68,0.08) 55%, transparent 75%);'">
                 <p class="text-white font-black text-[10px] uppercase tracking-[0.3em] text-center"
@@ -211,6 +238,7 @@ export class InvestLayoutComponent {
   myPlayers = this.playersService.myPlayers;
   vipPlayers = this.playersService.vipPlayers;
   isLoading = this.playersService.isLoading;
+  apiError = this.playersService.apiError;
 
   myRegularPlayers = computed(() => this.myPlayers().filter(p => !p.exclusive));
   myVipPlayers = computed(() => this.myPlayers().filter(p => p.exclusive));
@@ -231,7 +259,7 @@ export class InvestLayoutComponent {
     this.selectedPlayerForDetails.set(null);
   }
 
-  confirmPurchase(player: Player) {
+  async confirmPurchase(player: Player) {
     if (!player || !player.id) {
       this.purchaseMessage.set('Error: Jugador inválido');
       this.purchaseSuccess.set(false);
@@ -239,7 +267,9 @@ export class InvestLayoutComponent {
       return;
     }
 
-    const result = this.playersService.buyPlayer(player);
+    this.closeDetailsModal();
+
+    const result = await this.playersService.buyPlayer(player);
     this.purchaseMessage.set(result.message);
     this.purchaseSuccess.set(result.success);
 
@@ -250,10 +280,13 @@ export class InvestLayoutComponent {
     }
 
     setTimeout(() => this.purchaseMessage.set(null), 2000);
-    this.closeDetailsModal();
   }
 
   buyPlayer(player: Player) {
     this.openPlayerDetails(player);
+  }
+
+  retryLoadPlayers() {
+    this.playersService.refreshPlayers();
   }
 }

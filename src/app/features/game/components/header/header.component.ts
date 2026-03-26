@@ -5,6 +5,9 @@ import { LevelMenuComponent } from '../level-menu/level-menu.component';
 import { SettingsComponent } from '../settings/settings.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LocalApiService } from '../../../../core/services/local-api.service';
+import { UserStatusService } from '../../../../core/services/user-status.service';
+import { UserInfoService } from '../../../../core/services/user-info.service';
+import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-header',
@@ -60,7 +63,7 @@ import { LocalApiService } from '../../../../core/services/local-api.service';
       <app-level-menu [isOpen]="showLevelMenu()" class="block w-full" [levelInfo]="levelInfo()" [isAuthenticated]="authService.isAuthenticated()"
         [username]="authService.getUsername()" (close)="closeLevelMenu()" />
       <app-settings [isOpen]="showSettings()" class="block w-full" [vibrationEnabled]="vibrationEnabled()"
-        (close)="closeSettings()" (vibrationChange)="onVibrationChange($event)" />
+        [language]="language()" (close)="closeSettings()" (vibrationChange)="onVibrationChange()" (languageChange)="onLanguageChange($event)" />
     </div>
   `,
   styles: [`
@@ -75,10 +78,14 @@ import { LocalApiService } from '../../../../core/services/local-api.service';
 export class HeaderComponent {
   authService = inject(AuthService);
   private localApi = inject(LocalApiService);
+  private userStatusService = inject(UserStatusService);
+  private userInfo = inject(UserInfoService);
+  private errorHandler = inject(ErrorHandlerService);
 
   showLevelMenu = signal(false);
   showSettings = signal(false);
-  vibrationEnabled = signal(true);
+  vibrationEnabled = computed(() => this.userStatusService.settings()?.vibration ?? true);
+  language = computed(() => this.userStatusService.settings()?.language ?? 'es');
 
   readonly level = computed(() => this.localApi.profile()?.level ?? 1);
   readonly levelInfo = computed(() => this.localApi.getLevelInfo());
@@ -87,5 +94,48 @@ export class HeaderComponent {
   closeLevelMenu() { this.showLevelMenu.set(false); }
   toggleSettings() { this.showSettings.update(v => !v); }
   closeSettings() { this.showSettings.set(false); }
-  onVibrationChange(enabled: boolean) { this.vibrationEnabled.set(enabled); }
+
+  async onVibrationChange() {
+    const current = this.userStatusService.settings();
+    if (!current) return;
+
+    const newVibration = !current.vibration;
+
+    try {
+      const result = await this.userInfo.updateSettings({
+        language: current.language,
+        vibration: newVibration,
+      });
+
+      if (result.success && result.data) {
+        this.userStatusService.setSettings({ vibration: newVibration });
+        this.errorHandler.showSuccessToast('Vibración actualizada');
+      } else {
+        throw new Error(result.error || 'Failed to save');
+      }
+    } catch (error) {
+      this.errorHandler.showErrorToast(error);
+    }
+  }
+
+  async onLanguageChange(lang: string) {
+    const current = this.userStatusService.settings();
+    if (!current) return;
+
+    try {
+      const result = await this.userInfo.updateSettings({
+        language: lang,
+        vibration: current.vibration,
+      });
+
+      if (result.success && result.data) {
+        this.userStatusService.setSettings({ language: lang });
+        this.errorHandler.showSuccessToast('Idioma actualizado');
+      } else {
+        throw new Error(result.error || 'Failed to save');
+      }
+    } catch (error) {
+      this.errorHandler.showErrorToast(error);
+    }
+  }
 }

@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, computed } from '@angular/core';
 import { NgOptimizedImage, CommonModule } from '@angular/common';
-import { LocalApiService } from '../../../../core/services/local-api.service';
+import { UserStatusService } from '../../../../core/services/user-status.service';
 
 @Component({
   selector: 'app-per-hour-earnings',
-  standalone: true,
   imports: [NgOptimizedImage, CommonModule],
   template: `
     <div class="flex items-center gap-1.5 py-1.5 px-3.5 rounded-full liquid-glass-card border-emerald-500/30 shadow-lg transition-all active:scale-95 cursor-default h-[44px] accent-emerald">
@@ -25,9 +24,9 @@ import { LocalApiService } from '../../../../core/services/local-api.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PerHourEarningsComponent {
-  private localApi = inject(LocalApiService);
+  private userStatusService = inject(UserStatusService);
 
-  readonly hourlyEarning = this.localApi.hourlyEarning;
+  readonly hourlyEarning = this.userStatusService.earnPerHour;
 
   readonly formattedEarning = computed(() => {
     const value = this.hourlyEarning();

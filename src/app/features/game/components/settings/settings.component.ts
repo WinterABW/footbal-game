@@ -29,13 +29,22 @@ import { GlassModalComponent } from '../../../../shared/ui';
 
         <main class="flex flex-col gap-2.5">
           <!-- 1. Seleccionar idioma -->
-          <button class="flex items-center gap-4 p-3 liquid-glass-card bg-white/[0.03] border-white/5 hover:bg-white/[0.06] active:scale-[0.98] transition-all w-full text-left rounded-2xl">
-            <div class="w-10 h-10 rounded-[14px] flex items-center justify-center bg-blue-900/40 text-blue-300 shadow-inner">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
+          <div class="flex flex-col gap-2 p-3 liquid-glass-card bg-white/[0.03] border-white/5 rounded-2xl">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-[14px] flex items-center justify-center bg-blue-900/40 text-blue-300 shadow-inner">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
+              </div>
+              <span class="flex-1 text-[15px] font-bold text-white tracking-tight">Seleccionar idioma</span>
             </div>
-            <span class="flex-1 text-[15px] font-bold text-white tracking-tight">Seleccionar idioma</span>
-            <svg class="w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
-          </button>
+            <select
+              [value]="language()"
+              (change)="onLanguageChange($event)"
+              class="bg-white/10 border border-white/10 rounded-xl px-3 py-2 w-full text-white text-sm font-medium focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 appearance-none cursor-pointer">
+              <option value="es" class="bg-slate-900 text-white">Español</option>
+              <option value="en" class="bg-slate-900 text-white">English</option>
+              <option value="pt" class="bg-slate-900 text-white">Português</option>
+            </select>
+          </div>
 
           <!-- 2. Vibración en pantalla -->
           <button (click)="onVibrationToggle()" class="flex items-center gap-4 p-3 liquid-glass-card bg-white/[0.03] border-white/5 hover:bg-white/[0.06] active:scale-[0.98] transition-all w-full text-left rounded-2xl">
@@ -86,10 +95,16 @@ import { GlassModalComponent } from '../../../../shared/ui';
 export class SettingsComponent {
   isOpen = input.required<boolean>();
   vibrationEnabled = input.required<boolean>();
+  language = input<string>('');
 
   close = output<void>();
   vibrationChange = output<boolean>();
+  languageChange = output<string>();
 
   onClose() { this.close.emit(); }
   onVibrationToggle() { this.vibrationChange.emit(!this.vibrationEnabled()); }
+  onLanguageChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.languageChange.emit(select.value);
+  }
 }

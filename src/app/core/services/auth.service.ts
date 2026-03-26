@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, ApiMessageResponse, ProfileResponse } from '../../models/user.model';
+import { UserStatusService } from './user-status.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +12,7 @@ export class AuthService {
   private userSignal = signal<any>(null);
   private http = inject(HttpClient);
   private router = inject(Router);
+  private userStatusService = inject(UserStatusService);
 
   user = this.userSignal.asReadonly();
   isAuthenticated = computed(() => this.userSignal() !== null);
@@ -76,6 +78,7 @@ export class AuthService {
       }
 
       this.saveAuthStorage(user, token);
+      await this.userStatusService.loadUserStatus();
       return { success: true };
     } catch (error: unknown) {
       const httpError = error as HttpErrorResponse;
@@ -112,6 +115,7 @@ export class AuthService {
       }
 
       this.saveAuthStorage(user, token);
+      await this.userStatusService.loadUserStatus();
       return { success: true };
     } catch (error: unknown) {
       const httpError = error as HttpErrorResponse;
@@ -136,6 +140,7 @@ export class AuthService {
         const user: any = { username: response.username, isGuest: response.isGuest };
         if (response.id) user.id = response.id;
         this.saveAuthStorage(user, response.token);
+        await this.userStatusService.loadUserStatus();
         return { success: true };
       }
 
@@ -152,6 +157,7 @@ export class AuthService {
 
   logout(): void {
     this.clearAuthStorage();
+    this.userStatusService.clearUserStatus();
     this.router.navigate(['/login']);
   }
 

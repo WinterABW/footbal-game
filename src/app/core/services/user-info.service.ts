@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ApiMessageResponse } from '../../models/user.model';
+import { LocalApiService } from './local-api.service';
 
 export interface ReferInfoResponse {
   earnLastMonth: number;
@@ -15,30 +16,39 @@ export interface ReferInfoResponse {
 }
 
 export interface ActualInversion {
-  createdAt: string;
-  id: number;
-  phone: string | null;
-  referrealId: number | null;
+  articleId: number;
+  created: string;
 }
 
 export interface SettingsInfo {
-  skillsLevelReport: Record<string, number>;
+  language: string;
+  vibration: boolean;
 }
 
 export interface WalletInfo {
-  balance: number;
+  principalBalance: number;
+  ticketBalance: number;
+  totalTooks: number;
+  energy: number;
+}
+
+export interface SkillsLevelReport {
+  energyPlusLVL: number;
+  maxEnergyLVL: number;
+  tapPowerLVL: number;
 }
 
 export interface UserStatusResponse {
-  actualInversion: ActualInversion[] | null;
+  actualInversion: ActualInversion[];
   createdAt: string;
   id: number;
   phone: string | null;
-  referrealId: number | null;
+  referrealId: string | null;
   settings: SettingsInfo;
-  skillsLevelReport: Record<string, number>;
+  skillsLevelReport: SkillsLevelReport;
   username: string;
   wallet: WalletInfo;
+  earnPerHour: number;
 }
 
 @Injectable({
@@ -46,6 +56,7 @@ export interface UserStatusResponse {
 })
 export class UserInfoService {
   private http = inject(HttpClient);
+  private localApi = inject(LocalApiService);
 
   private getBaseUrl(): string {
     return environment.apiBaseUrl;
@@ -71,6 +82,30 @@ export class UserInfoService {
       }
       console.error('GetReferInfo failed:', error);
       return { success: false, error: 'Failed to get refer info' };
+    }
+  }
+
+  async updateSettings(settings: SettingsInfo): Promise<{ success: boolean; error?: string; data?: SettingsInfo }> {
+    try {
+      const url = `${this.getBaseUrl()}UserInfo/updateSettings`;
+      const body = { language: settings.language, vibration: settings.vibration };
+      const response = await this.http.put<SettingsInfo>(url, body).toPromise();
+
+      if (response) {
+        return { success: true, data: response };
+      }
+
+      return { success: false, error: 'Failed to update settings' };
+    } catch (error: unknown) {
+      const httpError = error as HttpErrorResponse;
+      if (httpError?.status === 401) {
+        return { success: false, error: 'Unauthorized' };
+      }
+      if (httpError?.error && typeof httpError.error === 'object' && 'message' in httpError.error) {
+        return { success: false, error: (httpError.error as ApiMessageResponse).message };
+      }
+      console.error('UpdateSettings failed:', error);
+      return { success: false, error: 'Failed to update settings' };
     }
   }
 

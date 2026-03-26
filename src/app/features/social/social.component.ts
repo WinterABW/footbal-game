@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
+import { UserStatusService } from '../../core/services/user-status.service';
+import { UserInfoService, ReferInfoResponse } from '../../core/services/user-info.service';
 
 @Component({
   selector: 'app-social',
@@ -43,7 +45,9 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
  
          <!-- Quick Actions Row -->
          <div class="flex gap-2">
-            <button class="flex-1 lg-module-card p-2 flex items-center justify-center gap-3 active:scale-[0.98] transition-all duration-300 group border-indigo-500/30 accent-violet">
+            <button 
+              (click)="shareReferralLink()"
+              class="flex-1 lg-module-card p-2 flex items-center justify-center gap-3 active:scale-[0.98] transition-all duration-300 group border-indigo-500/30 accent-violet">
              <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shadow-inner group-hover:bg-indigo-500/20 transition-colors">
                <img ngSrc="shared/icons/add-friend.png" alt="reward" width="32" height="32"
                      class="relative z-10 opacity-90 group-hover:scale-110 transition-transform duration-500 drop-shadow-lg">
@@ -51,9 +55,11 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
              <span class="text-[11px] font-black text-white uppercase tracking-widest">Invitar un amigo</span>
            </button>
           
-           <button class="w-14 lg-module-card p-0.5 flex items-center justify-center active:scale-[0.98] transition-all duration-300 group">
+           <button 
+             (click)="copyReferralLink()"
+             class="w-14 lg-module-card p-0.5 flex items-center justify-center active:scale-[0.98] transition-all duration-300 group">
               <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 transition-colors">
-                <img ngSrc="shared/icons/copy.png" alt="reward" width="32" height="32"
+                <img ngSrc="shared/icons/copy.png" alt="copy" width="32" height="32"
                      class="relative z-10 opacity-90 group-hover:scale-110 transition-transform duration-500 drop-shadow-lg">
               </div>
            </button>
@@ -86,24 +92,26 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
                 <div class="grid grid-cols-2 gap-3">
                   <div class="lg-module-card p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Total</span>
-                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">--</span>
+                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ referInfo()?.total ?? '--' }}</span>
                   </div>
                   <div class="lg-module-card p-3 border-emerald-500/30 accent-emerald">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Hoy</span>
-                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">--</span>
+                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.today ?? '--' }}</span>
                   </div>
                   <div class="lg-module-card p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Último mes</span>
-                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">--</span>
+                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ referInfo()?.lastMonth ?? '--' }}</span>
                   </div>
                   <div class="lg-module-card p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Última semana</span>
-                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">--</span>
+                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ referInfo()?.lastWeek ?? '--' }}</span>
                   </div>
                 </div>
 
                 <!-- Main Action Area -->
-                <button class="lg-btn-primary w-full h-12 flex items-center justify-center gap-3 px-4 active:scale-[0.98] transition-all">
+                <button 
+                  (click)="shareReferralLink()"
+                  class="lg-btn-primary w-full h-12 flex items-center justify-center gap-3 px-4 active:scale-[0.98] transition-all">
                   <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                       <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -156,19 +164,19 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
                 <div class="grid grid-cols-2 gap-3">
                   <div class="lg-module-card p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Total</span>
-                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">--</span>
+                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ referInfo()?.earnTotal ?? '--' }}</span>
                   </div>
                   <div class="lg-module-card p-3 border-emerald-500/30 accent-emerald">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Hoy</span>
-                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">--</span>
+                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.earnToday ?? '--' }}</span>
                   </div>
                   <div class="lg-module-card p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Último mes</span>
-                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">--</span>
+                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ referInfo()?.earnLastMonth ?? '--' }}</span>
                   </div>
                   <div class="lg-module-card p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Última semana</span>
-                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">--</span>
+                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ referInfo()?.earnLastWeek ?? '--' }}</span>
                   </div>
                 </div>
               </div>
@@ -189,7 +197,13 @@ import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SocialComponent {
+export class SocialComponent implements OnInit {
+  private userStatusService = inject(UserStatusService);
+  private userInfoService = inject(UserInfoService);
+
+  readonly referrealId = this.userStatusService.referrealId;
+  readonly referInfo = signal<ReferInfoResponse | null>(null);
+
   readonly socialTabs: GlassTab[] = [
     { id: 'misReferidos', label: 'Referidos' },
     { id: 'misGanancias', label: 'Ganancias' },
@@ -197,4 +211,58 @@ export class SocialComponent {
   ];
 
   activeTab = signal<string>('misReferidos');
+
+  private readonly baseUrl = 'https://t.me/football/start?startapp=';
+
+  async ngOnInit(): Promise<void> {
+    await this.loadReferInfo();
+  }
+
+  private async loadReferInfo(): Promise<void> {
+    const result = await this.userInfoService.getReferInfo();
+    if (result.success && result.data) {
+      this.referInfo.set(result.data);
+    }
+  }
+
+  getReferralUrl(): string | null {
+    const refId = this.referrealId();
+    if (!refId) return null;
+    return `${this.baseUrl}${refId}`;
+  }
+
+  async shareReferralLink(): Promise<void> {
+    const url = this.getReferralUrl();
+    if (!url) {
+      console.warn('No referral ID available');
+      return;
+    }
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ url });
+      } catch {
+        // User cancelled or share failed — silently ignore
+      }
+    } else {
+      await this.copyToClipboard(url);
+    }
+  }
+
+  async copyReferralLink(): Promise<void> {
+    const url = this.getReferralUrl();
+    if (!url) {
+      console.warn('No referral ID available');
+      return;
+    }
+    await this.copyToClipboard(url);
+  }
+
+  private async copyToClipboard(text: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      console.error('Failed to copy to clipboard');
+    }
+  }
 }

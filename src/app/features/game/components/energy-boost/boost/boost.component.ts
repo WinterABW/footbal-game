@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { LocalApiService } from '../../../../../core/services/local-api.service';
+import { UserStatusService } from '../../../../../core/services/user-status.service';
 import { Boost } from '../../../../../models/game.model';
 import { BalanceComponent } from '../../../../../shared/components/balance/balance.component';
 import { GlassSheetComponent } from '../../../../../shared/ui/glass-sheet/glass-sheet.component';
@@ -250,11 +251,26 @@ export class BoostComponent {
 
     private localApi = inject(LocalApiService);
     private router = inject(Router);
+    private userStatusService = inject(UserStatusService);
 
     balanceAmount = this.localApi.balance;
     currentEnergy = this.localApi.currentEnergy;
     maxEnergy = this.localApi.maxEnergy;
     tapValue = this.localApi.tapValue;
+
+    skillsLevelReport = this.userStatusService.skillsLevelReport;
+
+    private getSkillLevel(boostId: number): number {
+        const report = this.skillsLevelReport();
+        if (!report) return 0;
+        
+        switch (boostId) {
+            case 1: return report.energyPlusLVL;
+            case 4: return report.maxEnergyLVL;
+            case 5: return report.tapPowerLVL;
+            default: return 0;
+        }
+    }
 
     boosts = computed(() => {
         const apiBoosts = this.localApi.boosts();
@@ -265,7 +281,7 @@ export class BoostComponent {
                 title: b.name,
                 desc: b.description,
                 cost: b.cost.toString(),
-                level: `Lv${b.level}`,
+                level: `Lv${this.getSkillLevel(b.id)}`,
                 amount: b.amount,
                 type: b.type,
                 icon: b.icon ?? 'game/energy/thunder.png',
@@ -329,8 +345,7 @@ export class BoostComponent {
     currentLevel = computed(() => {
         const item = this.selectedBoost();
         if (!item) return 1;
-        const numeric = Number(String(item.level).replace(/\D/g, ''));
-        return Number.isFinite(numeric) && numeric > 0 ? numeric : 1;
+        return this.getSkillLevel(item.id) || 1;
     });
 
     nextLevel = computed(() => {
