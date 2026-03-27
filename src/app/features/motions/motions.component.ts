@@ -1,11 +1,9 @@
-import { ChangeDetectionStrategy, Component, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Signal, signal, effect } from '@angular/core';
 import { NgOptimizedImage, DecimalPipe } from '@angular/common';
 import { GlassModalComponent } from '../../shared/ui';
+import { MotionsService } from './motions.service';
 import confetti from 'canvas-confetti';
-
-interface Mission {
-  id: string; title: string; description: string; reward: number; currency: string; icon: string; completed: boolean;
-}
+import { Mission } from '../../models/mision.model';
 
 interface DailyReward {
   day: number;
@@ -26,8 +24,16 @@ interface DailyReward {
           <div class="relative w-24 h-32 group">
              <!-- Deep Aura Glow -->
             <div class="absolute inset-[-20px] bg-indigo-500/20 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-1000 animate-pulse"></div>
-            <img ngSrc="motions/main/mociones.webp" alt="Misiones" width="128" height="128" 
-                class="relative z-10 w-full h-full object-contain filter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] lg-float">
+             @if (!imageError()) {
+               <img ngSrc="motions/main/mociones.webp" alt="Misiones" width="128" height="128" 
+                 (error)="imageError.set(true)"
+                 class="relative z-10 w-full h-full object-contain filter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] lg-float">
+             } @else {
+               <svg class="relative z-10 w-full h-full object-contain filter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] lg-float text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                 <circle cx="12" cy="12" r="9" stroke-opacity="0.3" />
+               </svg>
+             }
           </div>
         </div>
 
@@ -42,7 +48,7 @@ interface DailyReward {
           </div>
 
           @for (tab of missionTabKeys; track tab) {
-            <button (click)="activeTab.set(tab)"
+            <button (click)="setActiveTab(tab)"
               class="flex-1 h-11 rounded-full flex items-center justify-center group active:scale-95 transition-all duration-300 relative z-10">
               <img [ngSrc]="'social/icons/' + (tab === 'History' ? 'complete.png' : tab === 'Daily' ? 'daily.png' : getTabIcon(tab))" 
                 [alt]="tab" width="22" height="22" 
@@ -55,6 +61,11 @@ interface DailyReward {
         </nav>
 
         <main class="flex-1">
+          @if (loading()) {
+            <div class="flex items-center justify-center h-32">
+              <span class="text-xs font-bold uppercase tracking-[0.2em] text-white/50">Cargando misiones...</span>
+            </div>
+          } @else {
           <div class="bg-white/5 border border-white/5 rounded-[32px] p-1 overflow-hidden backdrop-blur-sm">
             @switch (activeTab()) {
               @case ('Daily') {
@@ -153,7 +164,7 @@ interface DailyReward {
                     </div>
                     <div class="lg-module-card p-3 border-emerald-500/30 accent-emerald">
                       <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Totales</span>
-                      <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">16</span>
+                      <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ missions().length }}</span>
                     </div>
                     <div class="lg-module-card p-3">
                       <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Fallidas</span>
@@ -179,6 +190,7 @@ interface DailyReward {
               }
             }
           </div>
+          }
         </main>
       </div>
 
@@ -281,120 +293,67 @@ interface DailyReward {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MotionsComponent {
-  readonly missionTabKeys = ['Daily', 'Whatsapp', 'Facebook', 'Tiktok', 'Telegram', 'Youtube', 'History'];
+  readonly missionTabKeys: string[];
+  
+  // Signals from service (assigned in constructor)
+  readonly activeTab!: Signal<string>;
+  readonly activeIndex!: Signal<number>;
+  readonly selectedMission!: Signal<Mission | null>;
+  readonly showHistoryModal!: Signal<boolean>;
+  readonly missions!: Signal<Mission[]>;
+  readonly whatsappMissions!: Signal<Mission[]>;
+  readonly completedMissions!: Signal<Mission[]>;
+  readonly failedMissions!: Signal<Mission[]>;
+  readonly dailyRewards!: Signal<DailyReward[]>;
+  readonly toastData!: Signal<{ message: string, type: 'success' | 'error' | 'info' } | null>;
+  readonly loading!: Signal<boolean>;
+  readonly error!: Signal<string | null>;
+  readonly imageError = signal(false);
 
-  activeTab = signal<string>('Daily');
-  activeIndex = computed(() => this.missionTabKeys.indexOf(this.activeTab()));
-  selectedMission = signal<Mission | null>(null);
-  showHistoryModal = signal(false);
+  constructor(private readonly motionsService: MotionsService) {
+    this.missionTabKeys = this.motionsService.getMissionTabKeys();
+    this.activeTab = this.motionsService.activeTab$;
+    this.activeIndex = this.motionsService.activeIndex;
+    this.selectedMission = this.motionsService.selectedMission$;
+    this.showHistoryModal = this.motionsService.showHistoryModal$;
+    this.missions = this.motionsService.missions$;
+    this.whatsappMissions = this.motionsService.whatsappMissions$;
+    this.completedMissions = this.motionsService.completedMissions$;
+    this.failedMissions = this.motionsService.failedMissions$;
+    this.dailyRewards = this.motionsService.dailyRewards$;
+    this.toastData = this.motionsService.toastData$;
+    this.loading = this.motionsService.loading$;
+    this.error = this.motionsService.error$;
+  }
 
-  whatsappMissions = signal<Mission[]>([{ id: 'whatsapp-1', title: 'Estado de WhatsApp', description: 'Publica una captura del juego con tu link.', reward: 10000, currency: 'COP', icon: 'social/icons/Whatsapp_37229.png', completed: false }]);
-  completedMissions = signal<Mission[]>([{ id: 'comp-1', title: 'Estado WA', description: '', reward: 10000, currency: 'COP', icon: 'social/icons/Whatsapp_37229.png', completed: true }]);
-  failedMissions = signal<Mission[]>([]);
+  ngOnInit() {
+    this.motionsService.fetchMissions();
+    effect(() => {
+      const errorMsg = this.error();
+      if (errorMsg) {
+        this.motionsService.showToast(errorMsg, 'error');
+      }
+    });
+  }
 
-  openMission(m: Mission) { this.selectedMission.set(m); }
-  closeModal() { this.selectedMission.set(null); }
-  goToMission() { const m = this.selectedMission(); if (m) this.closeModal(); }
-  openHistoryModal() { this.showHistoryModal.set(true); }
-  closeHistoryModal() { this.showHistoryModal.set(false); }
+  // Delegated methods to service
+  openMission(m: Mission) { this.motionsService.openMission(m); }
+  closeModal() { this.motionsService.closeModal(); }
+  goToMission() { this.motionsService.goToMission(); }
+  openHistoryModal() { this.motionsService.openHistoryModal(); }
+  closeHistoryModal() { this.motionsService.closeHistoryModal(); }
+  setActiveTab(tab: string) { this.motionsService.setActiveTab(tab); }
 
   getTabIcon(tab: string): string {
-    const icons: Record<string, string> = {
-      Whatsapp: 'Whatsapp_37229.png', Facebook: 'facebook_icon-icons.com_53612.png',
-      Tiktok: 'tiktok_logo_icon_189233.png', Telegram: 'telegram_icon-icons.com_72055.png',
-      Youtube: 'YouTube_23392.png'
-    };
-    return icons[tab] || '';
+    return this.motionsService.getTabIcon(tab);
   }
-
-  dailyRewards = signal<DailyReward[]>([
-    { day: 1, state: 'claimed', icon: 'motions/daily/reclamed.webp' },
-    { day: 2, state: 'claimed', icon: 'motions/daily/reclamed.webp' },
-    { day: 3, state: 'available', icon: 'motions/daily/current.webp' },
-    { day: 4, state: 'upcoming', icon: 'motions/daily/comingsoon.webp' },
-    { day: 5, state: 'upcoming', icon: 'motions/daily/comingsoon.webp' },
-    { day: 6, state: 'upcoming', icon: 'motions/daily/comingsoon.webp' },
-    { day: 7, state: 'upcoming', icon: 'motions/daily/comingsoon.webp' },
-  ]);
-
-  toastData = signal<{ message: string, type: 'success' | 'error' | 'info' } | null>(null);
 
   claimDailyReward(reward: DailyReward) {
-    if (reward.state === 'upcoming') {
-      this.playErrorSound();
-      this.showToast('¡Aún no! Esta recompensa estará disponible pronto.', 'error');
-    } else if (reward.state === 'claimed') {
-      this.playErrorSound();
-      this.showToast('¡Ya reclamaste este premio! Vuelve mañana.', 'error');
-    } else if (reward.state === 'available') {
-      this.triggerConfetti();
-      this.playClaimSound();
-      this.dailyRewards.update(rewards => rewards.map(r =>
-        r.day === reward.day ? { ...r, state: 'claimed', icon: 'motions/daily/reclamed.webp' } : r
-      ));
-      this.showToast(`¡Genial! Has reclamado tu recompensa del Día ${reward.day}.`, 'success');
-    }
+    this.motionsService.claimDailyReward(reward);
   }
 
-  playClaimSound() {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
-    if (ctx.state === 'suspended') ctx.resume();
-
-    const playNote = (freq: number, startTime: number, type: OscillatorType = 'sine', duration: number = 0.5) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, startTime);
-
-      gain.gain.setValueAtTime(0, startTime);
-      gain.gain.linearRampToValueAtTime(0.15, startTime + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(startTime);
-      osc.stop(startTime + duration);
-    };
-
-    const now = ctx.currentTime;
-    // Magical chime chord (C Maj 7 Arpeggio)
-    playNote(523.25, now, 'sine', 0.6);       // C5
-    playNote(659.25, now + 0.1, 'sine', 0.6); // E5
-    playNote(783.99, now + 0.2, 'sine', 0.6); // G5
-    playNote(987.77, now + 0.3, 'sine', 0.6); // B5
-    playNote(1046.50, now + 0.4, 'triangle', 0.8); // C6 Sparkle
-  }
-
-  playErrorSound() {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
-    if (ctx.state === 'suspended') ctx.resume();
-
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(300, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.15);
-
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.2);
-  }
-
-  showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
-    this.toastData.set({ message, type });
-    setTimeout(() => this.toastData.set(null), 3000);
-  }
-
-  triggerConfetti() {
+  // Confetti trigger (UI effect only - stays in component)
+  private triggerConfetti() {
     const duration = 2000;
     const end = Date.now() + duration;
 
