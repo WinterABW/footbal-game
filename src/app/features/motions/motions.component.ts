@@ -153,6 +153,10 @@ interface DailyReward {
                         }
                       </div>
                     </article>
+                  } @empty {
+                    <div class="flex flex-col items-center justify-center py-8 text-center">
+                      <p class="text-sm font-medium text-white/50">No hay misiones disponibles</p>
+                    </div>
                   }
                 </div>
               }
@@ -218,6 +222,10 @@ interface DailyReward {
                         }
                       </div>
                     </article>
+                  } @empty {
+                    <div class="flex flex-col items-center justify-center py-8 text-center">
+                      <p class="text-sm font-medium text-white/50">No hay misiones disponibles</p>
+                    </div>
                   }
                 </div>
               }
