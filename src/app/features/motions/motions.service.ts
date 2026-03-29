@@ -2,6 +2,7 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { BackendMission, Mission } from '../../models/mision.model';
+import { GlassTab } from '../../shared/ui';
 
 interface DailyReward {
   day: number;
@@ -37,6 +38,13 @@ export class MotionsService {
   private readonly selectedMission = signal<Mission | null>(null);
   private readonly showHistoryModal = signal<boolean>(false);
   private readonly toastData = signal<{ message: string, type: 'success' | 'error' | 'info' } | null>(null);
+  // Session-persistent tab state for mission history modal (resets on app restart)
+  private readonly activeHistoryTab = signal<string>('completadas');
+  readonly activeHistoryTab$ = this.activeHistoryTab.asReadonly();
+  readonly historyTabs: GlassTab[] = [
+    { id: 'completadas', label: 'Completadas' },
+    { id: 'fallidas', label: 'Fallidas' }
+  ];
 
   // Computed signals
   readonly activeIndex = computed(() => this.missionTabKeys.indexOf(this.activeTab()));
@@ -51,6 +59,12 @@ export class MotionsService {
     return failed.reduce((sum, m) => sum + (Number(m.reward) || 0), 0);
   });
   readonly missionHistory$ = computed(() => [...this.completedMissions$(), ...this.failedMissions$()]);
+  readonly filteredHistory$ = computed(() => {
+    const tab = this.activeHistoryTab();
+    const missions = this.missions();
+    if (tab === 'completadas') return missions.filter(m => m.completed);
+    return missions.filter(m => !m.completed);
+  });
   readonly dailyRewards$ = this.dailyRewards.asReadonly();
   readonly activeTab$ = this.activeTab.asReadonly();
   readonly selectedMission$ = this.selectedMission.asReadonly();
@@ -167,6 +181,10 @@ export class MotionsService {
 
   setShowHistoryModal(show: boolean) {
     this.showHistoryModal.set(show);
+  }
+
+  setActiveHistoryTab(tab: string) {
+    this.activeHistoryTab.set(tab);
   }
 
   openMission(mission: Mission) {

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Signal, signal, effect, ViewChild, ViewChildren, ElementRef, QueryList, AfterViewInit, OnDestroy, Renderer2 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { NgOptimizedImage, DecimalPipe } from '@angular/common';
-import { GlassModalComponent } from '../../shared/ui';
+import { GlassModalComponent, GlassTabBarComponent, GlassTab } from '../../shared/ui';
 import { MotionsService } from './motions.service';
 import confetti from 'canvas-confetti';
 import { Mission } from '../../models/mision.model';
@@ -14,7 +14,7 @@ interface DailyReward {
 
 @Component({
   selector: 'app-motions',
-  imports: [NgOptimizedImage, DecimalPipe, GlassModalComponent],
+  imports: [NgOptimizedImage, DecimalPipe, GlassModalComponent, GlassTabBarComponent],
   template: `
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
       
@@ -274,14 +274,29 @@ interface DailyReward {
             </button>
           </div>
           
+          <!-- Tabs -->
+          <div class="mb-4">
+            <app-glass-tab-bar
+              [tabs]="historyTabs"
+              [activeTab]="activeHistoryTab()"
+              (activeTabChange)="setSelectedHistoryTab($event)"
+            />
+          </div>
+
           <!-- Scrollable list -->
           <div class="overflow-y-auto no-scrollbar max-h-[60vh] flex flex-col gap-2">
-            @if (missionHistory().length === 0) {
+            @if (filteredHistory().length === 0) {
               <div class="flex flex-col items-center justify-center py-8 text-center">
-                <p class="text-sm font-medium text-white/50">No hay misiones en el historial</p>
+                <p class="text-sm font-medium text-white/50">
+                  @if (activeHistoryTab() === 'completadas') {
+                    No hay misiones completadas
+                  } @else {
+                    No hay misiones fallidas
+                  }
+                </p>
               </div>
             } @else {
-              @for (mission of missionHistory(); track mission.id) {
+              @for (mission of filteredHistory(); track mission.id) {
                 <div class="lg-card-card p-3 flex gap-3 items-start" tabindex="0" role="listitem" [attr.aria-label]="mission.title + (mission.completed ? ' - Completada' : ' - Fallida')">
                   <!-- Icon -->
                   <div class="relative flex-shrink-0 w-10 h-10">
@@ -371,6 +386,10 @@ export class MotionsComponent implements AfterViewInit, OnDestroy {
   readonly failedMissions!: Signal<Mission[]>;
   readonly totalLost!: Signal<number>;
   readonly missionHistory!: Signal<Mission[]>;
+  // Service-managed tab state (persists while app is open)
+  readonly activeHistoryTab!: Signal<string>;
+  readonly historyTabs!: GlassTab[];
+  readonly filteredHistory!: Signal<Mission[]>;
   readonly dailyRewards!: Signal<DailyReward[]>;
   readonly toastData!: Signal<{ message: string, type: 'success' | 'error' | 'info' } | null>;
   readonly loading!: Signal<boolean>;
@@ -398,6 +417,9 @@ export class MotionsComponent implements AfterViewInit, OnDestroy {
     this.failedMissions = this.motionsService.failedMissions$;
     this.totalLost = this.motionsService.totalLost$;
     this.missionHistory = this.motionsService.missionHistory$;
+    this.activeHistoryTab = this.motionsService.activeHistoryTab$;
+    this.historyTabs = this.motionsService.historyTabs;
+    this.filteredHistory = this.motionsService.filteredHistory$;
     this.dailyRewards = this.motionsService.dailyRewards$;
     this.toastData = this.motionsService.toastData$;
     this.loading = this.motionsService.loading$;
@@ -506,6 +528,7 @@ export class MotionsComponent implements AfterViewInit, OnDestroy {
   openHistoryModal() { this.motionsService.openHistoryModal(); }
   closeHistoryModal() { this.motionsService.closeHistoryModal(); }
   setActiveTab(tab: string) { this.motionsService.setActiveTab(tab); }
+  setSelectedHistoryTab(tab: string) { this.motionsService.setActiveHistoryTab(tab); }
 
   getTabIcon(tab: string): string {
     return this.motionsService.getTabIcon(tab);
