@@ -19,21 +19,34 @@ export class AuthService {
   authToken = signal<string | null>(null);
 
   constructor() {
-    this.loadAuthFromStorage();
+    // Load auth from storage without blocking
+    this.loadAuthFromStorage().catch(err => console.error('Failed to load auth from storage:', err));
   }
 
   private getBaseUrl(): string {
     return environment.apiBaseUrl;
   }
 
-  private loadAuthFromStorage(): void {
+  private async loadAuthFromStorage(): Promise<void> {
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('auth_token');
 
     if (storedUser && storedToken) {
       try {
-        this.userSignal.set(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        this.userSignal.set(parsedUser);
         this.authToken.set(storedToken);
+        
+        // If user doesn't have ID, load from userStatus
+        if (!parsedUser.id) {
+          await this.userStatusService.loadUserStatus();
+          const userStatus = this.userStatusService.userStatus();
+          if (userStatus && userStatus.id) {
+            const updatedUser = { ...parsedUser, id: userStatus.id };
+            this.userSignal.set(updatedUser);
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+          }
+        }
       } catch (error) {
         console.error('Error loading auth from storage:', error);
         this.clearAuthStorage();
@@ -42,9 +55,11 @@ export class AuthService {
   }
 
   private saveAuthStorage(user: any, token: string): void {
+    // Ensure id is captured from various possible sources
+    const userId = user.id ?? user.Id ?? user.userId ?? user.Id;
     const userData = {
       ...user,
-      id: user.id || user.Id || null,
+      id: userId ?? null,
     };
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('auth_token', token);
@@ -79,6 +94,15 @@ export class AuthService {
 
       this.saveAuthStorage(user, token);
       await this.userStatusService.loadUserStatus();
+      
+      // Update user with ID from userStatus if not present
+      const userStatus = this.userStatusService.userStatus();
+      if (userStatus && userStatus.id && !this.userSignal()?.id) {
+        const updatedUser = { ...this.userSignal()!, id: userStatus.id };
+        this.userSignal.set(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+      
       return { success: true };
     } catch (error: unknown) {
       const httpError = error as HttpErrorResponse;
@@ -116,6 +140,15 @@ export class AuthService {
 
       this.saveAuthStorage(user, token);
       await this.userStatusService.loadUserStatus();
+      
+      // Update user with ID from userStatus if not present
+      const userStatus = this.userStatusService.userStatus();
+      if (userStatus && userStatus.id && !this.userSignal()?.id) {
+        const updatedUser = { ...this.userSignal()!, id: userStatus.id };
+        this.userSignal.set(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+      
       return { success: true };
     } catch (error: unknown) {
       const httpError = error as HttpErrorResponse;
@@ -141,6 +174,15 @@ export class AuthService {
         if (response.id) user.id = response.id;
         this.saveAuthStorage(user, response.token);
         await this.userStatusService.loadUserStatus();
+        
+        // Update user with ID from userStatus if not present
+        const userStatus = this.userStatusService.userStatus();
+        if (userStatus && userStatus.id && !this.userSignal()?.id) {
+          const updatedUser = { ...this.userSignal()!, id: userStatus.id };
+          this.userSignal.set(updatedUser);
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+        
         return { success: true };
       }
 
