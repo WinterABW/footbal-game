@@ -11,7 +11,7 @@ import { NgOptimizedImage, CommonModule } from '@angular/common';
         
         <!-- Imagen del jugador -->
         <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-white/5">
-          <img [src]="player.imageUrl" [alt]="player.name"
+          <img [src]="player.imagen" [alt]="player.name"
                class="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-110"
                width="120" height="120">
         </div>
@@ -25,7 +25,7 @@ import { NgOptimizedImage, CommonModule } from '@angular/common';
             <div class="w-3.5 h-3.5 rounded-full bg-amber-500/20 flex items-center justify-center">
                <img ngSrc="shared/balance/coin.webp" alt="coin" width="10" height="10" class="object-contain">
             </div>
-            <span class="text-[8px] font-bold text-white/80 text-glow-amber">+{{ player.earning || 0 }}</span>
+            <span class="text-[8px] font-bold text-white/80 text-glow-amber">+{{ player.interest || 0 }}</span>
             <span class="text-[6px] text-white/40 font-medium">/hora</span>
           </div>
         </div>

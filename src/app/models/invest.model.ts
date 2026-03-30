@@ -1,13 +1,5 @@
 /**
- * Raw API response shape from Invest/getPlayers endpoint.
- *
- * This type represents what the backend returns. Use InvestService.mapApiPlayerToPlayer()
- * to convert to the canonical Player interface (from player.model.ts).
- *
- * Field differences from Player:
- * - `days` → maps to `contract_days`
- * - `interest` → maps to `earning`
- * - `isVIP` → maps to `exclusive`
+ * API response from GET /Invest/getPlayers
  */
 export interface InvestApiPlayer {
   id: number;
@@ -17,4 +9,5 @@ export interface InvestApiPlayer {
   price: number;
   days: number;
   interest: number;
+  imagen: string;
 }

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, HostListener, input, output, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import type { Player } from '../../../../models/player.model';
+import type { InvestApiPlayer } from '../../../../models/invest.model';
 
 @Component({
   selector: 'app-player-details',
@@ -23,20 +23,20 @@ import type { Player } from '../../../../models/player.model';
         <div class="flex flex-col px-4 pb-3 overflow-y-auto max-h-[80vh]">
           <div class="flex items-center gap-3 mb-3 -mx-1">
             <div class="w-20 h-20 flex-shrink-0">
-              <img [ngSrc]="imageUrlWebp()" [alt]="player().name" width="80" height="80" class="w-full h-full object-contain">
+              <img [ngSrc]="player().imagen" [alt]="player().name" width="80" height="80" class="w-full h-full object-contain">
             </div>
             <div class="flex-1 flex flex-col gap-1">
               <div class="flex justify-between items-center bg-white/5 rounded-lg px-2 py-1.5 text-[10px]">
                 <span class="text-white/40">Edad</span>
-                <span class="text-white font-bold">{{ player().age || 'N/A' }}</span>
+                <span class="text-white font-bold">{{ age() }}</span>
               </div>
               <div class="flex justify-between items-center bg-white/5 rounded-lg px-2 py-1.5 text-[10px]">
                 <span class="text-white/40">Altura</span>
-                <span class="text-white font-bold">{{ player().height || 'N/A' }}cm</span>
+                <span class="text-white font-bold">{{ height() }}cm</span>
               </div>
               <div class="flex justify-between items-center bg-white/5 rounded-lg px-2 py-1.5 text-[10px]">
                 <span class="text-white/40">Nivel</span>
-                <span class="text-amber-400 font-bold">Lv.{{ player().level || 1 }}</span>
+                <span class="text-amber-400 font-bold">Lv.{{ level() }}</span>
               </div>
             </div>
           </div>
@@ -48,19 +48,19 @@ import type { Player } from '../../../../models/player.model';
             </div>
             <div class="flex justify-between items-center bg-emerald-500/10 rounded-lg px-3 py-2 border border-emerald-500/20">
               <span class="text-emerald-400/70 text-[10px] font-bold uppercase">/Hora</span>
-              <span class="text-white font-bold">+{{ player().earning | number }} <span class="text-[9px] text-emerald-400/60">COP</span></span>
+              <span class="text-white font-bold">+{{ player().interest | number }} <span class="text-[9px] text-emerald-400/60">COP</span></span>
             </div>
             <div class="flex justify-between items-center bg-blue-500/10 rounded-lg px-3 py-2 border border-blue-500/20">
               <span class="text-blue-400/70 text-[10px] font-bold uppercase">/Día</span>
-              <span class="text-white font-bold">+{{ (player().earning * 24) | number }}</span>
+              <span class="text-white font-bold">+{{ (player().interest * 24) | number }}</span>
             </div>
             <div class="flex justify-between items-center bg-purple-500/10 rounded-lg px-3 py-2 border border-purple-500/20">
               <span class="text-purple-400/70 text-[10px] font-bold uppercase">Total</span>
-              <span class="text-white font-bold">+{{ (player().earning * 24 * player().contract_days) | number }}</span>
+              <span class="text-white font-bold">+{{ totalEarnings() | number }}</span>
             </div>
             <div class="flex justify-between items-center bg-cyan-500/10 rounded-lg px-3 py-2 border border-cyan-500/20">
               <span class="text-cyan-400/70 text-[10px] font-bold uppercase">Contrato</span>
-              <span class="text-white font-bold">{{ player().contract_days }} <span class="text-[9px] text-cyan-400/60">días</span></span>
+              <span class="text-white font-bold">{{ player().days }} <span class="text-[9px] text-cyan-400/60">días</span></span>
             </div>
           </div>
 
@@ -80,25 +80,24 @@ import type { Player } from '../../../../models/player.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerDetailsComponent implements AfterViewInit {
-  player = input.required<Player>();
-  confirm = output<Player>();
+  player = input.required<InvestApiPlayer>();
+  confirm = output<InvestApiPlayer>();
   close = output<void>();
 
   @ViewChild('modalWrapper') modalWrapper!: ElementRef;
   @ViewChild('closeBtn') closeBtn!: ElementRef;
 
-  imageUrlWebp = computed(() => {
-    const url = this.player().imageUrl;
-    return url ? url.replace('.png', '.webp') : '';
-  });
+  // Hardcoded values for fields not in API
+  age = computed(() => 25);
+  height = computed(() => 180);
+  level = computed(() => 1);
 
-  totalGoals = computed(() => {
+  totalEarnings = computed(() => {
     const p = this.player();
-    return (p.earning || 0) * 24 * (p.contract_days || 0);
+    return p.interest * 24 * p.days;
   });
 
   ngAfterViewInit() {
-    // Set initial focus on close button for accessibility
     if (this.closeBtn) {
       this.closeBtn.nativeElement.focus();
     }
@@ -109,7 +108,6 @@ export class PlayerDetailsComponent implements AfterViewInit {
     if (event.key === 'Escape') {
       this.onClose();
     } else if (event.key === 'Tab') {
-      // Simple focus trap: keep focus within modal
       event.preventDefault();
       const focusableElements = this.modalWrapper.nativeElement.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -120,7 +118,6 @@ export class PlayerDetailsComponent implements AfterViewInit {
       const last = focusableElements[focusableElements.length - 1] as HTMLElement;
 
       if (event.shiftKey) {
-        // Shift+Tab: move focus backward
         if (document.activeElement === first) {
           last.focus();
         } else {
@@ -130,7 +127,6 @@ export class PlayerDetailsComponent implements AfterViewInit {
           }
         }
       } else {
-        // Tab: move focus forward
         if (document.activeElement === last) {
           first.focus();
         } else {

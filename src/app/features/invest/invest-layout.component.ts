@@ -6,13 +6,13 @@ import { ProductCardVerticalComponent } from './components/product-vertical/prod
 import { PlayerDetailsComponent } from './components/player-details/player-details.component';
 import { PerHourEarningsComponent } from '../game/components/per-hour-earnings/per-hour-earnings.component';
 import { RouterLink } from '@angular/router';
-import type { Player } from '../../models/player.model';
+import type { InvestApiPlayer } from '../../models/invest.model';
 import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
-import { PlayersService } from '../../core/services/players.service';
+import { InvestService } from '../../core/services/invest.service';
 
 @Component({
   selector: 'app-invest-layout',
-  imports: [NgOptimizedImage, BalanceComponent, ProductCardComponent, ProductCardVerticalComponent, PerHourEarningsComponent, RouterLink, PlayerDetailsComponent, GlassTabBarComponent],
+  imports: [NgOptimizedImage, BalanceComponent, ProductCardComponent, ProductCardVerticalComponent, PlayerDetailsComponent, PerHourEarningsComponent, RouterLink, GlassTabBarComponent],
   template: `
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
         
@@ -53,106 +53,33 @@ import { PlayersService } from '../../core/services/players.service';
 
             <div class="w-full pb-12">
                 @if (activeTab() === 'jugadores') {
-                  @if (isLoading()) {
-                    <div class="flex flex-col items-center py-24 gap-6" role="status" aria-live="polite">
-                        <div class="w-12 h-12 border-4 border-white/5 border-t-teal-500 rounded-full animate-spin" aria-hidden="true"></div>
-                        <p class="text-white/20 font-black text-[10px] uppercase tracking-[0.4em] text-glow-cyan">Scouting Talentos...</p>
-                    </div>
-                  } @else if (apiError()) {
-                    <div class="flex flex-col items-center py-20 gap-6" role="alert" aria-live="assertive">
-                        <div class="w-16 h-16 rounded-full bg-red-500/10 border border-red-400/20 flex items-center justify-center">
-                            <svg class="w-8 h-8 text-red-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                            </svg>
-                        </div>
-                        <p class="text-white/40 font-black text-[10px] uppercase tracking-[0.4em] text-center leading-relaxed">Error al cargar jugadores</p>
-                        <button (click)="retryLoadPlayers()"
-                            class="px-6 py-2.5 lg-module-card text-white/70 font-black text-[10px] uppercase tracking-[0.3em] active:scale-95 transition-all duration-200 hover:text-white">
-                            Reintentar
-                        </button>
-                    </div>
-                  } @else if (player().length > 0) {
+                  @if (availablePlayers().length > 0) {
                     <div class="grid grid-cols-2 gap-4">
-                        @for (p of player(); track p.id ) {
-                          <app-product-card [product]="p" (buy)="buyPlayer($event)" class="animate-fade-up" />
+                        @for (p of availablePlayers(); track p.id ) {
+                          <app-product-card [product]="p" (buy)="openPlayerDetails($event)" class="animate-fade-up" />
                         }
                     </div>
                   } @else {
                     <div class="lg-panel p-20 text-center opacity-40">
-                        <p class="text-white font-black text-[10px] uppercase tracking-[0.4em] leading-relaxed">Sin Jugadores Libres</p>
+                        <p class="text-white font-black text-[10px] uppercase tracking-[0.4em] leading-relaxed">Sin Jugadores</p>
                     </div>
                   }
                 } @else if(activeTab() === 'vip') {
-                  @if (isLoading()) {
-                    <div class="flex flex-col items-center py-24 gap-6" role="status" aria-live="polite">
-                        <div class="w-12 h-12 border-4 border-white/5 border-t-amber-400 rounded-full animate-spin" aria-hidden="true"></div>
-                        <p class="text-white/20 font-black text-[10px] uppercase tracking-[0.4em] text-glow-amber">Acceso VIP...</p>
-                    </div>
-                  } @else if (apiError()) {
-                    <div class="flex flex-col items-center py-20 gap-6" role="alert" aria-live="assertive">
-                        <div class="w-16 h-16 rounded-full bg-red-500/10 border border-red-400/20 flex items-center justify-center">
-                            <svg class="w-8 h-8 text-red-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                            </svg>
-                        </div>
-                        <p class="text-white/40 font-black text-[10px] uppercase tracking-[0.4em] text-center leading-relaxed">Error al cargar jugadores VIP</p>
-                        <button (click)="retryLoadPlayers()"
-                            class="px-6 py-2.5 lg-module-card text-white/70 font-black text-[10px] uppercase tracking-[0.3em] active:scale-95 transition-all duration-200 hover:text-white">
-                            Reintentar
-                        </button>
-                    </div>
-                  } @else if (vipPlayers().length > 0) {
+                  @if (vipPlayers().length > 0) {
                     <div class="grid grid-cols-2 gap-4">
                         @for (vipPlayer of vipPlayers(); track vipPlayer.id) {
-                          <app-product-card-vertical [product]="vipPlayer" (buy)="buyPlayer($event)" class="animate-fade-up" />
+                          <app-product-card-vertical [product]="vipPlayer" (buy)="openPlayerDetails($event)" class="animate-fade-up" />
                         }
                     </div>
                   } @else {
                     <div class="lg-panel p-20 text-center opacity-40">
-                        <p class="text-white font-black text-[10px] uppercase tracking-[0.4em] leading-relaxed">Exclusividad Pendiente</p>
+                        <p class="text-white font-black text-[10px] uppercase tracking-[0.4em] leading-relaxed">Sin Jugadores VIP</p>
                     </div>
                   }
-                } @else if (activeTab() === 'misJugadores') {
-                  @if (isLoading()) {
-                    <div class="flex flex-col items-center py-24 gap-6" role="status" aria-live="polite">
-                        <div class="w-12 h-12 border-4 border-white/5 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
-                        <p class="text-white/20 font-black text-[10px] uppercase tracking-[0.4em]">Revisando Plantilla...</p>
-                    </div>
-                  } @else if (myPlayers().length > 0) {
-                    @if (myVipPlayers().length > 0) {
-                      <div class="mb-12">
-                      <h4 class="text-[10px] font-black uppercase tracking-[0.4em] mb-8 flex items-center gap-4 text-glow-amber"
-                          style="background: linear-gradient(to right, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.18) 25%, rgba(245,158,11,0.08) 55%, transparent 75%); -webkit-background-clip: text; background-clip: text; color: rgba(251,191,36,0.5);">
-                          <span class="h-px flex-1 bg-amber-400/20"></span>
-                          ESTRELLAS
-                          <span class="h-px flex-1 bg-amber-400/20"></span>
-                      </h4>
-                          <div class="grid grid-cols-2 gap-4">
-                              @for (myPlayer of myVipPlayers(); track myPlayer.id) {
-                                <app-product-card-vertical [product]="myPlayer" />
-                              }
-                          </div>
-                      </div>
-                    }
-                    @if (myRegularPlayers().length > 0) {
-                      <div>
-                          <h4 class="text-[10px] font-black text-white/10 uppercase tracking-[0.4em] mb-8 flex items-center gap-4">
-                              <span class="h-px flex-1 bg-white/5"></span>
-                              PLANTILLA
-                              <span class="h-px flex-1 bg-white/5"></span>
-                          </h4>
-                          <div class="grid grid-cols-2 gap-4">
-                              @for (myPlayer of myRegularPlayers(); track myPlayer.id) {
-                                <app-product-card [product]="myPlayer" />
-                              }
-                          </div>
-                      </div>
-                    }
-                  } @else {
-                    <div class="lg-panel p-20 text-center opacity-30 flex flex-col items-center justify-center">
-                        <p class="text-white font-black text-[10px] uppercase tracking-[0.4em] leading-relaxed">Tu equipo está vacío.<br>¡Empieza a fichar!</p>
-                    </div>
-                  }
+                } @else if (activeTab() === 'comprados') {
+                  <div class="lg-panel p-20 text-center opacity-40">
+                    <p class="text-white font-black text-[10px] uppercase tracking-[0.4em] leading-relaxed">Sin Jugadores Comprados</p>
+                  </div>
                 }
             </div>
         </div>
@@ -167,37 +94,13 @@ import { PlayersService } from '../../core/services/players.service';
             </button>
         }
 
-        @if (purchaseMessage()) {
-            <div class="fixed bottom-32 left-6 right-6 z-[100] px-6 py-5 lg-module-card flex items-center justify-center animate-fade-in shadow-2xl"
-                role="status" aria-live="polite"
-                [class.border-emerald-500/30]="purchaseSuccess()" [class.border-red-500/30]="!purchaseSuccess()"
-                [style]="purchaseSuccess() ? 'background: linear-gradient(to right, rgba(16,185,129,0.20) 0%, rgba(16,185,129,0.18) 25%, rgba(16,185,129,0.08) 55%, transparent 75%);' : 'background: linear-gradient(to right, rgba(239,68,68,0.20) 0%, rgba(239,68,68,0.18) 25%, rgba(239,68,68,0.08) 55%, transparent 75%);'">
-                <p class="text-white font-black text-[10px] uppercase tracking-[0.3em] text-center"
-                   [class.text-glow-emerald]="purchaseSuccess()"
-                   [class.text-glow-rose]="!purchaseSuccess()">{{ purchaseMessage() }}</p>
-            </div>
+        @if (selectedPlayer()) {
+          <app-player-details 
+            [player]="selectedPlayer()!" 
+            (confirm)="confirmPurchase($event)" 
+            (close)="closeDetailsModal()" 
+          />
         }
-
-        @if (showPurchaseAnimation()) {
-          <div class="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-black/60 backdrop-blur-2xl animate-fade-in">
-              <div class="w-full max-w-sm lg-panel p-12 flex flex-col items-center text-center border-emerald-500/30"
-                   style="background: linear-gradient(to right, rgba(16,185,129,0.20) 0%, rgba(16,185,129,0.18) 25%, rgba(16,185,129,0.08) 55%, transparent 75%);">
-                  <div class="w-24 h-24 rounded-full bg-emerald-500/10 border border-emerald-400/30 flex items-center justify-center mb-10 shadow-[0_0_50px_rgba(16,185,129,0.2)]">
-                      <svg class="w-12 h-12 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                  </div>
-                  <h3 class="text-3xl font-black text-white tracking-tighter mb-4 text-glow-emerald uppercase">Fichaje Logrado</h3>
-                  <p class="text-xl font-black text-emerald-400 mb-2 uppercase tracking-tight text-glow-emerald">{{ purchasedPlayerName() }}</p>
-                  <p class="text-[9px] font-black text-white/20 uppercase tracking-[0.5em] mt-10">Transferencia Exitosa</p>
-              </div>
-          </div>
-        }
-
-        @if (selectedPlayerForDetails(); as playerDetail) {
-          <app-player-details [player]="playerDetail" (confirm)="confirmPurchase($event)" (close)="closeDetailsModal()" />
-        }
-
     </section>
   `,
   styles: [`
@@ -205,43 +108,43 @@ import { PlayersService } from '../../core/services/players.service';
     .pt-safe-top { padding-top: env(safe-area-inset-top, 1.5rem); }
     .animate-fade-up { animation: fadeUp 0.8s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
     @keyframes fadeUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    .animate-fade-in { animation: fadeIn 0.4s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .text-glow { text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InvestLayoutComponent {
-  private playersService = inject(PlayersService);
+  private investService = inject(InvestService);
 
   @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
   readonly investTabs: GlassTab[] = [
     { id: 'jugadores', label: 'Mercado' },
     { id: 'vip', label: 'VIP' },
-    { id: 'misJugadores', label: 'Equipo' },
+    { id: 'comprados', label: 'Equipo' },
   ];
 
   activeTabStr = signal<string>('jugadores');
-  activeTab = computed(() => this.activeTabStr() as 'jugadores' | 'misJugadores' | 'vip');
+  activeTab = computed(() => this.activeTabStr() as 'jugadores' | 'vip' | 'comprados');
 
-  purchaseMessage = signal<string | null>(null);
-  purchaseSuccess = signal(false);
-  showPurchaseAnimation = signal(false);
-  purchasedPlayerName = signal<string>('');
   showScrollToTopButton = signal(false);
-  selectedPlayerForDetails = signal<Player | null>(null);
+  selectedPlayer = signal<InvestApiPlayer | null>(null);
 
-  player = this.playersService.regularPlayers;
-  myPlayers = this.playersService.myPlayers;
-  vipPlayers = this.playersService.vipPlayers;
-  isLoading = this.playersService.isLoading;
-  apiError = this.playersService.apiError;
+  availablePlayers = this.investService.availablePlayers;
+  vipPlayers = this.investService.vipPlayers;
 
-  myRegularPlayers = computed(() => this.myPlayers().filter(p => !p.exclusive));
-  myVipPlayers = computed(() => this.myPlayers().filter(p => p.exclusive));
+  openPlayerDetails(player: InvestApiPlayer) {
+    this.selectedPlayer.set(player);
+  }
+
+  closeDetailsModal() {
+    this.selectedPlayer.set(null);
+  }
+
+  confirmPurchase(player: InvestApiPlayer) {
+    // TODO: Implement purchase when API is ready
+    this.closeDetailsModal();
+  }
 
   onSectionScroll(event: Event) {
     this.showScrollToTopButton.set((event.target as HTMLElement).scrollTop > 300);
@@ -249,44 +152,5 @@ export class InvestLayoutComponent {
 
   scrollToTop() {
     this.scrollContainer.nativeElement.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  openPlayerDetails(player: Player) {
-    this.selectedPlayerForDetails.set(player);
-  }
-
-  closeDetailsModal() {
-    this.selectedPlayerForDetails.set(null);
-  }
-
-  async confirmPurchase(player: Player) {
-    if (!player || !player.id) {
-      this.purchaseMessage.set('Error: Jugador inválido');
-      this.purchaseSuccess.set(false);
-      this.closeDetailsModal();
-      return;
-    }
-
-    this.closeDetailsModal();
-
-    const result = await this.playersService.buyPlayer(player);
-    this.purchaseMessage.set(result.message);
-    this.purchaseSuccess.set(result.success);
-
-    if (result.success) {
-      this.purchasedPlayerName.set(player.name);
-      this.showPurchaseAnimation.set(true);
-      setTimeout(() => this.showPurchaseAnimation.set(false), 2500);
-    }
-
-    setTimeout(() => this.purchaseMessage.set(null), 2000);
-  }
-
-  buyPlayer(player: Player) {
-    this.openPlayerDetails(player);
-  }
-
-  retryLoadPlayers() {
-    this.playersService.refreshPlayers();
   }
 }
