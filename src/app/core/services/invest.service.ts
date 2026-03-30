@@ -25,7 +25,7 @@ export class InvestService {
   }
 
   // ============== Players Methods ==============
-  private async loadPlayers(): Promise<void> {
+  async loadPlayers(): Promise<void> {
     const result = await this.getPlayers();
     if (result.success && result.players) {
       this._players.set(result.players);

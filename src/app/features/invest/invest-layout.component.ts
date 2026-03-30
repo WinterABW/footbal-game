@@ -116,6 +116,10 @@ import { InvestService } from '../../core/services/invest.service';
 export class InvestLayoutComponent {
   private investService = inject(InvestService);
 
+  constructor() {
+    this.investService.loadPlayers();
+  }
+
   @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
   readonly investTabs: GlassTab[] = [
