@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { LocalApiService } from './local-api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { EncryptionService } from './encryption.service';
+import { UserStatusService } from '../../core/services/user-status.service';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -13,6 +14,7 @@ export class TapService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private encryptionService = inject(EncryptionService);
+  private userStatusService = inject(UserStatusService);
   private readonly baseUrl = environment.apiBaseUrl;
   private readonly secretKey = 'MiClaveSecreta123!';
   private readonly PENDING_TAPS_KEY = 'pendingTaps';
@@ -83,11 +85,14 @@ export class TapService {
 
       const url = `${this.baseUrl}Game/addTooks`;
       this.http.post(url, { amount: pendingCount, token, timestamp }).subscribe({
-        next: () => {
+        next: async () => {
           // On success, reset pending taps
           localStorage.setItem(this.PENDING_TAPS_KEY, '0');
           this.pendingTaps.set(0);
           console.log(`Sent ${pendingCount} taps to API`);
+          
+          // Refresh user status to update wallet
+          await this.userStatusService.loadUserStatus();
         },
         error: (error: unknown) => {
           const httpError = error as HttpErrorResponse;

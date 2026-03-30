@@ -2,12 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ApiMessageResponse } from '../../models/user.model';
+import { UserStatusService } from './user-status.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GameService {
   private http = inject(HttpClient);
+  private userStatusService = inject(UserStatusService);
 
   private getBaseUrl(): string {
     return environment.apiBaseUrl;
@@ -17,6 +19,9 @@ export class GameService {
     try {
       const url = `${this.getBaseUrl()}Game/addTooks`;
       await this.http.post(url, { coins }).toPromise();
+
+      // Refresh user status after successful operation
+      await this.userStatusService.loadUserStatus();
 
       return { success: true };
     } catch (error: unknown) {
@@ -35,6 +40,9 @@ export class GameService {
       const response = await this.http.post<ApiMessageResponse>(url, { earn, tickets }).toPromise();
 
       if (response) {
+        // Refresh user status after successful operation
+        await this.userStatusService.loadUserStatus();
+        
         return { success: true, message: response.message };
       }
 
@@ -58,6 +66,9 @@ export class GameService {
       const response = await this.http.post<ApiMessageResponse>(url, { skillId, price }).toPromise();
 
       if (response) {
+        // Refresh user status after successful operation
+        await this.userStatusService.loadUserStatus();
+        
         return { success: true, message: response.message };
       }
 
