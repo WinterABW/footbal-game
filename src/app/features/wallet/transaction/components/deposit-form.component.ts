@@ -48,7 +48,7 @@ import { PaymentScreenComponent } from '../payment-screen.component';
           <h1 class="text-2xl font-black text-white tracking-tight text-glow uppercase">Depósito</h1>
         </div>
         @if (methodLogo()) {
-          <img [src]="methodLogo()!" alt="logo" width="48" height="48" class="object-contain drop-shadow-lg" />
+          <img [src]="methodLogo()!" alt="logo" width="48" height="48" class="w-12 h-12 object-contain drop-shadow-lg" />
         } @else {
           <div class="w-12 h-12"></div>
         }
@@ -237,7 +237,7 @@ export class DepositFormComponent {
   network = input<string>('');
 
   amount = signal(0);
-  selectedChannel = signal<string>('nequi-1');
+  selectedChannel = signal<string>('Nequi-1');
 
   readonly paymentChannels = computed(() => {
     const m = this.selectedMethod();
@@ -264,11 +264,23 @@ export class DepositFormComponent {
   showPaymentScreen = signal(false);
   cryptoAddress = signal('');
   orderNumber = signal('');
-  qrImage = signal('qr/deposit.PNG');
+  qrImage = signal('wallet/qr/nequi1.jpg');
 
   selectedMethod = computed(() => this.currency() || 'NEQUI');
   isNequi = computed(() => this.selectedMethod() === 'Nequi');
+  isDaviplata = computed(() => this.selectedMethod() === 'Daviplata');
   isCrypto = computed(() => ['USDT', 'BTC', 'TRX', 'BNB'].includes(this.selectedMethod()));
+
+  resolvedQrImage = computed(() => {
+    if (this.isDaviplata()) return 'wallet/qr/deviplata.jpg';
+    const channel = this.selectedChannel();
+    const qrMap: Record<string, string> = {
+      'Nequi-1': 'wallet/qr/nequi1.jpg',
+      'Nequi-2': 'wallet/qr/nequi2.jpg',
+      'Nequi-3': 'wallet/qr/nequi3.jpg',
+    };
+    return qrMap[channel] ?? 'wallet/qr/nequi1.jpg';
+  });
 
   methodLogo = computed(() => {
     const logoMap: Record<string, string> = {
@@ -297,7 +309,7 @@ export class DepositFormComponent {
       this.showCryptoModal.set(true);
     } else {
       this.orderNumber.set('FIFA-' + Math.floor(Math.random() * 900000 + 100000));
-      this.qrImage.set('qr/deposit.PNG');
+      this.qrImage.set(this.resolvedQrImage());
       this.showPaymentScreen.set(true);
     }
   }
