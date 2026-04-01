@@ -394,11 +394,6 @@ export class WalletComponent {
       else this.sheetContent.set('default');
       this.isSheetOpen.set(true);
     } else {
-      const isCrypto = ['USDT', 'BTC', 'TRX', 'BNB'].includes(item.title);
-      if (isCrypto && item.title === 'USDT') {
-        this.sheetContent.set(tab === 'retirar' ? 'usdt-networks-withdraw' : 'usdt-networks');
-        return;
-      }
       this.navigateToTransaction(item.title, tab);
     }
   }
