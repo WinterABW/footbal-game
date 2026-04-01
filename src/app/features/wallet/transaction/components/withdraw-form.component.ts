@@ -125,7 +125,7 @@ export class WithdrawFormComponent {
   isCrypto = computed(() => ['USDT', 'BTC', 'TRX', 'BNB'].includes(this.currency()));
   currencyLogo = computed(() => {
     const logoMap: Record<string, string> = {
-      'Nequi': 'wallet/col/nequi.png', 'Daviplata': 'wallet/col/daviplata.png',
+      'Nequi': 'wallet/colombia/nequi.png', 'Daviplata': 'wallet/colombia/daviplata.png',
       'Plin': 'wallet/peru/plin.png', 'Yape': 'wallet/peru/yape.png',
       'USDT': 'wallet/crypto/usdt.png', 'TRX': 'wallet/crypto/trx.png',
       'BNB': 'wallet/crypto/bnb.png', 'BTC': 'wallet/crypto/btc.png',
