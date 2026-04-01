@@ -2,7 +2,7 @@ import { Injectable, inject, computed } from '@angular/core';
 import { LocalApiService } from './local-api.service';
 import { UserStatusService } from './user-status.service';
 import { UserInfoService } from './user-info.service';
-import type { Boost } from '../../models';
+import type { Boost } from '../../models/game.model';
 
 export type { Boost };
 
