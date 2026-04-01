@@ -1,10 +1,3 @@
-export interface EnergyState {
-  current: number;
-  maximum: number;
-  recoveryRate: number; // puntos por segundo
-  lastUpdated: string;
-}
-
 export interface Boost {
   id: number;
   name: string;
@@ -32,12 +25,6 @@ export interface TapConfig {
   currentMultiplier: number;
   maxMultiplier: number;
   levelBonus: { level: number; multiplier: number }[];
-}
-
-export interface EarningSource {
-  source: string;
-  amount: number;
-  percentage: number;
 }
 
 export interface GameState {

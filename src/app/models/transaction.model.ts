@@ -9,20 +9,3 @@ export interface Transaction {
   reference: string;
   description?: string;
 }
-
-export interface DepositMethod {
-  id: number;
-  title: string;
-  desc: string;
-  icon: string;
-  type: string;
-  countries: string[];
-  currencies?: string[];
-}
-
-export interface CryptoAddress {
-  currency: string;
-  network?: string;
-  address: string;
-  qrCode?: string;
-}
