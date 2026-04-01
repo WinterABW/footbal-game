@@ -58,6 +58,12 @@ import { BalanceComponent } from '../../../../shared/components/balance/balance.
               <span class="text-[7px] text-white/15 mt-0.5">●</span>
               <span class="text-[9px] font-bold text-white/30 uppercase tracking-wider">Cada Retiro puede tardar hasta 24h</span>
             </div>
+            @if (isCrypto()) {
+              <div class="flex items-start gap-1.5">
+                <span class="text-[7px] text-white/15 mt-0.5">●</span>
+                <span class="text-[9px] font-bold text-white/30 uppercase tracking-wider">El retiro será efectuado al cambio actual de COP/{{ currency() }}</span>
+              </div>
+            }
           </div>
         </div>
 
@@ -153,7 +159,7 @@ export class WithdrawFormComponent {
   presetAmounts = computed(() => {
     const curr = this.currency();
     if (curr === 'USDT') return [10, 15, 25, 50, 100, 200];
-    if (curr === 'TRX') return [50, 120, 230, 500, 1000, 2000];
+    if (curr === 'TRX') return [30000, 50000, 80000, 100000, 200000, 500000];
     if (curr === 'BNB') return [0.02, 0.045, 0.08, 0.15, 0.3, 0.5];
     if (curr === 'BTC') return [0.0002, 0.0004, 0.0008, 0.0015, 0.003, 0.005];
     if (curr === 'Plin' || curr === 'Yape') return [30, 50, 80, 100, 150, 200];
