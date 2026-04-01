@@ -311,7 +311,7 @@ export class WalletComponent {
     { id: 'retirar', label: 'Retirar' },
   ];
 
-  activeTabStr = signal<string>('historial');
+  activeTabStr = signal<string>('depositar');
   activeTab = computed(() => this.activeTabStr() as 'depositar' | 'historial' | 'retirar');
 
   showSupportChat = signal(false);

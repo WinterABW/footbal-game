@@ -5,9 +5,12 @@ export interface InvestApiPlayer {
   id: number;
   name: string;
   isVIP: boolean;
-  description: string;
   price: number;
   days: number;
   interest: number;
-  imagen: string;
+  age: number;
+  lesions: number;
+  goals: number;
+  /** Populated from separate image endpoint */
+  imagen?: string;
 }

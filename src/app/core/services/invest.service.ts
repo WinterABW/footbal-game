@@ -28,7 +28,11 @@ export class InvestService {
   async loadPlayers(): Promise<void> {
     const result = await this.getPlayers();
     if (result.success && result.players) {
-      this._players.set(result.players);
+      const withImages = result.players.map(p => ({
+        ...p,
+        imagen: `${this.getBaseUrl()}images/players/${p.id}.webp`,
+      }));
+      this._players.set(withImages);
     }
   }
 
