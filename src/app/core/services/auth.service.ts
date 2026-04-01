@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { lastValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, ApiMessageResponse, ProfileResponse } from '../../models/user.model';
 import { UserStatusService } from './user-status.service';
@@ -17,6 +18,7 @@ export class AuthService {
   user = this.userSignal.asReadonly();
   isAuthenticated = computed(() => this.userSignal() !== null);
   authToken = signal<string | null>(null);
+  restored = signal<boolean>(false);
 
   constructor() {
     // Load auth from storage without blocking
@@ -36,27 +38,32 @@ export class AuthService {
         const parsedUser = JSON.parse(storedUser);
         this.userSignal.set(parsedUser);
         this.authToken.set(storedToken);
-        
-        // If user doesn't have ID, load from userStatus
-        if (!parsedUser.id) {
-          await this.userStatusService.loadUserStatus();
-          const userStatus = this.userStatusService.userStatus();
-          if (userStatus && userStatus.id) {
-            const updatedUser = { ...parsedUser, id: userStatus.id };
-            this.userSignal.set(updatedUser);
-            localStorage.setItem('user', JSON.stringify(updatedUser));
-          }
+      } catch {
+        this.clearAuthStorage();
+        this.restored.set(true);
+        return;
+      }
+
+      // Fetch fresh user status (wallet, coins, etc.) — don't fail auth if this errors
+      try {
+        await this.userStatusService.loadUserStatus();
+        const userStatus = this.userStatusService.userStatus();
+        if (userStatus && userStatus.id && !this.userSignal()?.id) {
+          const updatedUser = { ...this.userSignal()!, id: userStatus.id };
+          this.userSignal.set(updatedUser);
+          localStorage.setItem('user', JSON.stringify(updatedUser));
         }
       } catch (error) {
-        console.error('Error loading auth from storage:', error);
-        this.clearAuthStorage();
+        console.error('Failed to refresh user status on restore:', error);
+        // Keep auth — user stays logged in, status will refresh on next action
       }
     }
+    this.restored.set(true);
   }
 
   private saveAuthStorage(user: any, token: string): void {
     // Ensure id is captured from various possible sources
-    const userId = user.id ?? user.Id ?? user.userId ?? user.Id;
+    const userId = user.id ?? user.Id ?? user.userId;
     const userData = {
       ...user,
       id: userId ?? null,
@@ -77,7 +84,7 @@ export class AuthService {
   async login(username: string, password: string): Promise<{ success: boolean; error?: string }> {
     try {
       const url = `${this.getBaseUrl()}Auth/login`;
-      const response = await this.http.post(url, { username, password }).toPromise() as AuthResponse | string | null;
+      const response = await lastValueFrom(this.http.post(url, { username, password })) as AuthResponse | string | null;
 
       let user: { id?: number; username: string; isGuest: boolean } = { username, isGuest: false };
       let token: string;
@@ -123,7 +130,7 @@ export class AuthService {
       const body: { username: string; refId?: number | string | null } = { username };
       if (refId !== undefined) body.refId = refId;
 
-      const response = await this.http.post(url, body).toPromise() as AuthResponse | string | null;
+      const response = await lastValueFrom(this.http.post(url, body)) as AuthResponse | string | null;
 
       let user: { id?: number; username: string; isGuest: boolean } = { username, isGuest: true };
       let token: string;
@@ -167,7 +174,7 @@ export class AuthService {
       if (phone !== undefined) body.phone = phone;
       if (refId !== undefined) body.refId = refId;
 
-      const response = await this.http.post<AuthResponse>(url, body).toPromise();
+      const response = await lastValueFrom(this.http.post<AuthResponse>(url, body));
 
       if (response) {
         const user: any = { username: response.username, isGuest: response.isGuest };
@@ -200,7 +207,7 @@ export class AuthService {
   logout(): void {
     this.clearAuthStorage();
     this.userStatusService.clearUserStatus();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/welcome']);
   }
 
   getUsername(): string {
@@ -219,7 +226,7 @@ export class AuthService {
   async getProfile(username: string): Promise<{ success: boolean; profile?: ProfileResponse; error?: string }> {
     try {
       const url = `${this.getBaseUrl()}Auth/profile/${username}`;
-      const response = await this.http.get<ProfileResponse>(url, { responseType: 'json' }).toPromise();
+      const response = await lastValueFrom(this.http.get<ProfileResponse>(url, { responseType: 'json' }));
 
       if (response) {
         return { success: true, profile: response };
