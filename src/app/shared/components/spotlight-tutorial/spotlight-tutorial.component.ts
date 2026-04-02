@@ -70,9 +70,7 @@ interface ElementStyle {
         [src]="characterSrc()"
         alt="Árbitro"
         class="referee-character"
-        [class.pose-standing]="currentStepData().characterPose === 'standing'"
-        [class.pose-pointing]="currentStepData().characterPose === 'pointing'"
-        [class.character-above-bubble]="isFirstOrLastStep()"
+        [class.character-above-bubble]="isCharacterAboveBubble()"
         [style.top]="characterPos().top"
         [style.bottom]="characterPos().bottom"
         [style.left]="characterPos().left"
@@ -196,11 +194,8 @@ interface ElementStyle {
       filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.4));
     }
 
-    .referee-character.pose-standing { width: 130px; height: auto; }
-    .referee-character.pose-pointing { width: 140px; height: auto; }
-
-    .referee-character.character-above-bubble.pose-standing { width: 180px; height: auto; }
-    .referee-character.character-above-bubble.pose-pointing { width: 190px; height: auto; }
+    .referee-character { width: 140px; height: auto; }
+    .referee-character.character-above-bubble { width: 190px; height: auto; }
 
     /* ═══════════ Liquid Glass Speech Bubble ═══════════ */
     .speech-bubble {
@@ -328,7 +323,11 @@ export class SpotlightTutorialComponent implements OnDestroy {
   readonly currentStepData = this.onboarding.currentStepData;
   readonly isFirstStep = this.onboarding.isFirstStep;
   readonly isLastStep = this.onboarding.isLastStep;
-  readonly isFirstOrLastStep = computed(() => this.currentStep() === 0 || this.currentStep() === ONBOARDING_STEPS.length - 1);
+  readonly isCharacterAboveBubble = computed(() => {
+    const step = this.currentStep();
+    // welcome (0), closing (last), and steps 9-14 (index 9+) have character above bubble
+    return step === 0 || step >= 9 || step === ONBOARDING_STEPS.length - 1;
+  });
   readonly steps = ONBOARDING_STEPS;
   readonly PANEL_GAP = 4;
 
@@ -353,8 +352,10 @@ export class SpotlightTutorialComponent implements OnDestroy {
   private readonly standingPose = 'tuto/BackgroundEraser_20260325_024134450.webp';
   private readonly pointingPose = 'tuto/BackgroundEraser_20260402_081920861.webp';
 
+  readonly isBallStep = computed(() => this.currentStepData().id === 'tap');
+
   characterSrc = computed(() =>
-    this.currentStepData().characterPose === 'standing' ? this.standingPose : this.pointingPose
+    this.isBallStep() ? this.pointingPose : this.standingPose
   );
 
   constructor() {
@@ -423,68 +424,68 @@ export class SpotlightTutorialComponent implements OnDestroy {
     const positions: Record<string, { char: ElementStyle; bubble: ElementStyle }> = {
       // Intro: character centered above dialog
       'welcome': {
-        char: { bottom: '440px', left: 'calc(50vw - 90px)', right: 'auto', top: 'auto' },
+        char: { bottom: '440px', left: 'calc(50vw - 95px)', right: 'auto', top: 'auto' },
         bubble: { bottom: '165px', left: '16px', right: 'auto', top: 'auto' },
       },
-      // Steps 2-7: dialog a la izquierda, character abajo del diálogo
+      // Steps 2-7: dialog abajo del spotlight, character abajo del diálogo y centrado
       'profile': {
         bubble: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
-        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: 'calc(50vw - 95px)', right: 'auto', bottom: 'auto' },
       },
       'settings': {
         bubble: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
-        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: 'calc(50vw - 95px)', right: 'auto', bottom: 'auto' },
       },
       'balance': {
         bubble: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
-        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: 'calc(50vw - 95px)', right: 'auto', bottom: 'auto' },
       },
       'openball': {
         bubble: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
-        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: 'calc(50vw - 95px)', right: 'auto', bottom: 'auto' },
       },
       'roulette': {
         bubble: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
-        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: 'calc(50vw - 95px)', right: 'auto', bottom: 'auto' },
       },
       'copspin': {
         bubble: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
-        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: 'calc(50vw - 95px)', right: 'auto', bottom: 'auto' },
       },
       // Step 8: character bajo la pelota, diálogo más a la izquierda
       'tap': {
         char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
         bubble: { top: '70px', left: '16px', right: 'auto', bottom: 'auto' },
       },
-      // Steps 9-10: diálogo arriba y a la izquierda
+      // Steps 9-10: character arriba del diálogo y centrado
       'energy': {
-        char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
+        char: { top: '40px', left: 'calc(50vw - 95px)', right: 'auto', bottom: 'auto' },
         bubble: { top: '170px', left: '16px', right: 'auto', bottom: 'auto' },
       },
       'boost': {
-        char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
+        char: { top: '40px', left: 'calc(50vw - 95px)', right: 'auto', bottom: 'auto' },
         bubble: { top: '170px', left: '16px', right: 'auto', bottom: 'auto' },
       },
-      // Steps 11-14: diálogo arriba y a la izquierda (más abajo que 9-10)
+      // Steps 11-14: character arriba del diálogo y centrado
       'nav-social': {
-        char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
-        bubble: { top: '250px', left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: '110px', left: 'calc(50vw - 95px)', right: 'auto', bottom: 'auto' },
+        bubble: { top: '240px', left: '16px', right: 'auto', bottom: 'auto' },
       },
       'nav-retos': {
-        char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
-        bubble: { top: '250px', left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: '110px', left: 'calc(50vw - 95px)', right: 'auto', bottom: 'auto' },
+        bubble: { top: '240px', left: '16px', right: 'auto', bottom: 'auto' },
       },
       'nav-fichajes': {
-        char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
-        bubble: { top: '250px', left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: '110px', left: 'calc(50vw - 95px)', right: 'auto', bottom: 'auto' },
+        bubble: { top: '240px', left: '16px', right: 'auto', bottom: 'auto' },
       },
       'nav-banco': {
-        char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
-        bubble: { top: '250px', left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: '110px', left: 'calc(50vw - 95px)', right: 'auto', bottom: 'auto' },
+        bubble: { top: '240px', left: '16px', right: 'auto', bottom: 'auto' },
       },
       // Closing: character centered above dialog
       'closing': {
-        char: { bottom: '380px', left: 'calc(50vw - 90px)', right: 'auto', top: 'auto' },
+        char: { bottom: '380px', left: 'calc(50vw - 95px)', right: 'auto', top: 'auto' },
         bubble: { bottom: '165px', left: '16px', right: 'auto', top: 'auto' },
       },
     };
