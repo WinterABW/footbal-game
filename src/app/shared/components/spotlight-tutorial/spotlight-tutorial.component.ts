@@ -192,7 +192,7 @@ interface ElementStyle {
       filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.5));
     }
 
-    .referee-character.pose-standing { width: 120px; height: auto; }
+    .referee-character.pose-standing { width: 90px; height: auto; }
     .referee-character.pose-pointing { width: 140px; height: auto; }
 
     .speech-bubble {
@@ -335,9 +335,9 @@ export class SpotlightTutorialComponent implements OnDestroy {
     const isStanding = step.characterPose === 'standing';
 
     if (isStanding || !rect) {
-      // Intro/closing: character bottom-left, bubble beside it
+      // Intro/closing: character small bottom-left, dialog above-right
       this.characterPos.set({ bottom: '20px', left: '16px', right: 'auto', top: 'auto' });
-      this.bubblePos.set({ bottom: '30px', left: '140px', right: 'auto', top: 'auto' });
+      this.bubblePos.set({ bottom: '140px', left: '80px', right: 'auto', top: 'auto' });
       return;
     }
 
