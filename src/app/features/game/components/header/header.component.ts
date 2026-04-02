@@ -4,7 +4,6 @@ import { PerHourEarningsComponent } from '../per-hour-earnings/per-hour-earnings
 import { LevelMenuComponent } from '../level-menu/level-menu.component';
 import { SettingsComponent } from '../settings/settings.component';
 import { AuthService } from '../../../../core/services/auth.service';
-import { LocalApiService } from '../../../../core/services/local-api.service';
 import { UserStatusService } from '../../../../core/services/user-status.service';
 import { UserInfoService } from '../../../../core/services/user-info.service';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
@@ -77,7 +76,6 @@ import { ErrorHandlerService } from '../../../../core/services/error-handler.ser
 })
 export class HeaderComponent {
   authService = inject(AuthService);
-  private localApi = inject(LocalApiService);
   private userStatusService = inject(UserStatusService);
   private userInfo = inject(UserInfoService);
   private errorHandler = inject(ErrorHandlerService);

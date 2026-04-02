@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal, inject, computed } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
-import { LocalApiService } from '../../core/services/local-api.service';
 import { UserStatusService } from '../../core/services/user-status.service';
 import { Transaction } from '../../models/transaction.model';
 import { SupportChatComponent } from './support-chat.component';
@@ -302,7 +301,6 @@ interface Deposit {
 })
 export class WalletComponent {
   private router = inject(Router);
-  private localApi = inject(LocalApiService);
   private userStatusService = inject(UserStatusService);
 
   readonly walletTabs: GlassTab[] = [

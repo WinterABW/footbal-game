@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { LocalApiService } from '../../../../core/services/local-api.service';
 import { SuccessOverlayComponent } from './success-overlay.component';
 import { CryptoDepositModalComponent } from '../../crypto-deposit-modal.component';
 import { PaymentScreenComponent } from '../payment-screen.component';
@@ -232,7 +231,6 @@ import { PaymentScreenComponent } from '../payment-screen.component';
 })
 export class DepositFormComponent {
   private router = inject(Router);
-  private localApi = inject(LocalApiService);
 
   currency = input.required<string>();
   network = input<string>('');
