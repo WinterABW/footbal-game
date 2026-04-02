@@ -204,8 +204,8 @@ interface ElementStyle {
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 24px;
       padding: 20px;
-      max-width: 320px;
       width: calc(100vw - 32px);
+      left: 16px;
       box-shadow:
         0 20px 60px rgba(0, 0, 0, 0.5),
         inset 0 1px 1px rgba(255, 255, 255, 0.1);
