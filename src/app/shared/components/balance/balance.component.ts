@@ -6,7 +6,7 @@ import { TapService } from '../../../core/services/tap.service';
   selector: 'app-balance',
   imports: [NgOptimizedImage, DecimalPipe],
   template: `
-    <section class="flex flex-row justify-center items-center z-20 relative px-6 py-3 mx-auto w-fit active:scale-95 transition-all cursor-pointer">
+    <section data-tutorial-id="balance" class="flex flex-row justify-center items-center z-20 relative px-6 py-3 mx-auto w-fit active:scale-95 transition-all cursor-pointer">
       <div class="relative w-12 h-12 mr-1 drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]">
          <img ngSrc="shared/balance/coin.webp" alt="coin" class="w-full h-full object-contain" width="48" height="48">
       </div>

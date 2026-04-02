@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink, NgOptimizedImage],
   template: `
     <nav class="flex justify-between items-center gap-3 px-1 py-1 z-20 relative">
-      <div routerLink="/main/box"
+      <div data-tutorial-id="action-openball" routerLink="/main/box"
         class="flex-1 liquid-glass-card py-1.5 px-1 flex flex-col items-center justify-center gap-0 cursor-pointer group active:scale-95 transition-all duration-300 bg-gradient-to-br from-white/[0.05] to-transparent hover:from-white/[0.08] hover:to-white/[0.02] border-fuchsia-500/30 hover:border-fuchsia-400/50 rounded-xl relative overflow-visible accent-fuchsia-double">
         
         <!-- Neon Glow Halo (blurred layer behind the line) -->
@@ -19,7 +19,7 @@ import { RouterLink } from '@angular/router';
         <span class="text-[10px] font-black text-white/50 group-hover:text-fuchsia-400 uppercase tracking-widest transition-colors duration-300 mb-0.5 mt-0.5 text-glow-fuchsia">Open Ball</span>
       </div>
 
-      <div routerLink="/main/ruleta"
+      <div data-tutorial-id="action-roulette" routerLink="/main/ruleta"
         class="flex-1 liquid-glass-card py-1.5 px-1 flex flex-col items-center justify-center gap-0 cursor-pointer group active:scale-95 transition-all duration-300 bg-gradient-to-br from-white/[0.05] to-transparent hover:from-white/[0.08] hover:to-white/[0.02] border-yellow-500/30 hover:border-yellow-400/50 rounded-xl relative overflow-visible accent-amber-double">
         
         <!-- Neon Glow Halo (blurred layer behind the line) -->
@@ -31,7 +31,7 @@ import { RouterLink } from '@angular/router';
         <span class="text-[10px] font-black text-white/50 group-hover:text-yellow-400 uppercase tracking-widest transition-colors duration-300 mb-0.5 mt-0.5 text-glow-yellow">Roulette</span>
       </div>
 
-      <div routerLink="/main/ticket"
+      <div data-tutorial-id="action-copspin" routerLink="/main/ticket"
         class="flex-1 liquid-glass-card py-1.5 px-1 flex flex-col items-center justify-center gap-0 cursor-pointer group active:scale-95 transition-all duration-300 bg-gradient-to-br from-white/[0.05] to-transparent hover:from-white/[0.08] hover:to-white/[0.02] border-cyan-500/30 hover:border-cyan-400/50 rounded-xl relative overflow-visible accent-cyan-double">
         
         <!-- Neon Glow Halo (blurred layer behind the line) -->

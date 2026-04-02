@@ -16,7 +16,7 @@ import { ErrorHandlerService } from '../../../../core/services/error-handler.ser
       <div class="w-full mt-1.5 mb-1 liquid-glass-card bg-white/[0.03] border-white/5 rounded-[36px] flex flex-row justify-between items-center p-2 min-h-[60px]">
         
         @if (authService.isAuthenticated()) {
-          <article class="flex items-center group cursor-pointer active:scale-95 transition-all" (click)="toggleLevelMenu()">
+          <article data-tutorial-id="header-profile" class="flex items-center group cursor-pointer active:scale-95 transition-all" (click)="toggleLevelMenu()">
             <div class="relative flex-shrink-0 ml-1">
               <div class="w-[44px] h-[44px] rounded-full liquid-glass-card bg-white/[0.03] border-white/5 overflow-hidden flex items-center justify-center">
                 <img ngSrc="game/header/user.png" alt="User" fill class="opacity-80 group-hover:scale-110 transition-transform object-cover" />
@@ -32,7 +32,7 @@ import { ErrorHandlerService } from '../../../../core/services/error-handler.ser
             </div>
           </article>
         } @else {
-          <article class="flex items-center group cursor-pointer active:scale-95 transition-all" (click)="toggleLevelMenu()">
+          <article data-tutorial-id="header-profile" class="flex items-center group cursor-pointer active:scale-95 transition-all" (click)="toggleLevelMenu()">
             <div class="w-[44px] h-[44px] rounded-full liquid-glass-card bg-white/[0.03] border-white/5 flex items-center justify-center flex-shrink-0 ml-1">
               <img ngSrc="game/header/user.png" alt="Guest" fill class="opacity-70 object-cover" />
             </div>
@@ -46,7 +46,7 @@ import { ErrorHandlerService } from '../../../../core/services/error-handler.ser
         <div class="flex items-center gap-2">
           <app-per-hour-earnings />
           <!-- Settings Trigger Button -->
-          <button
+          <button data-tutorial-id="header-settings"
             class="w-[44px] h-[44px] rounded-full liquid-glass-card bg-white/[0.03] border-violet-500/30 flex items-center justify-center active:scale-90 transition-all group overflow-hidden mr-1 accent-violet"
             (click)="toggleSettings()" type="button" aria-label="Ajustes">
             <svg class="w-[22px] h-[22px] text-white/70 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">

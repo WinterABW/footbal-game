@@ -33,7 +33,7 @@ interface FloatingNumber {
       }
 
       <!-- Main Ball Tap Area -->
-      <div class="relative tap-area-container group mt-4 w-[320px] h-[320px] md:w-[460px] md:h-[460px]" 
+      <div data-tutorial-id="tap-area" class="relative tap-area-container group mt-4 w-[320px] h-[320px] md:w-[460px] md:h-[460px]" 
            style="perspective: 1000px;" 
            (pointerdown)="tap($event)"
            (mouseenter)="activateAnimations()"

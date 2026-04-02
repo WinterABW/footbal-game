@@ -7,7 +7,7 @@ import { TapAreaComponent } from './components/tap-area/tap-area.component';
 import { LevelUpAnimationComponent } from '../../shared/components/level-up-animation/level-up-animation.component';
 import { LocalApiService } from '../../core/services/local-api.service';
 import { OnboardingService } from '../../core/services/onboarding.service';
-import { WelcomeTutorialComponent } from '../../shared/components/welcome-tutorial/welcome-tutorial.component';
+import { SpotlightTutorialComponent } from '../../shared/components/spotlight-tutorial/spotlight-tutorial.component';
 import { UserStatusService } from '../../core/services/user-status.service';
 
 @Component({
@@ -19,7 +19,7 @@ import { UserStatusService } from '../../core/services/user-status.service';
     TapAreaComponent,
     EnergyBoostComponent,
     LevelUpAnimationComponent,
-    WelcomeTutorialComponent,
+    SpotlightTutorialComponent,
   ],
   template: `
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
@@ -42,7 +42,7 @@ import { UserStatusService } from '../../core/services/user-status.service';
       }
 
       <!-- Welcome Tutorial (first-time onboarding) -->
-      <app-welcome-tutorial (bonusClaimed)="onBonusClaimed()" />
+      <app-spotlight-tutorial />
     </section>
   `,
   styles: [`
