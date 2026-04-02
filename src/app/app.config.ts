@@ -7,6 +7,7 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { LocalApiService } from './core/services/local-api.service';
 import { NavigationSyncService } from './core/services/navigation-sync.service';
 import { apiInterceptor } from './core/interceptors/api.interceptor';
+import { authErrorInterceptor } from './core/interceptors/auth-error.interceptor';
 
 function initializeLocalApi(): () => void {
   const localApi = inject(LocalApiService);
@@ -27,7 +28,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes, withViewTransitions({ skipInitialTransition: true })),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withInterceptors([apiInterceptor])),
+    provideHttpClient(withInterceptors([apiInterceptor, authErrorInterceptor])),
     {
       provide: APP_INITIALIZER,
       useFactory: initializeLocalApi,
