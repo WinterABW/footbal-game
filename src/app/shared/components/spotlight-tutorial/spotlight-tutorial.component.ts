@@ -84,8 +84,11 @@ interface ElementStyle {
         [style.bottom]="bubblePos().bottom"
         [style.left]="bubblePos().left"
         [style.right]="bubblePos().right">
+        <!-- Glossy glare layer -->
+        <div class="bubble-glare"></div>
+
         <!-- Step indicators -->
-        <div class="flex items-center justify-center gap-1.5 mb-3">
+        <div class="flex items-center justify-center gap-2 mb-4">
           @for (step of steps; track step.id; let i = $index) {
             <div class="step-dot"
               [class.active]="i === currentStep()"
@@ -95,33 +98,33 @@ interface ElementStyle {
         </div>
 
         <!-- Title -->
-        <h3 class="text-lg font-black text-white tracking-tight mb-1 text-center">
-          {{ currentStepData().icon }} {{ currentStepData().title }}
+        <h3 class="text-[17px] font-extrabold text-white tracking-tight mb-2 text-center leading-tight">
+          {{ currentStepData().title }}
         </h3>
 
         <!-- Description -->
-        <p class="text-sm text-white/70 leading-relaxed text-center mb-4">
+        <p class="text-[13px] text-white/60 leading-[1.6] text-center mb-5 font-medium">
           {{ currentStepData().description }}
         </p>
 
         <!-- Navigation -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2.5">
           @if (!isFirstStep()) {
             <button (click)="previousStep()"
-              class="flex-1 py-2.5 rounded-xl text-sm font-bold text-white/60 bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 transition-all">
+              class="btn-secondary">
               Anterior
             </button>
           }
 
           @if (isLastStep()) {
             <button (click)="finishTutorial()"
-              class="flex-[2] py-2.5 rounded-xl text-sm font-black text-white bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 active:scale-95 transition-all shadow-lg shadow-cyan-500/20">
-              ¡A jugar!
+              class="btn-primary">
+              <span class="relative z-10">¡A jugar!</span>
             </button>
           } @else {
             <button (click)="nextStep()"
-              class="flex-[2] py-2.5 rounded-xl text-sm font-black text-white bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 active:scale-95 transition-all shadow-lg shadow-cyan-500/20">
-              {{ isFirstStep() ? 'Empezar' : 'Siguiente' }}
+              class="btn-primary">
+              <span class="relative z-10">{{ isFirstStep() ? 'Empezar' : 'Siguiente' }}</span>
             </button>
           }
         </div>
@@ -129,7 +132,7 @@ interface ElementStyle {
         <!-- Skip link -->
         @if (!isLastStep()) {
           <button (click)="skipTutorial()"
-            class="w-full mt-2 py-1.5 text-xs text-white/30 hover:text-white/60 transition-colors font-medium">
+            class="w-full mt-3 py-1 text-[11px] text-white/25 hover:text-white/50 transition-colors font-semibold tracking-wide uppercase">
             Saltar tutorial
           </button>
         }
@@ -142,9 +145,9 @@ interface ElementStyle {
     .tutorial-panel {
       position: fixed;
       z-index: 9998;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
       pointer-events: none;
       animation: panel-fade-in 300ms ease-out forwards;
     }
@@ -153,9 +156,9 @@ interface ElementStyle {
       position: fixed;
       inset: 0;
       z-index: 9998;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
       pointer-events: none;
       animation: panel-fade-in 300ms ease-out forwards;
     }
@@ -168,67 +171,147 @@ interface ElementStyle {
     .spotlight-ring {
       position: fixed;
       z-index: 9999;
-      border-radius: 16px;
-      border: 2px solid rgba(0, 212, 255, 0.6);
+      border-radius: 20px;
+      border: 1.5px solid rgba(0, 212, 255, 0.5);
       box-shadow:
-        0 0 20px rgba(0, 212, 255, 0.3),
-        0 0 60px rgba(0, 212, 255, 0.1),
-        inset 0 0 20px rgba(0, 212, 255, 0.1);
+        0 0 30px rgba(0, 212, 255, 0.15),
+        0 0 80px rgba(0, 212, 255, 0.06),
+        inset 0 0 30px rgba(0, 212, 255, 0.05);
       pointer-events: none;
       transition: all 400ms cubic-bezier(0.25, 1, 0.5, 1);
-      animation: ring-pulse 2s ease-in-out infinite;
+      animation: ring-pulse 3s ease-in-out infinite;
     }
 
     @keyframes ring-pulse {
-      0%, 100% { border-color: rgba(0, 212, 255, 0.6); }
-      50% { border-color: rgba(0, 212, 255, 0.9); }
+      0%, 100% { border-color: rgba(0, 212, 255, 0.4); box-shadow: 0 0 30px rgba(0, 212, 255, 0.12); }
+      50% { border-color: rgba(0, 212, 255, 0.7); box-shadow: 0 0 40px rgba(0, 212, 255, 0.25); }
     }
 
     .referee-character {
       position: fixed;
       z-index: 10000;
       pointer-events: none;
-      transition: all 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
-      filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.5));
+      transition: all 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.4));
     }
 
     .referee-character.pose-standing { width: 130px; height: auto; }
     .referee-character.pose-pointing { width: 140px; height: auto; }
 
+    /* ═══════════ Liquid Glass Speech Bubble ═══════════ */
     .speech-bubble {
       position: fixed;
       z-index: 10001;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(48px) saturate(180%);
-      -webkit-backdrop-filter: blur(48px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 24px;
-      padding: 20px;
+      background: linear-gradient(
+        135deg,
+        rgba(13, 27, 110, 0.7) 0%,
+        rgba(15, 23, 42, 0.8) 50%,
+        rgba(30, 10, 60, 0.7) 100%
+      );
+      backdrop-filter: blur(64px) saturate(200%);
+      -webkit-backdrop-filter: blur(64px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 28px;
+      padding: 24px 20px 18px;
       width: calc(100vw - 32px);
       left: 16px;
       box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.5),
-        inset 0 1px 1px rgba(255, 255, 255, 0.1);
-      transition: top 350ms ease, bottom 350ms ease, left 350ms ease;
-      animation: bubble-pop 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        0 32px 80px rgba(0, 0, 0, 0.5),
+        0 8px 24px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 0 60px rgba(0, 212, 255, 0.02);
+      overflow: hidden;
+      transition: top 400ms cubic-bezier(0.25, 1, 0.5, 1),
+                  bottom 400ms cubic-bezier(0.25, 1, 0.5, 1),
+                  left 400ms cubic-bezier(0.25, 1, 0.5, 1);
+      animation: bubble-enter 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
 
-    @keyframes bubble-pop {
-      from { opacity: 0; transform: scale(0.9) translateY(10px); }
+    /* Specular highlight — top gloss */
+    .bubble-glare {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.06) 0%,
+        transparent 100%
+      );
+      border-radius: 28px 28px 0 0;
+      pointer-events: none;
+    }
+
+    @keyframes bubble-enter {
+      from { opacity: 0; transform: scale(0.92) translateY(12px); }
       to { opacity: 1; transform: scale(1) translateY(0); }
     }
 
+    /* ═══════════ Buttons ═══════════ */
+    .btn-primary {
+      flex: 2;
+      padding: 12px 20px;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 800;
+      color: white;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #00d4ff 0%, #6366f1 100%);
+      box-shadow:
+        0 4px 20px rgba(0, 212, 255, 0.25),
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: all 200ms cubic-bezier(0.25, 1, 0.5, 1);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 10px rgba(0, 212, 255, 0.2);
+    }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.5);
+      text-align: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 200ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-secondary:active {
+      transform: scale(0.96);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* ═══════════ Step Dots ═══════════ */
     .step-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.15);
-      transition: all 250ms ease-out;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      transition: all 300ms cubic-bezier(0.25, 1, 0.5, 1);
     }
+
     .step-dot.active {
-      width: 20px; border-radius: 10px;
-      background: rgba(0, 212, 255, 0.9);
-      box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+      width: 18px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(0, 212, 255, 0.9), rgba(99, 102, 241, 0.9));
+      box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
     }
-    .step-dot.completed { background: rgba(0, 212, 255, 0.4); }
+
+    .step-dot.completed {
+      background: rgba(0, 212, 255, 0.3);
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
