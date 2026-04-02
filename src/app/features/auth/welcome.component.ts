@@ -4,7 +4,6 @@ import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-welcome',
-  standalone: true,
   template: `
     <div class="welcome-container min-h-screen w-full flex flex-col relative overflow-hidden">
       <!-- Background Image -->

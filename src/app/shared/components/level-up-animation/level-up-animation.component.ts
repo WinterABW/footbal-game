@@ -7,7 +7,6 @@ import { LocalApiService } from '../../../core/services/local-api.service';
   templateUrl: './level-up-animation.component.html',
   styleUrls: ['./level-up-animation.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
 })
 export class LevelUpAnimationComponent implements AfterViewInit {
   @Input() newLevel = 0;

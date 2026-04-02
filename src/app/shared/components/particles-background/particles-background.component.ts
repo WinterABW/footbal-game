@@ -2,7 +2,6 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-particles-background',
-  standalone: true,
   template: `
     <div class="pg-root" aria-hidden="true">
 

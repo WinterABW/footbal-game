@@ -4,7 +4,6 @@ import type { InvestApiPlayer } from '../../../../models/invest.model';
 
 @Component({
   selector: 'app-player-details',
-  standalone: true,
   imports: [CommonModule],
   template: `
     <!-- Scrim overlay -->

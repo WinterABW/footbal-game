@@ -3,7 +3,6 @@ import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-product-card',
-  standalone: true,
   imports: [NgOptimizedImage],
   template: `
     @if (product(); as player) {

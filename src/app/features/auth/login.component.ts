@@ -5,7 +5,6 @@ import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
   imports: [FormsModule],
   template: `
     <section class="min-h-dvh w-full relative overflow-hidden flex flex-col bg-transparent">

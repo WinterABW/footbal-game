@@ -11,7 +11,6 @@ interface FloatingNumber {
 
 @Component({
   selector: 'app-tap-area',
-  standalone: true,
   imports: [NgOptimizedImage],
   template: `
     <div class="relative w-full h-full flex flex-col items-center justify-center overflow-visible">

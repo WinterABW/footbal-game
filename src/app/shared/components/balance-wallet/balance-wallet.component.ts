@@ -4,7 +4,6 @@ import { UserStatusService } from '../../../core/services/user-status.service';
 
 @Component({
   selector: 'app-balance-wallet',
-  standalone: true,
   imports: [NgOptimizedImage],
   template: `
     <section class="flex flex-col gap-2 absolute top-6 left-6 z-10 animate-fade-in">

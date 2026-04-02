@@ -6,7 +6,6 @@ import { map, filter } from 'rxjs';
 
 @Component({
   selector: 'app-bottom-nav',
-  standalone: true,
   imports: [RouterLink, RouterLinkActive, NgOptimizedImage],
   template: `
     <!--
