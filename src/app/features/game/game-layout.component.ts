@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, afterNextRender, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { BalanceComponent } from '../../shared/components/balance/balance.component';
 import { ActionButtonsComponent } from './components/action-buttons/action-buttons.component';
 import { EnergyBoostComponent } from './components/energy-boost/energy-boost.component';
@@ -21,7 +20,6 @@ import { UserStatusService } from '../../core/services/user-status.service';
     EnergyBoostComponent,
     LevelUpAnimationComponent,
     WelcomeTutorialComponent,
-    CommonModule
   ],
   template: `
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">

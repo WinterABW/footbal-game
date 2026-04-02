@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-payment-screen',
-  imports: [CommonModule],
+  imports: [],
   template: `
     <section class="fixed inset-0 z-[100] flex flex-col w-full overflow-hidden payment-bg">
       <div class="absolute inset-0 bg-[#010208]/40 backdrop-blur-2xl pointer-events-none"></div>

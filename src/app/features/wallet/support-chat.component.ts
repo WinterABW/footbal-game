@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 interface Message {
@@ -8,7 +8,7 @@ interface Message {
 
 @Component({
   selector: 'app-support-chat',
-  imports: [CommonModule, NgOptimizedImage, FormsModule],
+  imports: [NgOptimizedImage, FormsModule],
   template: `
     <section class="fixed inset-0 z-[200] flex flex-col overflow-hidden animate-slide-up chat-bg">
 

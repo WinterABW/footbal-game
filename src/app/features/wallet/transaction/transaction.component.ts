@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { DepositFormComponent } from './components/deposit-form.component';
 import { WithdrawFormComponent } from './components/withdraw-form.component';
 
 @Component({
   selector: 'app-transaction',
-  imports: [CommonModule, DepositFormComponent, WithdrawFormComponent],
+  imports: [DepositFormComponent, WithdrawFormComponent],
   template: `
     <section class="flex flex-col relative w-full h-full overflow-hidden bg-transparent">
 

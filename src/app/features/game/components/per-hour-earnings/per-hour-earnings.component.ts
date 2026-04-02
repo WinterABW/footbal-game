@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, computed } from '@angular/core';
-import { NgOptimizedImage, CommonModule } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { UserStatusService } from '../../../../core/services/user-status.service';
 
 @Component({
   selector: 'app-per-hour-earnings',
-  imports: [NgOptimizedImage, CommonModule],
+  imports: [NgOptimizedImage],
   template: `
     <div class="flex items-center gap-1.5 py-1.5 px-3.5 rounded-full liquid-glass-card border-emerald-500/30 shadow-lg transition-all active:scale-95 cursor-default h-[44px] accent-emerald">
       <div class="w-[22px] h-[22px] flex items-center justify-center drop-shadow-[0_0_8px_rgba(16,185,129,0.3)]">

@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
-import { NgOptimizedImage, CommonModule } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-crypto-deposit-modal',
-  imports: [NgOptimizedImage, CommonModule],
+  imports: [NgOptimizedImage],
   template: `
     <div class="fixed inset-0 z-[200] flex items-center justify-center p-5 animate-fade-in" (click)="onBackdropClick($event)">
       <div class="absolute inset-0 bg-[#010208]/80 backdrop-blur-2xl"></div>

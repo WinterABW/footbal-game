@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { NgOptimizedImage, CommonModule } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { UserStatusService } from '../../../core/services/user-status.service';
 
 @Component({
   selector: 'app-balance-wallet',
   standalone: true,
-  imports: [NgOptimizedImage, CommonModule],
+  imports: [NgOptimizedImage],
   template: `
     <section class="flex flex-col gap-2 absolute top-6 left-6 z-10 animate-fade-in">
       

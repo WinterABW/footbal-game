@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { NgOptimizedImage, CommonModule } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-action-buttons',
-  imports: [RouterLink, NgOptimizedImage, CommonModule],
+  imports: [RouterLink, NgOptimizedImage],
   template: `
     <nav class="flex justify-between items-center gap-3 px-1 py-1 z-20 relative">
       <div routerLink="/main/box"

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@angular/core';
-import { NgOptimizedImage, CommonModule } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { PerHourEarningsComponent } from '../per-hour-earnings/per-hour-earnings.component';
 import { LevelMenuComponent } from '../level-menu/level-menu.component';
 import { SettingsComponent } from '../settings/settings.component';
@@ -11,7 +11,7 @@ import { ErrorHandlerService } from '../../../../core/services/error-handler.ser
 
 @Component({
   selector: 'app-header',
-  imports: [PerHourEarningsComponent, NgOptimizedImage, LevelMenuComponent, SettingsComponent, CommonModule],
+  imports: [PerHourEarningsComponent, NgOptimizedImage, LevelMenuComponent, SettingsComponent],
   template: `
     <header class="w-full h-fit flex flex-col justify-center items-center bg-transparent relative z-20 pt-safe-top px-4 pb-2 animate-slide-down">
       <div class="w-full mt-1.5 mb-1 liquid-glass-card bg-white/[0.03] border-white/5 rounded-[36px] flex flex-row justify-between items-center p-2 min-h-[60px]">

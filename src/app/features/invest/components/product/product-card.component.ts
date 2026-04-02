@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { NgOptimizedImage, CommonModule } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [NgOptimizedImage, CommonModule],
+  imports: [NgOptimizedImage],
   template: `
     @if (product(); as player) {
       <article class="lg-module-card p-3 flex flex-col gap-2 border border-white/10 hover:border-teal-500/30 active:scale-[0.98] transition-all duration-300 cursor-pointer bg-white/5 backdrop-blur-2xl rounded-2xl">

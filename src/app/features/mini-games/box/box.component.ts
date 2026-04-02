@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { UserStatusService } from '../../../core/services/user-status.service';
 
@@ -10,9 +10,8 @@ interface Box {
 }
 
 @Component({
-  selector: 'app-game1',
-  standalone: true,
-  imports: [CommonModule, NgOptimizedImage],
+  selector: 'app-box',
+  imports: [NgOptimizedImage],
   template: `
     <div class="game-wrapper hide-nav">
       <!-- Botón Atrás -->

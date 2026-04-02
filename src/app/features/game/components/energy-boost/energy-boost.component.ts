@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { NgOptimizedImage, CommonModule } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { EnergyService } from '../../../../core/services/energy.service';
 
 @Component({
   selector: 'app-energy-boost',
-  imports: [NgOptimizedImage, CommonModule],
+  imports: [NgOptimizedImage],
   template: `
     <section class="flex flex-row items-center justify-between w-full z-20 relative p-1 mt-2 px-2">
 

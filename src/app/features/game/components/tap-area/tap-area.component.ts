@@ -1,5 +1,5 @@
 import { afterNextRender, ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
-import { NgOptimizedImage, CommonModule } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { TapService } from '../../../../core/services/tap.service';
 import { EnergyService } from '../../../../core/services/energy.service';
@@ -12,7 +12,7 @@ interface FloatingNumber {
 @Component({
   selector: 'app-tap-area',
   standalone: true,
-  imports: [NgOptimizedImage, CommonModule],
+  imports: [NgOptimizedImage],
   template: `
     <div class="relative w-full h-full flex flex-col items-center justify-center overflow-visible">
       

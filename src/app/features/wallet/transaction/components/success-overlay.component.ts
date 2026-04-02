@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-success-overlay',
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="fixed inset-0 z-[300] flex items-center justify-center p-6 animate-fade-in">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-2xl"></div>
