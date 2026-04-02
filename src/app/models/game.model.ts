@@ -26,13 +26,3 @@ export interface TapConfig {
   maxMultiplier: number;
   levelBonus: { level: number; multiplier: number }[];
 }
-
-export interface GameState {
-  experience: number;
-  experienceToNextLevel: number;
-  sessionTaps: number;
-  lastSessionStart: string;
-  spinsRemaining: number;
-  dailySpinsTotal: number;
-  lastSpinReset: string;
-}

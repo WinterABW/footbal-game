@@ -2,13 +2,12 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { StorageService } from './storage.service';
 import { UserStatusService } from './user-status.service';
 import type { UserStats } from '../../models/user.model';
-import type { Boost, ActiveBoost, TapConfig, GameState } from '../../models/game.model';
+import type { Boost, ActiveBoost, TapConfig } from '../../models/game.model';
 
 // ============== STORAGE KEYS ==============
 
 const STORAGE_KEYS = {
     STATS: 'nequi_stats',
-    GAME_STATE: 'nequi_game_state',
 } as const;
 
 
@@ -47,16 +46,6 @@ const DEFAULT_TAP_CONFIG: TapConfig = {
     ],
 };
 
-const DEFAULT_GAME_STATE: GameState = {
-    experience: 0,
-    experienceToNextLevel: 100,
-    sessionTaps: 0,
-    lastSessionStart: new Date().toISOString(),
-    spinsRemaining: 3,
-    dailySpinsTotal: 3,
-    lastSpinReset: new Date().toISOString(),
-};
-
 
 
 // ============== SERVICE ==============
@@ -75,7 +64,6 @@ export class LocalApiService {
     private _tapConfig = signal<TapConfig | null>(null);
 
 
-    private _gameState = signal<GameState | null>(null);
     private _isLoading = signal(false);
     private _isInitialized = signal(false);
     private _levelUp = signal<{ newLevel: number; oldLevel: number } | null>(null);
@@ -87,7 +75,6 @@ export class LocalApiService {
     readonly tapConfig = this._tapConfig.asReadonly();
 
 
-    readonly gameState = this._gameState.asReadonly();
     readonly isLoading = this._isLoading.asReadonly();
     readonly isInitialized = this._isInitialized.asReadonly();
     readonly levelUp = this._levelUp.asReadonly();
@@ -193,8 +180,6 @@ export class LocalApiService {
         });
         // Boosts, Active Boosts y Tap Config están conectados a la API - no se persisten en localStorage
         // ENERGY viene del UserStatusService (API)
-
-        this.storage.set(STORAGE_KEYS.GAME_STATE, DEFAULT_GAME_STATE);
     }
 
     private loadAllData(): void {
@@ -204,38 +189,15 @@ export class LocalApiService {
         this._activeBoosts.set([]);
         this._tapConfig.set(DEFAULT_TAP_CONFIG);
 
-        this._gameState.set(this.storage.get<GameState>(STORAGE_KEYS.GAME_STATE));
-
-
         // Limpiar boosts expirados
         this.cleanExpiredBoosts();
     }
 
 
 
-    /**
-     * Resetea todos los datos a los valores por defecto
-     */
-    resetAllData(): void {
-
-        this.initializeDefaults();
-        this.loadAllData();
-    }
-
     // ============== PROFILE ==============
 
 
-
-    // ============== STATS ==============
-
-
-
-    incrementTaps(count: number = 1): void {
-        const gameState = this._gameState();
-        if (gameState) {
-            this.updateGameState({ sessionTaps: gameState.sessionTaps + count });
-        }
-    }
 
     // ============== ENERGY ==============
     // La energía ahora viene directamente del UserStatusService (API)
@@ -251,33 +213,6 @@ export class LocalApiService {
         this._activeBoosts.set(updated);
     }
 
-    /**
-     * Activa un boost temporal (ej: desde la ruleta)
-     */
-    activateBoost(boostId: string, multiplier: number, expiresAt: number): void {
-        const activeBoost: ActiveBoost = {
-            boostId,
-            activatedAt: new Date().toISOString(),
-            expiresAt: new Date(expiresAt).toISOString(),
-        };
-        this.addActiveBoost(activeBoost);
-
-        // Si necesitamos guardar info del multiplier temporal
-        const tapConfig = this._tapConfig();
-        if (tapConfig && multiplier > 1) {
-            this.updateTapConfig({ currentMultiplier: multiplier });
-
-            // Restaurar multiplier cuando expire
-            const timeUntilExpire = expiresAt - Date.now();
-            if (timeUntilExpire > 0) {
-                setTimeout(() => {
-                    this.updateTapConfig({ currentMultiplier: 1 });
-                    this.cleanExpiredBoosts();
-                }, timeUntilExpire);
-            }
-        }
-    }
-
     private cleanExpiredBoosts(): void {
         const now = Date.now();
         const active = this._activeBoosts().filter(b => {
@@ -289,18 +224,6 @@ export class LocalApiService {
         this._activeBoosts.set(active);
     }
 
-    // ============== TAP CONFIG ==============
-
-    updateTapConfig(updates: Partial<TapConfig>): boolean {
-        const current = this._tapConfig();
-        if (!current) return false;
-
-        const updated = { ...current, ...updates };
-        // Tap config está conectado a la API - solo actualizamos el signal
-        this._tapConfig.set(updated);
-        return true;
-    }
-
     // ============== TRANSACTIONS ==============
 
 
@@ -309,54 +232,6 @@ export class LocalApiService {
 
 
     // ============== DEPOSITS & WITHDRAWALS ==============
-
-    // ============== GAME STATE ==============
-
-    updateGameState(updates: Partial<GameState>): boolean {
-        const current = this._gameState();
-        if (!current) return false;
-
-        const updated = { ...current, ...updates };
-        const success = this.storage.set(STORAGE_KEYS.GAME_STATE, updated);
-        if (success) {
-            this._gameState.set(updated);
-        }
-        return success;
-    }
-
-    useSpin(): boolean {
-        const gameState = this._gameState();
-        if (!gameState || gameState.spinsRemaining <= 0) return false;
-
-        return this.updateGameState({
-            spinsRemaining: gameState.spinsRemaining - 1,
-        });
-    }
-
-    addSpins(count: number): boolean {
-        const gameState = this._gameState();
-        if (!gameState) return false;
-
-        return this.updateGameState({
-            spinsRemaining: gameState.spinsRemaining + count,
-        });
-    }
-
-    resetDailySpins(): void {
-        const gameState = this._gameState();
-        if (!gameState) return;
-
-        const lastReset = new Date(gameState.lastSpinReset);
-        const now = new Date();
-
-        // Resetear si ha pasado un día
-        if (now.toDateString() !== lastReset.toDateString()) {
-            this.updateGameState({
-                spinsRemaining: 10,
-                lastSpinReset: now.toISOString(),
-            });
-        }
-    }
 
 
 

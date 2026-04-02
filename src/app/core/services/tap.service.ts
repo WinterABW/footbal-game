@@ -64,9 +64,6 @@ export class TapService {
   }
 
   async addTap(count: number = 1) {
-    // Update local state first
-    this.localApi.incrementTaps(count);
-
     // Load pending taps from localStorage
     const storedPending = localStorage.getItem(this.PENDING_TAPS_KEY);
     let pendingCount = storedPending ? parseInt(storedPending, 10) : 0;

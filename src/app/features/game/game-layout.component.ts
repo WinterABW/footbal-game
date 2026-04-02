@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, afterNextRender, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BalanceComponent } from '../../shared/components/balance/balance.component';
 import { ActionButtonsComponent } from './components/action-buttons/action-buttons.component';
@@ -7,6 +7,9 @@ import { HeaderComponent } from './components/header/header.component';
 import { TapAreaComponent } from './components/tap-area/tap-area.component';
 import { LevelUpAnimationComponent } from '../../shared/components/level-up-animation/level-up-animation.component';
 import { LocalApiService } from '../../core/services/local-api.service';
+import { OnboardingService } from '../../core/services/onboarding.service';
+import { WelcomeTutorialComponent } from '../../shared/components/welcome-tutorial/welcome-tutorial.component';
+import { UserStatusService } from '../../core/services/user-status.service';
 
 @Component({
   selector: 'app-game-layout',
@@ -17,6 +20,7 @@ import { LocalApiService } from '../../core/services/local-api.service';
     TapAreaComponent,
     EnergyBoostComponent,
     LevelUpAnimationComponent,
+    WelcomeTutorialComponent,
     CommonModule
   ],
   template: `
@@ -38,6 +42,9 @@ import { LocalApiService } from '../../core/services/local-api.service';
           [oldLevel]="levelUpInfo.oldLevel"
           (animationFinished)="localApi.clearLevelUp()" />
       }
+
+      <!-- Welcome Tutorial (first-time onboarding) -->
+      <app-welcome-tutorial (bonusClaimed)="onBonusClaimed()" />
     </section>
   `,
   styles: [`
@@ -47,4 +54,21 @@ import { LocalApiService } from '../../core/services/local-api.service';
 })
 export class GameLayoutComponent {
   localApi = inject(LocalApiService);
+  private onboarding = inject(OnboardingService);
+  private userStatusService = inject(UserStatusService);
+
+  constructor() {
+    effect(() => {
+      const userStatus = this.userStatusService.userStatus();
+      if (userStatus) {
+        this.onboarding.startOnboardingIfNeeded();
+      }
+    });
+  }
+
+  onBonusClaimed(): void {
+    // Bonus is already credited by the backend on registration
+    // This is just for UI celebration — could trigger confetti, sound, etc.
+    console.log('Welcome bonus claimed!');
+  }
 }
