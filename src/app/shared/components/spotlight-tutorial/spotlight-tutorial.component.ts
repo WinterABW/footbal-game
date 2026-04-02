@@ -341,27 +341,27 @@ export class SpotlightTutorialComponent implements OnDestroy {
       // Steps 2-7: dialog a la izquierda, character abajo del diálogo
       'profile': {
         bubble: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
-        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 240}px`, left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: '16px', right: 'auto', bottom: 'auto' },
       },
       'settings': {
         bubble: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
-        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 240}px`, left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: '16px', right: 'auto', bottom: 'auto' },
       },
       'balance': {
         bubble: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
-        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 240}px`, left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: '16px', right: 'auto', bottom: 'auto' },
       },
       'openball': {
         bubble: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
-        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 240}px`, left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: '16px', right: 'auto', bottom: 'auto' },
       },
       'roulette': {
         bubble: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
-        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 240}px`, left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: '16px', right: 'auto', bottom: 'auto' },
       },
       'copspin': {
         bubble: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 16}px`, left: '16px', right: 'auto', bottom: 'auto' },
-        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 240}px`, left: '16px', right: 'auto', bottom: 'auto' },
+        char: { top: `${(rect?.top ?? 0) + (rect?.height ?? 0) + 280}px`, left: '16px', right: 'auto', bottom: 'auto' },
       },
       // Step 8: character bajo la pelota, diálogo más a la izquierda
       'tap': {
@@ -371,28 +371,28 @@ export class SpotlightTutorialComponent implements OnDestroy {
       // Steps 9-10: diálogo arriba y a la izquierda
       'energy': {
         char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
-        bubble: { top: '80px', left: '16px', right: 'auto', bottom: 'auto' },
+        bubble: { top: '120px', left: '16px', right: 'auto', bottom: 'auto' },
       },
       'boost': {
         char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
-        bubble: { top: '80px', left: '16px', right: 'auto', bottom: 'auto' },
+        bubble: { top: '120px', left: '16px', right: 'auto', bottom: 'auto' },
       },
-      // Steps 11-14: diálogo arriba y a la izquierda
+      // Steps 11-14: diálogo arriba y a la izquierda (más abajo que 9-10)
       'nav-social': {
         char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
-        bubble: { top: '80px', left: '16px', right: 'auto', bottom: 'auto' },
+        bubble: { top: '180px', left: '16px', right: 'auto', bottom: 'auto' },
       },
       'nav-retos': {
         char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
-        bubble: { top: '80px', left: '16px', right: 'auto', bottom: 'auto' },
+        bubble: { top: '180px', left: '16px', right: 'auto', bottom: 'auto' },
       },
       'nav-fichajes': {
         char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
-        bubble: { top: '80px', left: '16px', right: 'auto', bottom: 'auto' },
+        bubble: { top: '180px', left: '16px', right: 'auto', bottom: 'auto' },
       },
       'nav-banco': {
         char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
-        bubble: { top: '80px', left: '16px', right: 'auto', bottom: 'auto' },
+        bubble: { top: '180px', left: '16px', right: 'auto', bottom: 'auto' },
       },
       // Closing: character bottom-left, dialog above
       'closing': {
