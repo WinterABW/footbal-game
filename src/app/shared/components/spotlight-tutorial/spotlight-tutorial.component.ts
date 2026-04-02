@@ -18,7 +18,10 @@ interface SpotlightRect {
 }
 
 interface ElementStyle {
-  [key: string]: string;
+  top: string;
+  bottom: string;
+  left: string;
+  right: string;
 }
 
 @Component({
@@ -28,22 +31,22 @@ interface ElementStyle {
       <!-- 4 overlay panels that SURROUND the spotlight -->
       @if (spotlightRect(); as rect) {
         <div class="tutorial-panel"
-          style.top: 0; left: 0; width: 100vw;"
+          style="top: 0; left: 0; width: 100vw;"
           [style.height.px]="rect.top - PANEL_GAP">
         </div>
         <div class="tutorial-panel"
-          style.left: 0; width: 100vw;"
+          style="left: 0; width: 100vw;"
           [style.top.px]="rect.top + rect.height + PANEL_GAP"
           [style.height.vh]="100">
         </div>
         <div class="tutorial-panel"
-          style.left: 0;"
+          style="left: 0;"
           [style.top.px]="rect.top - PANEL_GAP"
           [style.width.px]="rect.left - PANEL_GAP"
           [style.height.px]="rect.height + PANEL_GAP * 2">
         </div>
         <div class="tutorial-panel"
-          style="left: auto; right: 0;"
+          style="right: 0;"
           [style.top.px]="rect.top - PANEL_GAP"
           [style.width.px]="window.innerWidth - rect.left - rect.width - PANEL_GAP"
           [style.height.px]="rect.height + PANEL_GAP * 2">
