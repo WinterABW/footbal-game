@@ -72,6 +72,7 @@ interface ElementStyle {
         class="referee-character"
         [class.pose-standing]="currentStepData().characterPose === 'standing'"
         [class.pose-pointing]="currentStepData().characterPose === 'pointing'"
+        [class.character-above-bubble]="isFirstOrLastStep()"
         [style.top]="characterPos().top"
         [style.bottom]="characterPos().bottom"
         [style.left]="characterPos().left"
@@ -197,6 +198,9 @@ interface ElementStyle {
 
     .referee-character.pose-standing { width: 130px; height: auto; }
     .referee-character.pose-pointing { width: 140px; height: auto; }
+
+    .referee-character.character-above-bubble.pose-standing { width: 180px; height: auto; }
+    .referee-character.character-above-bubble.pose-pointing { width: 190px; height: auto; }
 
     /* ═══════════ Liquid Glass Speech Bubble ═══════════ */
     .speech-bubble {
@@ -324,6 +328,7 @@ export class SpotlightTutorialComponent implements OnDestroy {
   readonly currentStepData = this.onboarding.currentStepData;
   readonly isFirstStep = this.onboarding.isFirstStep;
   readonly isLastStep = this.onboarding.isLastStep;
+  readonly isFirstOrLastStep = computed(() => this.currentStep() === 0 || this.currentStep() === ONBOARDING_STEPS.length - 1);
   readonly steps = ONBOARDING_STEPS;
   readonly PANEL_GAP = 4;
 
@@ -416,9 +421,9 @@ export class SpotlightTutorialComponent implements OnDestroy {
 
     // Per-step explicit positioning — user-verified
     const positions: Record<string, { char: ElementStyle; bubble: ElementStyle }> = {
-      // Intro: character bottom-left, dialog above
+      // Intro: character centered above dialog
       'welcome': {
-        char: { bottom: '20px', left: '16px', right: 'auto', top: 'auto' },
+        char: { bottom: '440px', left: 'calc(50vw - 90px)', right: 'auto', top: 'auto' },
         bubble: { bottom: '165px', left: '16px', right: 'auto', top: 'auto' },
       },
       // Steps 2-7: dialog a la izquierda, character abajo del diálogo
@@ -477,9 +482,9 @@ export class SpotlightTutorialComponent implements OnDestroy {
         char: { bottom: `${window.innerHeight - (rect?.top ?? 0) + 16}px`, left: '16px', right: 'auto', top: 'auto' },
         bubble: { top: '250px', left: '16px', right: 'auto', bottom: 'auto' },
       },
-      // Closing: character bottom-left, dialog above
+      // Closing: character centered above dialog
       'closing': {
-        char: { bottom: '20px', left: '16px', right: 'auto', top: 'auto' },
+        char: { bottom: '380px', left: 'calc(50vw - 90px)', right: 'auto', top: 'auto' },
         bubble: { bottom: '165px', left: '16px', right: 'auto', top: 'auto' },
       },
     };
