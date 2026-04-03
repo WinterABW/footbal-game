@@ -24,7 +24,7 @@ import { UserStatusService } from '../../core/services/user-status.service';
   template: `
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
       <!-- Main UI Layer -->
-      <app-header class="relative z-20 pt-8" />
+      <app-header class="relative z-20 pt-12" />
       
       <main class="flex-1 flex flex-col px-4 gap-3 pb-24 overflow-hidden relative z-10">
         <app-action-buttons />
