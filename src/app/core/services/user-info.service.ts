@@ -39,8 +39,12 @@ export interface SkillsLevelReport {
 
 export interface SkillLevelInfo {
   [level: string]: {
+    $type: 'energy_plus' | 'max_energy' | 'tap_power';
     lvl: number;
     price: number;
+    energyRechargeTime?: number;  // energy_plus: segundos de recarga
+    maxEnergy?: number;           // max_energy: capacidad máxima
+    tooks?: number;               // tap_power: monedas por toque
   };
 }
 

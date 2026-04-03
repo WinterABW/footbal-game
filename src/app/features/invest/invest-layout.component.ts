@@ -9,6 +9,9 @@ import { RouterLink } from '@angular/router';
 import type { InvestApiPlayer } from '../../models/invest.model';
 import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
 import { InvestService } from '../../core/services/invest.service';
+import { AuthService } from '../../core/services/auth.service';
+import { UserStatusService } from '../../core/services/user-status.service';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-invest-layout',
@@ -97,6 +100,7 @@ import { InvestService } from '../../core/services/invest.service';
         @if (selectedPlayer()) {
           <app-player-details 
             [player]="selectedPlayer()!" 
+            [loading]="isPurchasing()"
             (confirm)="confirmPurchase($event)" 
             (close)="closeDetailsModal()" 
           />
@@ -115,6 +119,9 @@ import { InvestService } from '../../core/services/invest.service';
 })
 export class InvestLayoutComponent {
   private investService = inject(InvestService);
+  private authService = inject(AuthService);
+  private userStatusService = inject(UserStatusService);
+  private errorHandler = inject(ErrorHandlerService);
 
   constructor() {
     this.investService.loadPlayers();
@@ -133,6 +140,7 @@ export class InvestLayoutComponent {
 
   showScrollToTopButton = signal(false);
   selectedPlayer = signal<InvestApiPlayer | null>(null);
+  isPurchasing = signal(false);
 
   availablePlayers = this.investService.availablePlayers;
   vipPlayers = this.investService.vipPlayers;
@@ -145,9 +153,31 @@ export class InvestLayoutComponent {
     this.selectedPlayer.set(null);
   }
 
-  confirmPurchase(player: InvestApiPlayer) {
-    // TODO: Implement purchase when API is ready
-    this.closeDetailsModal();
+  async confirmPurchase(player: InvestApiPlayer) {
+    if (this.isPurchasing()) return;
+
+    const token = this.authService.authToken();
+    const uid = this.userStatusService.userStatus()?.id;
+
+    if (!token || !uid) {
+      this.errorHandler.showToast('Sesión no válida. Inicia sesión nuevamente.', 'error');
+      this.closeDetailsModal();
+      return;
+    }
+
+    this.isPurchasing.set(true);
+
+    const result = await this.investService.buyPlayer(player.id, Date.now(), token, uid);
+
+    this.isPurchasing.set(false);
+
+    if (result.success) {
+      this.errorHandler.showSuccessToast(result.message ?? '¡Fichaje confirmado!');
+      this.closeDetailsModal();
+      this.userStatusService.loadUserStatus();
+    } else {
+      this.errorHandler.showToast(result.error ?? 'No se pudo completar el fichaje.', 'error');
+    }
   }
 
   onSectionScroll(event: Event) {

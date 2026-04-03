@@ -83,19 +83,24 @@ export class InvestService {
         return { success: true, message: response.message };
       }
 
-      return { success: false, error: 'Failed to buy player' };
+      return { success: false, error: 'No se recibió respuesta del servidor' };
     } catch (error: unknown) {
       const httpError = error as HttpErrorResponse;
+
+      const serverMessage = httpError?.error && typeof httpError.error === 'object' && 'message' in httpError.error
+        ? (httpError.error as ApiMessageResponse).message
+        : null;
+
       if (httpError?.status === 400) {
-        return { success: false, error: 'Bad request' };
+        return { success: false, error: serverMessage ?? 'Solicitud no válida' };
       }
       if (httpError?.status === 401) {
-        return { success: false, error: 'Unauthorized' };
+        return { success: false, error: 'Sesión expirada. Inicia sesión nuevamente.' };
       }
       if (httpError?.status === 404) {
-        return { success: false, error: 'Not found' };
+        return { success: false, error: 'Jugador no disponible' };
       }
-      return { success: false, error: 'Failed to buy player' };
+      return { success: false, error: serverMessage ?? 'No se pudo completar la compra. Intenta de nuevo.' };
     }
   }
 }

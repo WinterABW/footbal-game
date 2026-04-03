@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, OnInit } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
+import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { UserStatusService } from '../../../../../core/services/user-status.service';
 import { UserInfoService, SkillLevelInfo } from '../../../../../core/services/user-info.service';
+import { ErrorHandlerService } from '../../../../../core/services/error-handler.service';
 import { BalanceComponent } from '../../../../../shared/components/balance/balance.component';
 import { GlassSheetComponent } from '../../../../../shared/ui/glass-sheet/glass-sheet.component';
 
@@ -26,7 +27,7 @@ interface BoostDisplay {
 
 @Component({
     selector: 'app-boost',
-    imports: [DecimalPipe, BalanceComponent, GlassSheetComponent],
+    imports: [DecimalPipe, NgOptimizedImage, BalanceComponent, GlassSheetComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
 <section class="min-h-dvh flex flex-col relative overflow-hidden">
@@ -258,6 +259,7 @@ export class BoostComponent implements OnInit {
     private router = inject(Router);
     private userStatusService = inject(UserStatusService);
     private userInfoService = inject(UserInfoService);
+    private errorHandler = inject(ErrorHandlerService);
 
     // Balance desde el servidor
     balanceAmount = computed(() => this.userStatusService.userStatus()?.wallet?.principalBalance ?? 0);
@@ -276,19 +278,27 @@ export class BoostComponent implements OnInit {
 
     async ngOnInit(): Promise<void> {
         // Cargar precios de las 3 skills
-        await this.loadSkillPrices();
+        try {
+            await this.loadSkillPrices();
+        } catch {
+            // Silencioso — el usuario verá precios en 0, puede reintentar recargando
+        }
     }
 
     private async loadSkillPrices(): Promise<void> {
         const prices: Record<number, SkillLevelInfo> = {};
-        
-        for (const skillId of [1, 2, 3]) {
-            const result = await this.userInfoService.getSkillInfo(skillId);
+        const skillIds = [1, 2, 3];
+        const results = await Promise.all(
+            skillIds.map(skillId => this.userInfoService.getSkillInfo(skillId))
+        );
+        results.forEach((result, i) => {
+            const sid = skillIds[i];
             if (result.success && result.data) {
-                prices[skillId] = result.data;
+                prices[sid] = result.data;
+            } else {
+                console.warn(`Failed to load skill info for skillId ${sid}`);
             }
-        }
-        
+        });
         this.skillPrices.set(prices);
     }
 
@@ -375,25 +385,27 @@ export class BoostComponent implements OnInit {
         const boost = this.selectedBoost();
         if (!boost) return;
 
-        // Obtener el skillId对应的购买方式
         const skillId = this.boostToSkillId[boost.id];
         
-        // Llamar al servidor para comprar
-        this.userInfoService.purchaseSkill(skillId).then(result => {
-            const message = result.message ?? (result.success ? '¡Compra exitosa!' : result.error) ?? 'Error desconocido';
-            this.purchaseMessage.set(message);
-            this.purchaseSuccess.set(result.success);
+        this.userInfoService.purchaseSkill(skillId)
+            .then(result => {
+                const message = result.message ?? (result.success ? '¡Compra exitosa!' : result.error) ?? 'Error desconocido';
+                this.purchaseMessage.set(message);
+                this.purchaseSuccess.set(result.success);
 
-            if (result.success) {
-                // Recargar datos del usuario después de la compra
-                this.userStatusService.loadUserStatus();
-                this.loadSkillPrices();
-                
-                setTimeout(() => {
-                    this.closeSheet();
-                }, 1500);
-            }
-        });
+                if (result.success) {
+                    this.userStatusService.loadUserStatus();
+                    this.loadSkillPrices();
+                    this.errorHandler.showSuccessToast('¡Mejora aplicada con éxito!');
+                    setTimeout(() => this.closeSheet(), 800);
+                }
+            })
+            .catch(err => {
+                console.error('Purchase boost failed:', err);
+                this.purchaseMessage.set('Error de conexión. Intenta de nuevo.');
+                this.purchaseSuccess.set(false);
+                this.errorHandler.showErrorToast(err, 'boost_purchase');
+            });
     }
 
     currentLevel = computed(() => {
@@ -412,18 +424,17 @@ export class BoostComponent implements OnInit {
         
         const skillId = this.boostToSkillId[item.id];
         const currentLvl = this.currentLevel();
+        const nextLvl = currentLvl + 1;
         
-        if (skillId === 1) {
-            // Energy Plus: +50 base * 1.2^level
-            return Math.floor(50 * Math.pow(1.2, currentLvl));
-        } else if (skillId === 2) {
-            // Max Energy: +100 base * 1.2^level
-            return Math.floor(100 * Math.pow(1.2, currentLvl));
-        } else if (skillId === 3) {
-            // Tap Power: current level value
-            return currentLvl + 1;
-        }
-        return item.amount ?? 0;
+        const prices = this.skillPrices()[skillId];
+        const nextLevelData = prices?.[nextLvl];
+        if (!nextLevelData) return 0;
+        
+        if (nextLevelData.energyRechargeTime !== undefined) return nextLevelData.energyRechargeTime;
+        if (nextLevelData.maxEnergy !== undefined) return nextLevelData.maxEnergy;
+        if (nextLevelData.tooks !== undefined) return nextLevelData.tooks;
+        
+        return 0;
     });
 
     nextLevelDescription = computed(() => {
@@ -433,13 +444,9 @@ export class BoostComponent implements OnInit {
         const skillId = this.boostToSkillId[item.id];
         const amount = this.nextLevelAmount();
         
-        if (skillId === 1) {
-            return `+${amount} energía instantánea`;
-        } else if (skillId === 2) {
-            return `+${amount} energía máxima permanente`;
-        } else if (skillId === 3) {
-            return `+${amount} valor por toque permanente`;
-        }
+        if (skillId === 1) return `${amount}s tiempo de recarga`;
+        if (skillId === 2) return `${amount} energía máxima`;
+        if (skillId === 3) return `${amount} monedas por toque`;
         return item.desc;
     });
 }
