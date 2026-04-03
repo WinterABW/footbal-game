@@ -24,7 +24,7 @@ interface Deposit {
         <img ngSrc="shared/icons/support.webp" alt="Soporte" width="32" height="32" class="rounded-full object-cover w-full h-full" />
       </button>
 
-      <div class="flex-1 w-full relative z-10 flex flex-col overflow-y-auto no-scrollbar pt-safe-top pb-24 px-5 gap-2">
+      <div class="flex-1 w-full relative z-10 flex flex-col overflow-y-auto no-scrollbar pb-24 px-5 gap-2" style="padding-top: calc(var(--safe-top, 0px) + 0.75rem);">
 
         <!-- Hero Section -->
         <div class="flex flex-col items-center py-0 -mb-1.5">

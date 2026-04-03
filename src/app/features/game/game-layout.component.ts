@@ -22,7 +22,7 @@ import { UserStatusService } from '../../core/services/user-status.service';
     SpotlightTutorialComponent,
   ],
   template: `
-    <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent pt-4">
+    <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent pt-6">
       <!-- Main UI Layer -->
       <app-header class="relative z-20" />
       
