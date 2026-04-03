@@ -121,7 +121,7 @@ export class WelcomeComponent {
   error = signal<string | null>(null);
 
   goToRegister() {
-    this.router.navigate(['/register']);
+    this.router.navigate(['/login'], { queryParams: { tab: 'register' } });
   }
 
   goToLogin() {
