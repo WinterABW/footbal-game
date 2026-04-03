@@ -5,12 +5,6 @@
   /* Core brand colors */
   --color-dark-background: radial-gradient(ellipse at center, rgba(10, 25, 47, 0.5) 0%, #000020 70%), repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(57, 255, 20, 0.03) 21px);
   --color-dark-surface: #0c0726;
-
-  /* Telegram Web App Safe Area */
-  /* Telegram header (close/minimize buttons) occupies ~56px on mobile */
-  --tg-header-height: 56px;
-  /* Combined safe area: Telegram header + iOS notch (if any) */
-  --safe-top: calc(var(--tg-header-height) + env(safe-area-inset-top, 0px));
   --color-football-green: #10B981;
   --color-trophy-gold: #F59E0B;
   --color-action-red: #EF4444;
@@ -76,11 +70,6 @@
   --lg-tint-amber: rgba(251, 191, 36, 0.12);
   --lg-tint-cyan: rgba(0, 229, 255, 0.10);
   --lg-tint-magenta: rgba(224, 64, 251, 0.12);
-}
-
-/* Global safe area utility for Telegram Web App */
-.safe-top {
-  padding-top: var(--safe-top, 56px);
 }
 
 @layer utilities {

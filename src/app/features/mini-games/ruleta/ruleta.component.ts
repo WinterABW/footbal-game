@@ -107,7 +107,7 @@ interface Prize {
        align-items: center;
        justify-content: flex-start;
        min-height: 100vh;
-       padding-top: var(--safe-top, 56px);
+       padding: 1rem 0 0.5rem;
        position: relative;
        overflow: hidden;
        gap: 0.5rem;

@@ -67,7 +67,7 @@ import { ErrorHandlerService } from '../../../../core/services/error-handler.ser
   `,
   styles: [`
     :host { display: block; width: 100%; }
-    .pt-safe-top { padding-top: var(--safe-top, 56px); }
+    .pt-safe-top { padding-top: env(safe-area-inset-top, 1rem); }
     .animate-slide-down { animation: slideDown 0.6s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
     @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
     .modal-context { display: contents; }

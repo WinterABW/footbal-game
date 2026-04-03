@@ -189,7 +189,7 @@ import { UserInfoService, ReferInfoResponse } from '../../core/services/user-inf
   `,
   styles: [`
     :host { display: block; }
-    .pt-safe-top { padding-top: var(--safe-top, 56px); }
+    .pt-safe-top { padding-top: env(safe-area-inset-top, 0); }
     .animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
     @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .scrollbar-hide::-webkit-scrollbar { display: none; }

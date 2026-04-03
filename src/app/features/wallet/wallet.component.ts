@@ -20,7 +20,7 @@ interface Deposit {
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
 
       <!-- Support button (floating top-right) -->
-      <button (click)="navigateToSupport()" class="absolute right-5 z-20 w-12 h-12 lg-icon-btn flex items-center justify-center active:scale-90 transition-transform p-0.5" style="top: calc(var(--safe-top, 56px) + 0.5rem);">
+      <button (click)="navigateToSupport()" class="absolute top-0 right-5 mt-[calc(env(safe-area-inset-top,0px)+1.5rem)] z-20 w-12 h-12 lg-icon-btn flex items-center justify-center active:scale-90 transition-transform p-0.5">
         <img ngSrc="shared/icons/support.webp" alt="Soporte" width="32" height="32" class="rounded-full object-cover w-full h-full" />
       </button>
 
@@ -295,7 +295,7 @@ interface Deposit {
   `,
   styles: [`
     :host { display: block; }
-    .pt-safe-top { padding-top: var(--safe-top, 56px); }
+    .pt-safe-top { padding-top: env(safe-area-inset-top, 1rem); }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

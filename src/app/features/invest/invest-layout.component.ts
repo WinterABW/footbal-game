@@ -17,7 +17,7 @@ import { InvestService } from '../../core/services/invest.service';
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
         
         <!-- Floating Header Controls -->
-        <div class="absolute left-0 right-0 z-20 px-5 flex flex-row justify-between items-center pointer-events-none" style="top: calc(var(--safe-top, 56px) + 0.5rem);">
+        <div class="absolute top-0 left-0 right-0 z-20 px-5 mt-[calc(env(safe-area-inset-top,0px)+1rem)] flex flex-row justify-between items-center pointer-events-none">
             <a routerLink="/main"
                 class="w-10 h-10 lg-module-card flex items-center justify-center active:scale-90 transition-transform pointer-events-auto"
                 aria-label="Volver">
@@ -105,7 +105,7 @@ import { InvestService } from '../../core/services/invest.service';
   `,
   styles: [`
     :host { display: block; }
-    .pt-safe-top { padding-top: var(--safe-top, 56px); }
+    .pt-safe-top { padding-top: env(safe-area-inset-top, 1.5rem); }
     .animate-fade-up { animation: fadeUp 0.8s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
     @keyframes fadeUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .no-scrollbar::-webkit-scrollbar { display: none; }

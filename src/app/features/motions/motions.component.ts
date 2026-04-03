@@ -378,7 +378,7 @@ interface DailyReward {
   `,
   styles: [`
     :host { display: block; }
-    .pt-safe-top { padding-top: var(--safe-top, 56px); }
+    .pt-safe-top { padding-top: env(safe-area-inset-top, 1.5rem); }
     .animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
     .animate-slide-down-toast { animation: slideDownToast 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .animate-pulse-subtle { animation: pulseSubtle 3s ease-in-out infinite; }
