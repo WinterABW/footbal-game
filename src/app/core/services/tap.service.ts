@@ -14,9 +14,10 @@ export class TapService {
   private authService = inject(AuthService);
   private encryptionService = inject(EncryptionService);
   private readonly baseUrl = environment.apiBaseUrl;
-  private readonly secretKey = 'MiClaveSecreta123!';
+  private readonly secretKey = environment.tapSecretKey;
   private readonly PENDING_TAPS_KEY = 'pendingTaps';
   private readonly BATCH_SIZE = 100;
+  private isFlushing = false;
   
   // Signal to track pending taps waiting to be sent to API
   private pendingTaps = signal<number>(0);
@@ -77,6 +78,8 @@ export class TapService {
 
   // Method to manually flush pending taps (called from NavigationSyncService)
   async flushPendingTaps(): Promise<void> {
+    if (this.isFlushing) return;
+
     const user = this.authService.user();
     const userId = user ? (user.id || user.Id) : null;
     if (!userId) {
@@ -87,6 +90,11 @@ export class TapService {
     const pendingCount = this.pendingTaps();
     if (pendingCount === 0) return;
 
+    // Reset pending taps immediately to prevent race condition
+    this.isFlushing = true;
+    localStorage.setItem(this.PENDING_TAPS_KEY, '0');
+    this.pendingTaps.set(0);
+
     const timestamp = Math.floor(Date.now() / 1000);
     const payload = `${userId}:${timestamp}:${this.secretKey}`;
     
@@ -96,15 +104,18 @@ export class TapService {
       const url = `${this.baseUrl}Game/addTooks`;
       this.http.post(url, { amount: pendingCount, token, timestamp }).subscribe({
         next: async () => {
-          // On success, reset pending taps
-          localStorage.setItem(this.PENDING_TAPS_KEY, '0');
-          this.pendingTaps.set(0);
           console.log(`Sent ${pendingCount} taps to API`);
           
           // Refresh user status to update wallet
           await this.userStatusService.loadUserStatus();
+          this.isFlushing = false;
         },
         error: (error: unknown) => {
+          // Restore pending taps on failure so they can be retried
+          this.pendingTaps.update(current => current + pendingCount);
+          localStorage.setItem(this.PENDING_TAPS_KEY, this.pendingTaps().toString());
+          this.isFlushing = false;
+          
           const httpError = error as HttpErrorResponse;
           if (httpError?.error && typeof httpError.error === 'object' && 'message' in httpError.error) {
             console.error('AddTooks failed:', (httpError.error as { message: string }).message);
@@ -114,6 +125,10 @@ export class TapService {
         }
       });
     } catch (error) {
+      // Restore pending taps on failure
+      this.pendingTaps.update(current => current + pendingCount);
+      localStorage.setItem(this.PENDING_TAPS_KEY, this.pendingTaps().toString());
+      this.isFlushing = false;
       console.error('Failed to generate token:', error);
     }
   }
