@@ -93,20 +93,19 @@ export class UserStatusService {
   
   // Level-up signal for UI animations
   readonly levelUp = signal<{ oldLevel: number; newLevel: number } | null>(null);
+  private _previousLevel = signal(0);
 
   // Effect to detect level changes and notify UI
   constructor() {
     effect(() => {
       const current = this.level();
-      const previous = this._previousLevel;
+      const previous = this._previousLevel();
       if (previous > 0 && current !== previous) {
         this.levelUp.set({ oldLevel: previous, newLevel: current });
       }
-      this._previousLevel = current;
+      this._previousLevel.set(current);
     });
   }
-  
-  private _previousLevel = 0;
 
   async loadUserStatus(pendingTaps?: number): Promise<void> {
     this.isLoading.set(true);
