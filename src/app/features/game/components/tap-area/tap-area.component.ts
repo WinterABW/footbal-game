@@ -104,7 +104,6 @@ export class TapAreaComponent {
   readonly coins = this.tapSvc.coins;
   readonly level = this.tapSvc.level;
   readonly tapValue = this.localApi.tapValue;
-  readonly activeMultiplier = this.localApi.activeMultiplier;
 
   readonly ballImageSrc = computed(() => `game/balls/ball-lv${this.level()}.webp`);
 
@@ -138,7 +137,7 @@ export class TapAreaComponent {
 
     // RESTRICCIÓN DE ENERGÍA DESHABILITADA TEMPORALMENTE
     // this.energySvc.decrementEnergy(1);
-    const earnedCoins = Math.floor(this.tapValue() * this.activeMultiplier());
+    const earnedCoins = this.tapValue();
     this.tapSvc.addTap(1);
     this.tapSvc.addCoins(earnedCoins);
 

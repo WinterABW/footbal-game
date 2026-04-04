@@ -2,14 +2,10 @@ import { Injectable, inject, computed } from '@angular/core';
 import { LocalApiService } from './local-api.service';
 import { UserStatusService } from './user-status.service';
 import { UserInfoService } from './user-info.service';
-import type { Boost } from '../../models/game.model';
-
-export type { Boost };
 
 export interface EnergyData {
   currentEnergy: number;
   maxEnergy: number;
-  boosts: Boost[];
 }
 
 @Injectable({
@@ -23,8 +19,6 @@ export class EnergyService {
   // Signals conectados a LocalApiService/UserStatusService
   readonly energy = this.localApi.currentEnergy;
   readonly maxEnergy = this.localApi.maxEnergy;
-  readonly boosts = this.localApi.boosts;
-  readonly activeBoosts = this.localApi.activeBoosts;
 
   // La energía viene del UserStatusService (API)
   // No se modifica localmente, viene del servidor
@@ -57,14 +51,10 @@ export class EnergyService {
     return 500 + ((skills?.maxEnergyLVL ?? 0) * 100);
   }
 
-  getBoosts(): Boost[] {
-    return this.localApi.boosts();
-  }
-
   async applyBoost(boostId: number) {
     const result = await this.userInfo.purchaseSkill(boostId);
     if (result.success) {
-      return this.localApi.boosts().find(b => b.id === boostId) ?? null;
+      return null;
     }
     return null;
   }
