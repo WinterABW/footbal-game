@@ -3,7 +3,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { TapService } from '../../../../core/services/tap.service';
 import { EnergyService } from '../../../../core/services/energy.service';
-import { LocalApiService } from '../../../../core/services/local-api.service';
+import { UserStatusService } from '../../../../core/services/user-status.service';
 
 interface FloatingNumber {
   id: number; value: number; x: number; y: number;
@@ -87,9 +87,9 @@ interface FloatingNumber {
 export class TapAreaComponent {
   @ViewChild('ballImage') ballImage!: ElementRef<HTMLImageElement>;
 
+  private userStatusService = inject(UserStatusService);
   private tapSvc = inject(TapService);
   private energySvc = inject(EnergyService);
-  private localApi = inject(LocalApiService);
   private router = inject(Router);
 
   floatingNumbers = signal<FloatingNumber[]>([]);
@@ -103,7 +103,7 @@ export class TapAreaComponent {
 
   readonly coins = this.tapSvc.coins;
   readonly level = this.tapSvc.level;
-  readonly tapValue = this.localApi.tapValue;
+  readonly tapValue = this.userStatusService.tapValue;
 
   readonly ballImageSrc = computed(() => `game/balls/ball-lv${this.level()}.webp`);
 

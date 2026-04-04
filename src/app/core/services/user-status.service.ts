@@ -1,7 +1,26 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { UserInfoService, UserStatusResponse, SettingsInfo } from './user-info.service';
 
-// Level thresholds based on totalTooks (same as LocalApiService)
+// Tap configuration (default values)
+const TAP_CONFIG = {
+    baseValue: 1,
+    currentMultiplier: 1,
+    maxMultiplier: 10,
+    levelBonus: [
+        { level: 1, multiplier: 1.0 },
+        { level: 2, multiplier: 1.2 },
+        { level: 3, multiplier: 1.5 },
+        { level: 4, multiplier: 2.0 },
+        { level: 5, multiplier: 2.5 },
+        { level: 6, multiplier: 3.0 },
+        { level: 7, multiplier: 3.5 },
+        { level: 8, multiplier: 4.0 },
+        { level: 9, multiplier: 4.5 },
+        { level: 10, multiplier: 5.0 },
+    ],
+};
+
+// Level thresholds based on totalTooks
 const LEVEL_THRESHOLDS = [
   { level: 1, tooksRequired: 0 },
   { level: 2, tooksRequired: 120 },
@@ -49,6 +68,13 @@ export class UserStatusService {
     return currentLevel;
   });
   
+  // Tap value computed from level
+  readonly tapValue = computed(() => {
+    const level = this.level();
+    const levelMultiplier = TAP_CONFIG.levelBonus.find(b => b.level === level)?.multiplier ?? 1;
+    return Math.floor(TAP_CONFIG.baseValue * TAP_CONFIG.currentMultiplier * levelMultiplier);
+  });
+  
   // Level info computed
   readonly levelInfo = computed(() => {
     const tooks = this.totalTooks();
@@ -64,6 +90,23 @@ export class UserStatusService {
       isMaxLevel: currentLevel >= 8,
     };
   });
+  
+  // Level-up signal for UI animations
+  readonly levelUp = signal<{ oldLevel: number; newLevel: number } | null>(null);
+
+  // Effect to detect level changes and notify UI
+  constructor() {
+    effect(() => {
+      const current = this.level();
+      const previous = this._previousLevel;
+      if (previous > 0 && current !== previous) {
+        this.levelUp.set({ oldLevel: previous, newLevel: current });
+      }
+      this._previousLevel = current;
+    });
+  }
+  
+  private _previousLevel = 0;
 
   async loadUserStatus(pendingTaps?: number): Promise<void> {
     this.isLoading.set(true);

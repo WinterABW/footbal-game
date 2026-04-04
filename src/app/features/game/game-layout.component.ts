@@ -5,7 +5,6 @@ import { EnergyBoostComponent } from './components/energy-boost/energy-boost.com
 import { HeaderComponent } from './components/header/header.component';
 import { TapAreaComponent } from './components/tap-area/tap-area.component';
 import { LevelUpAnimationComponent } from '../../shared/components/level-up-animation/level-up-animation.component';
-import { LocalApiService } from '../../core/services/local-api.service';
 import { OnboardingService } from '../../core/services/onboarding.service';
 import { SpotlightTutorialComponent } from '../../shared/components/spotlight-tutorial/spotlight-tutorial.component';
 import { UserStatusService } from '../../core/services/user-status.service';
@@ -34,11 +33,11 @@ import { UserStatusService } from '../../core/services/user-status.service';
       </main>
 
       <!-- Overlays -->
-      @if (localApi.levelUp(); as levelUpInfo) {
+      @if (userStatusService.levelUp(); as levelUpInfo) {
         <app-level-up-animation 
           [newLevel]="levelUpInfo.newLevel" 
           [oldLevel]="levelUpInfo.oldLevel"
-          (animationFinished)="localApi.clearLevelUp()" />
+          (animationFinished)="userStatusService.levelUp.set(null)" />
       }
 
       <!-- Welcome Tutorial (first-time onboarding) -->
@@ -51,9 +50,8 @@ import { UserStatusService } from '../../core/services/user-status.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GameLayoutComponent {
-  localApi = inject(LocalApiService);
+  userStatusService = inject(UserStatusService);
   private onboarding = inject(OnboardingService);
-  private userStatusService = inject(UserStatusService);
 
   constructor() {
     effect(() => {

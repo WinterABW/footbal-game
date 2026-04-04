@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, AfterViewInit, signal, inject } from '@angular/core';
-import { LocalApiService } from '../../../core/services/local-api.service';
+import { UserStatusService } from '../../../core/services/user-status.service';
 
 @Component({
   selector: 'app-level-up-animation',
@@ -13,7 +13,7 @@ export class LevelUpAnimationComponent implements AfterViewInit {
   @Input() oldLevel = 0;
   @Output() animationFinished = new EventEmitter<void>();
 
-  private localApi = inject(LocalApiService);
+  private userStatusService = inject(UserStatusService);
 
   show = signal(false);
 
@@ -28,7 +28,7 @@ export class LevelUpAnimationComponent implements AfterViewInit {
     this.show.set(false);
     // Allow fade-out animation to complete before emitting event
     setTimeout(() => {
-      this.localApi.clearLevelUp();
+      this.userStatusService.levelUp.set(null);
       this.animationFinished.emit();
     }, 500);
   }

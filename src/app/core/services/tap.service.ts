@@ -1,6 +1,5 @@
 import { Injectable, inject, computed, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { LocalApiService } from './local-api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { EncryptionService } from './encryption.service';
 import { UserStatusService } from '../../core/services/user-status.service';
@@ -10,11 +9,10 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class TapService {
-  private localApi = inject(LocalApiService);
+  private userStatusService = inject(UserStatusService);
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private encryptionService = inject(EncryptionService);
-  private userStatusService = inject(UserStatusService);
   private readonly baseUrl = environment.apiBaseUrl;
   private readonly secretKey = 'MiClaveSecreta123!';
   private readonly PENDING_TAPS_KEY = 'pendingTaps';
@@ -44,8 +42,8 @@ export class TapService {
   // Computed para determinar el nivel basado en el perfil
   readonly level = this.userStatusService.level;
 
-  // Valor por tap calculado desde LocalApiService
-  readonly tapValue = this.localApi.tapValue;
+  // Valor por tap calculado desde UserStatusService
+  readonly tapValue = this.userStatusService.tapValue;
 
   setCoins(coins: number) {
     // Balance is now managed by API, this method is deprecated
