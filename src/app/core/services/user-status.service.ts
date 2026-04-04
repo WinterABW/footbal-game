@@ -122,6 +122,8 @@ export class UserStatusService {
       this.actualInversion.set(data.actualInversion);
       this.skillsLevelReport.set(data.skillsLevelReport);
       this.earnPerHour.set(data.earnPerHour);
+      // Sync previousLevel to current level so initial load doesn't trigger levelUp animation
+      this._previousLevel.set(this.level());
     } else {
       console.error('UserStatusService: Failed to load user status:', result.error);
       this.error.set(result.error ?? 'Failed to load user status');
