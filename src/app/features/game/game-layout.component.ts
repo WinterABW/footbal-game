@@ -7,6 +7,7 @@ import { TapAreaComponent } from './components/tap-area/tap-area.component';
 import { LevelUpAnimationComponent } from '../../shared/components/level-up-animation/level-up-animation.component';
 import { OnboardingService } from '../../core/services/onboarding.service';
 import { SpotlightTutorialComponent } from '../../shared/components/spotlight-tutorial/spotlight-tutorial.component';
+import { BonusClaimComponent } from '../../shared/components/bonus-claim/bonus-claim.component';
 import { UserStatusService } from '../../core/services/user-status.service';
 
 @Component({
@@ -19,6 +20,7 @@ import { UserStatusService } from '../../core/services/user-status.service';
     EnergyBoostComponent,
     LevelUpAnimationComponent,
     SpotlightTutorialComponent,
+    BonusClaimComponent,
   ],
   template: `
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
@@ -42,6 +44,11 @@ import { UserStatusService } from '../../core/services/user-status.service';
 
       <!-- Welcome Tutorial (first-time onboarding) -->
       <app-spotlight-tutorial />
+
+      <!-- Bonus Claim (after tutorial completes) -->
+      @if (onboarding.showBonusClaim()) {
+        <app-bonus-claim (claimed)="onBonusClaimed()" />
+      }
     </section>
   `,
   styles: [`
@@ -51,7 +58,7 @@ import { UserStatusService } from '../../core/services/user-status.service';
 })
 export class GameLayoutComponent {
   userStatusService = inject(UserStatusService);
-  private onboarding = inject(OnboardingService);
+  onboarding = inject(OnboardingService);
 
   constructor() {
     effect(() => {
@@ -67,7 +74,8 @@ export class GameLayoutComponent {
   }
 
   onBonusClaimed(): void {
-    // Bonus is already credited by the backend on registration
-    // This is just for UI celebration — could trigger confetti, sound, etc.
+    // Close the bonus claim modal in the onboarding service
+    // Note: Backend integration for actual credit will be added later
+    this.onboarding.claimBonusAndClose();
   }
 }

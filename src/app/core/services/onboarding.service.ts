@@ -145,10 +145,12 @@ export class OnboardingService {
   private _isActive = signal(false);
   private _currentStep = signal(0);
   private _bonusClaimed = signal(false);
+  private _showBonusClaim = signal(false);
 
   readonly isActive = this._isActive.asReadonly();
   readonly currentStep = this._currentStep.asReadonly();
   readonly bonusClaimed = this._bonusClaimed.asReadonly();
+  readonly showBonusClaim = this._showBonusClaim.asReadonly();
   readonly steps = ONBOARDING_STEPS;
 
   readonly currentStepData = computed(() => ONBOARDING_STEPS[this._currentStep()]);
@@ -214,11 +216,11 @@ export class OnboardingService {
   }
 
   /**
-   * Marca el bono como reclamado y cierra el onboarding
+   * Marca el bono como reclamado y cierra el modal de bonus claim
    */
   claimBonusAndClose(): void {
     this._bonusClaimed.set(true);
-    this.completeOnboarding();
+    this._showBonusClaim.set(false);
   }
 
   /**
@@ -230,11 +232,22 @@ export class OnboardingService {
 
   /**
    * Marca el onboarding como completado en localStorage
+   * y muestra el modal de bonus claim
    */
   completeOnboarding(): void {
     this._isActive.set(false);
     this._currentStep.set(0);
     this.storage.set(ONBOARDING_KEY, true);
+    // Show bonus claim after tutorial completes
+    this._showBonusClaim.set(true);
+  }
+
+  /**
+   * Cierra el modal de bonus claim
+   */
+  dismissBonusClaim(): void {
+    this._showBonusClaim.set(false);
+    this._bonusClaimed.set(true);
   }
 
   /**
@@ -245,5 +258,6 @@ export class OnboardingService {
     this._bonusClaimed.set(false);
     this._isActive.set(false);
     this._currentStep.set(0);
+    this._showBonusClaim.set(false);
   }
 }
