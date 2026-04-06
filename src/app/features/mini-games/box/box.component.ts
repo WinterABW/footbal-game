@@ -28,7 +28,7 @@ interface BallBox {
       </div>
 
       <div class="grid-container !gap-4 !mb-6">
-        @for (box of boxes; track box.id) {
+        @for (box of boxes(); track box.id) {
           <div class="box glass !w-24 !h-24"
                [class.active]="gameState === 'playing' && !box.opened"
                [class.opened]="box.opened"
