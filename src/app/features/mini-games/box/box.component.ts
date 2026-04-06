@@ -3,9 +3,10 @@ import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { UserStatusService } from '../../../core/services/user-status.service';
 
-interface Box {
+interface BallBox {
   id: number;
   hasPrize: boolean;
+  prizeValue: number;
   opened: boolean;
 }
 
@@ -35,7 +36,7 @@ interface Box {
                [class.loser]="box.opened && !box.hasPrize"
                (click)="openBox(box)">
             <div class="content">
-              <img [ngSrc]="boxIcon(box)" [alt]="'Caja ' + (box.opened ? (box.hasPrize ? 'con premio' : 'vacía') : 'sin abrir')" width="96" height="96" class="icon-img">
+              <img [ngSrc]="boxIcon(box)" [alt]="'Balón ' + (box.opened ? (box.hasPrize ? box.prizeValue + ' COP' : 'vacío') : 'sin abrir')" width="96" height="96" class="icon-img">
             </div>
           </div>
         }
@@ -43,12 +44,12 @@ interface Box {
 
        <button class="play-btn glass !px-6 !py-3 !text-base bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 shadow-lg shadow-blue-500/30 border border-white/20 hover:shadow-blue-500/50 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                (click)="startGame()" [disabled]="gameState === 'playing' || balance() <= 0">
-         {{ balance() <= 0 ? 'SIN TICKETS' : (gameState === 'idle' ? 'JUGAR (Costo: $10)' : '🎯 SELECCIONA UNA CAJA 🎯') }}
+         {{ balance() <= 0 ? 'SIN TICKETS' : (gameState === 'idle' ? 'JUGAR (Costo: 1 ticket)' : '⚽ TOCA UN BALÓN ⚽') }}
        </button>
 
       @if (gameState === 'won' || gameState === 'lost') {
         <div class="banner glass !p-4 !text-xl" [class.banner-win]="gameState === 'won'">
-          <h2>{{ gameState === 'won' ? '¡GANASTE EL PREMIO!' : '¡CAJA VACÍA! PERDISTE' }}</h2>
+          <h2>{{ gameState === 'won' ? '¡GANASTE ' + prizeWon() + ' COP!' : '¡BALÓN VACÍA! PERDISTE' }}</h2>
         </div>
       }
     </div>
@@ -255,8 +256,9 @@ export class BoxComponent {
   
   // Balance inicial desde wallet, mutable durante el juego
   balance = signal(0);
-  boxes: Box[] = [];
+  boxes: BallBox[] = [];
   gameState: 'idle' | 'playing' | 'won' | 'lost' = 'idle';
+  prizeWon = signal(0);
 
   private readonly router = inject(Router);
 
@@ -271,7 +273,7 @@ export class BoxComponent {
     this.router.navigate(['/main']);
   }
 
-  boxIcon(box: Box): string {
+  boxIcon(box: BallBox): string {
     if (!box.opened) return 'mini-games/box/init.webp';
     if (box.hasPrize) return 'mini-games/box/good.webp';
     return 'mini-games/box/empty.webp';
@@ -281,33 +283,41 @@ export class BoxComponent {
     this.boxes = Array.from({ length: 9 }, (_, i) => ({
       id: i,
       hasPrize: false,
+      prizeValue: 0,
       opened: false
     }));
   }
 
   startGame() {
-    if (this.balance() < 10) return;
-    this.balance.update(v => v - 10);
+    if (this.balance() <= 0) return;
+    this.balance.update(v => v - 1);
     this.gameState = 'playing';
+    this.prizeWon.set(0);
     this.initBoxes();
     this.playAudioSynth('start');
 
-    let prizesAssigned = 0;
-    while (prizesAssigned < 3) {
+    // 3 premios fijos: 20, 50, 80 COP
+    const prizes = [20, 50, 80];
+    const shuffled = prizes.sort(() => Math.random() - 0.5);
+    let prizeIndex = 0;
+
+    while (prizeIndex < 3) {
       const randomIndex = Math.floor(Math.random() * 9);
       if (!this.boxes[randomIndex].hasPrize) {
         this.boxes[randomIndex].hasPrize = true;
-        prizesAssigned++;
+        this.boxes[randomIndex].prizeValue = shuffled[prizeIndex];
+        prizeIndex++;
       }
     }
   }
 
-  openBox(box: Box) {
+  openBox(box: BallBox) {
     if (this.gameState !== 'playing' || box.opened) return;
     box.opened = true;
     if (box.hasPrize) {
       this.gameState = 'won';
-      this.balance.update(v => v + 50);
+      this.prizeWon.set(box.prizeValue);
+      this.balance.update(v => v + box.prizeValue);
       this.playAudioSynth('win');
       this.triggerConfetti();
     } else {
