@@ -38,7 +38,7 @@ import { ConfettiService } from '../../../services/confetti.service';
           <!-- Top: Bonus icon with glow -->
           <div class="crown-wrapper">
             <div class="crown-ring">
-              <img ngSrc="tuto/bono.webp" alt="Bono" width="72" height="72" class="crown-icon" />
+              <img ngSrc="tuto/bono.webp" alt="Bono" width="140" height="140" class="crown-icon" />
             </div>
             <div class="crown-glow"></div>
           </div>
@@ -221,12 +221,12 @@ import { ConfettiService } from '../../../services/confetti.service';
     .crown-wrapper {
       display: flex;
       justify-content: center;
-      margin-bottom: 24px;
+      margin-bottom: 32px;
     }
 
     .crown-ring {
-      width: 72px;
-      height: 72px;
+      width: 140px;
+      height: 140px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -252,8 +252,8 @@ import { ConfettiService } from '../../../services/confetti.service';
     }
 
     .crown-icon {
-      width: 72px;
-      height: 72px;
+      width: 120px;
+      height: 120px;
       object-fit: contain;
       animation: crown-bob 3s ease-in-out infinite;
       filter: drop-shadow(0 4px 8px rgba(255, 208, 96, 0.3));
@@ -269,8 +269,8 @@ import { ConfettiService } from '../../../services/confetti.service';
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 100px;
-      height: 100px;
+      width: 160px;
+      height: 160px;
       background: radial-gradient(circle, rgba(255, 208, 96, 0.15) 0%, transparent 70%);
       animation: glow-expand 4s ease-in-out infinite;
       z-index: -1;
