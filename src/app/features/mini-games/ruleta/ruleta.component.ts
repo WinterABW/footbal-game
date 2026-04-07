@@ -116,12 +116,12 @@ interface Prize {
 
     .roulette-shell {
       position: relative;
-      width: min(84vw, 360px);
-      height: min(84vw, 360px);
+      width: min(88vw, 380px);
+      height: min(88vw, 380px);
       border-radius: 50%;
       display: grid;
       place-items: center;
-      padding: 0.95rem;
+      padding: 1rem;
       border: 1px solid var(--lg-glass-border-hi);
       box-shadow:
         0 24px 48px rgba(0, 0, 0, 0.36),
