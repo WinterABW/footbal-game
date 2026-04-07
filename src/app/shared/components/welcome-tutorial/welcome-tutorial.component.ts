@@ -43,17 +43,17 @@ import { OnboardingService } from '../../../core/services/onboarding.service';
               {{ onboarding.currentStepData().description }}
             </p>
 
-            <!-- Bonus Step: Extra visual flair -->
-            @if (onboarding.isLastStep()) {
-              <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-amber-500/10 border border-amber-500/20">
-                <div class="text-3xl font-black text-amber-400 tracking-wider">
-                  +500 🪙
-                </div>
-                <p class="text-[10px] text-amber-300/70 mt-1 uppercase tracking-wider">
-                  Monedas de bienvenida
-                </p>
-              </div>
-            }
+             <!-- Bonus Step: Extra visual flair -->
+             @if (onboarding.isLastStep()) {
+               <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-amber-500/10 border border-amber-500/20">
+                 <div class="text-4xl font-black text-amber-400 tracking-wider">
+                   +500 🪙
+                 </div>
+                 <p class="text-[10px] text-amber-300/70 mt-1 uppercase tracking-wider">
+                   Monedas de bienvenida
+                 </p>
+               </div>
+             }
 
             <!-- Action Buttons -->
             <div class="flex flex-col gap-3">
