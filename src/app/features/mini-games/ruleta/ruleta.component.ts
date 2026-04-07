@@ -137,9 +137,12 @@ interface Prize {
       box-shadow:
         0 18px 46px rgba(0, 0, 0, 0.5),
         inset 0 2px 0 rgba(255, 255, 255, 0.28),
-        inset 0 -4px 0 rgba(0, 0, 0, 0.3);
+        inset 0 -4px 0 rgba(0, 0, 0, 0.3),
+        0 0 0 2px rgba(255, 215, 0, 0.4),
+        inset 0 0 0 2px rgba(255, 215, 0, 0.3),
+        0 4px 8px rgba(0, 0, 0, 0.4);
       background: radial-gradient(circle at center, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
-      border: 9px solid color-mix(in srgb, var(--lg-accent-gold) 72%, var(--lg-violet-mid));
+      border: 12px solid #b8860b;
     }
 
     .wheel-face {
