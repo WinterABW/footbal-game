@@ -10,8 +10,8 @@ import { AuthService } from '../../core/services/auth.service';
     <section class="min-h-dvh w-full relative overflow-hidden flex flex-col bg-transparent">
       <!-- Background -->
       <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div class="absolute top-[-20%] right-[-10%] w-[120%] h-[120%] bg-gradient-to-b from-indigo-500/10 via-transparent to-black/80 blur-[120px]"></div>
-        <div class="absolute bottom-[-10%] right-[10%] w-[50%] h-[50%] bg-teal-500/5 rounded-full blur-[100px]"></div>
+        <div class="absolute top-[-20%] right-[-10%] w-[120%] h-[120%] bg-gradient-to-b from-[#0d1b6e]/20 via-transparent to-black/80 blur-[80px] lg-float"></div>
+        <div class="absolute bottom-[-10%] right-[10%] w-[50%] h-[50%] bg-[#00d4ff]/10 rounded-full blur-[60px] lg-float animation-delay-200"></div>
       </div>
 
       <!-- Header Minimal -->
@@ -27,27 +27,27 @@ import { AuthService } from '../../core/services/auth.service';
       <main class="relative z-20 flex-1 flex flex-col px-5 justify-center -mt-10">
         <!-- Logo/Title -->
         <div class="text-center mb-6">
-          <h1 class="text-3xl font-black text-white tracking-tighter">
+          <h1 class="text-3xl font-black text-white tracking-tighter text-glow-cyan">
             Game Football
           </h1>
-          <p class="text-[10px] font-medium text-white/30 uppercase tracking-widest mt-1">
-            {{ activeTab() === 'login' ? 'Acceder' : 'Unirse' }}
+          <p class="text-xs font-medium text-white/70 uppercase tracking-widest mt-1">
+            {{ activeTab() === 'login' ? 'Acceder' : 'Registrar' }}
           </p>
         </div>
 
         <!-- Compact Tabs - Using official lg-tab-bar -->
-        <div class="lg-tab-bar mb-6">
-          <button (click)="activeTab.set('login')" 
-                  [class.lg-tab-item--active]="activeTab() === 'login'"
-                  class="lg-tab-item flex-1">
-            Entrar
-          </button>
-          <button (click)="activeTab.set('register')"
-                  [class.lg-tab-item--active]="activeTab() === 'register'"
-                  class="lg-tab-item flex-1">
-            Registro
-          </button>
-        </div>
+         <div class="lg-tab-bar mb-6">
+           <button (click)="activeTab.set('login')" 
+                   [class.lg-tab-item--active]="activeTab() === 'login'"
+                   class="lg-tab-item flex-1">
+             Acceder
+           </button>
+           <button (click)="activeTab.set('register')"
+                   [class.lg-tab-item--active]="activeTab() === 'register'"
+                   class="lg-tab-item flex-1">
+             Registrar
+           </button>
+         </div>
 
         <!-- Error Alert -->
         @if (error()) {
@@ -57,13 +57,13 @@ import { AuthService } from '../../core/services/auth.service';
         }
 
         <!-- Form -->
-        <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5">
+        <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
           @if (activeTab() === 'login') {
-            <form (ngSubmit)="onLogin()" class="space-y-4">
+            <form (ngSubmit)="onLogin()" class="space-y-3">
               <div class="space-y-2">
-                <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Usuario o Email</label>
+                 <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Email o Número</label>
                 <input type="text" [(ngModel)]="identifier" name="ident" 
-                       class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                       class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
                        placeholder="usuario@email.com">
               </div>
 
@@ -71,7 +71,7 @@ import { AuthService } from '../../core/services/auth.service';
                 <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Contraseña</label>
                 <div class="relative">
                   <input [type]="showPassword() ? 'text' : 'password'" [(ngModel)]="pass" name="pass"
-                         class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 pr-10 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                         class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 pr-10 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
                          placeholder="••••••••">
                   <button type="button" (click)="togglePassword()" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -81,25 +81,46 @@ import { AuthService } from '../../core/services/auth.service';
                 </div>
               </div>
 
-              <button type="submit" [disabled]="isLoading()" 
-                      class="w-full lg-btn-primary py-3 px-4 text-sm uppercase tracking-wider active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
-                {{ isLoading() ? 'Cargando...' : 'Entrar' }}
-              </button>
+                <button type="submit" [disabled]="isLoading()" 
+                        class="w-full lg-btn-primary py-2.5 px-4 text-sm uppercase tracking-wider active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed text-glow-cyan">
+                  {{ isLoading() ? 'Cargando...' : 'Entrar' }}
+                </button>
             </form>
           } @else {
-            <form (ngSubmit)="onRegister()" class="space-y-4">
+            <form (ngSubmit)="onRegister()" class="space-y-3">
               <div class="space-y-2">
-                <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Nombre de usuario</label>
-                <input type="text" [(ngModel)]="identifier" name="reg-ident" 
-                       class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Nombre</label>
+                <input type="text" [(ngModel)]="name" name="reg-name" 
+                       class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
                        placeholder="Tu nombre">
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Correo electrónico</label>
+                <input type="email" [(ngModel)]="email" name="reg-email" 
+                       class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                       placeholder="tu.correo@ejemplo.com">
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Número telefónico</label>
+                <input type="tel" [(ngModel)]="phoneNumber" name="reg-phone" 
+                       class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                       placeholder="+XX YYY ZZZZ">
               </div>
 
               <div class="space-y-2">
                 <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Contraseña</label>
                 <input type="password" [(ngModel)]="pass" name="reg-pass"
-                       class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                       class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
                        placeholder="Mínimo 8 caracteres">
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Repetir Contraseña</label>
+                <input type="password" [(ngModel)]="repeatPass" name="reg-repeat-pass"
+                       class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                       placeholder="Repite tu contraseña">
               </div>
 
               <div class="flex items-center gap-3">
@@ -117,9 +138,9 @@ import { AuthService } from '../../core/services/auth.service';
               </div>
 
                <button type="submit" [disabled]="isLoading() || !terms()" 
-                       class="w-full lg-btn-primary py-3 px-4 text-sm uppercase tracking-wider active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
-                {{ isLoading() ? 'Creando...' : 'Crear cuenta' }}
-              </button>
+                       class="w-full lg-btn-primary py-2.5 px-4 text-sm uppercase tracking-wider active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed text-glow-cyan">
+                 {{ isLoading() ? 'Creando...' : 'Crear cuenta' }}
+               </button>
             </form>
           }
          </div>
@@ -139,7 +160,11 @@ export class LoginComponent {
 
   activeTab = signal<'login' | 'register'>('login');
   identifier = '';
+  name = '';
+  email = '';
+  phoneNumber = '';
   pass = '';
+  repeatPass = '';
   terms = signal(false);
   isLoading = signal(false);
   showPassword = signal(false);
@@ -147,8 +172,8 @@ export class LoginComponent {
 
   checkboxClass = computed(() => {
     const base = 'relative w-5 h-5 rounded-lg border-2 transition-all duration-200 flex items-center justify-center';
-    const state = this.terms() ? 'border-white' : 'border-white/30 bg-white/5';
-    const hover = 'hover:border-white/50';
+    const state = this.terms() ? 'border-emerald-400 bg-emerald-600/20' : 'border-white/20 bg-white/5';
+    const hover = 'hover:border-white/40';
     return `${base} ${state} ${hover}`;
   });
 
@@ -182,8 +207,12 @@ export class LoginComponent {
   }
 
   async onRegister() {
-    if (!this.identifier || !this.pass) {
-      this.error.set('Campos requeridos vacíos');
+    if (!this.name || !this.email || !this.phoneNumber || !this.pass || !this.repeatPass) {
+      this.error.set('Todos los campos son requeridos');
+      return;
+    }
+    if (this.pass !== this.repeatPass) {
+      this.error.set('Las contraseñas no coinciden');
       return;
     }
     if (!this.terms()) {
@@ -194,10 +223,10 @@ export class LoginComponent {
     this.error.set(null);
     try {
       const result = await this.authService.register(
-        this.identifier,
+        this.email, // Usamos el email como identificador principal
         this.pass,
-        null,
-        null
+        this.name, // Nombre de usuario
+        this.phoneNumber // Número de teléfono
       );
       if (result.success) {
         this.router.navigate(['/main']);
