@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Signal, signal, effect, ElementRef,
 import { Subscription } from 'rxjs';
 import { NgOptimizedImage, DecimalPipe } from '@angular/common';
 import { GlassModalComponent, GlassTabBarComponent, GlassTab } from '../../shared/ui';
-import { MotionsService, MissionHistoryItem } from './motions.service';
+import { MotionsService, MissionHistoryItem, CompletedMission } from './motions.service';
 import { AudioService } from '../../services/audio.service';
 import { ConfettiService } from '../../services/confetti.service';
 import { ErrorHandlerService } from '../../core/services/error-handler.service';
@@ -183,7 +183,7 @@ interface DailyReward {
                     </div>
                     <div class="lg-module-card p-3 border-emerald-500/30 accent-emerald">
                       <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Totales</span>
-                      <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ missions().length }}</span>
+                      <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ totalMissions() }}</span>
                     </div>
                     <div class="lg-module-card p-3">
                       <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Fallidas</span>
@@ -395,10 +395,11 @@ export class MotionsComponent implements AfterViewInit, OnDestroy {
   readonly showHistoryModal!: Signal<boolean>;
   readonly missions!: Signal<Mission[]>;
   readonly whatsappMissions!: Signal<Mission[]>;
-  readonly completedMissions!: Signal<Mission[]>;
-  readonly failedMissions!: Signal<Mission[]>;
+  readonly completedMissions!: Signal<CompletedMission[]>;
+  readonly failedMissions!: Signal<CompletedMission[]>;
+  readonly totalMissions!: Signal<number>;
   readonly totalLost!: Signal<number>;
-  readonly missionHistory!: Signal<Mission[]>;
+  readonly missionHistory!: Signal<CompletedMission[]>;
   // Service-managed tab state (persists while app is open)
   readonly activeHistoryTab!: Signal<string>;
   readonly historyTabs!: GlassTab[];
@@ -432,6 +433,7 @@ export class MotionsComponent implements AfterViewInit, OnDestroy {
     this.whatsappMissions = this.motionsService.whatsappMissions$;
     this.completedMissions = this.motionsService.completedMissions$;
     this.failedMissions = this.motionsService.failedMissions$;
+    this.totalMissions = this.motionsService.totalMissions$;
     this.totalLost = this.motionsService.totalLost$;
     this.missionHistory = this.motionsService.missionHistory$;
     this.activeHistoryTab = this.motionsService.activeHistoryTab$;
@@ -578,6 +580,10 @@ export class MotionsComponent implements AfterViewInit, OnDestroy {
     this.motionsService.setActiveTab(tab);
     const categoryId = tab === 'History' ? null : this.missionTabKeys.indexOf(tab);
     this.motionsService.fetchMissions(categoryId);
+    // Load completed missions for History tab statistics
+    if (tab === 'History') {
+      this.motionsService.fetchCompletedMissions();
+    }
   }
   setSelectedHistoryTab(tab: string) {
     this.motionsService.setActiveHistoryTab(tab);

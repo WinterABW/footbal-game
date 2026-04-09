@@ -67,8 +67,6 @@ export class MotionsService {
   private readonly missions = signal<Mission[]>([]);
   private readonly loading = signal<boolean>(false);
   private readonly error = signal<string | null>(null);
-  private readonly completedMissions = signal<Mission[]>([]);
-  private readonly failedMissions = signal<Mission[]>([]);
   private readonly completedMissionRecords = signal<CompletedMission[]>([]);
   private readonly loadingCompletedMissions = signal<boolean>(false);
 
@@ -124,11 +122,21 @@ export class MotionsService {
   readonly loading$ = this.loading.asReadonly();
   readonly error$ = this.error.asReadonly();
   readonly whatsappMissions$ = computed(() => this.missions().filter(m => m.category === 'whatsapp'));
-  readonly completedMissions$ = computed(() => this.missions().filter(m => m.completed));
-  readonly failedMissions$ = computed(() => this.missions().filter(m => !m.completed));
+  
+  // Statistics from completedMissionRecords (GetCompletedMisions endpoint)
+  readonly completedMissions$ = computed(() => 
+    this.completedMissionRecords().filter(r => r.state === MisionState.Completed)
+  );
+  readonly failedMissions$ = computed(() => 
+    this.completedMissionRecords().filter(r => r.state === MisionState.Failed)
+  );
+  readonly totalMissions$ = computed(() => {
+    const records = this.completedMissionRecords();
+    return records.filter(r => r.state === MisionState.Completed || r.state === MisionState.Failed).length;
+  });
   readonly totalLost$ = computed(() => {
     const failed = this.failedMissions$();
-    return failed.reduce((sum, m) => sum + (Number(m.reward) || 0), 0);
+    return failed.reduce((sum, r) => sum + (Number(r.misionReward) || 0), 0);
   });
   readonly missionHistory$ = computed(() => [...this.completedMissions$(), ...this.failedMissions$()]);
   readonly filteredHistory$ = computed<MissionHistoryItem[]>(() => {
