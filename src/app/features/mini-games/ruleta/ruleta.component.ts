@@ -31,7 +31,6 @@ interface Prize {
   template: `
     <section class="game-wrapper hide-nav" aria-label="Juego de ruleta aleatoria">
       <app-ticket-header
-        [ticketCount]="ticketsCount()"
         [accentColor]="'yellow'"
         (backClick)="goBack()"
       />

@@ -19,7 +19,6 @@ interface BallBox {
   template: `
     <div class="game-wrapper hide-nav">
       <app-ticket-header
-        [ticketCount]="balance()"
         [accentColor]="'yellow'"
         (backClick)="goBack()"
       />

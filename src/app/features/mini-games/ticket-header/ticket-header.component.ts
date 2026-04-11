@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
+import { UserStatusService } from '../../../core/services/user-status.service';
 
 export type TicketAccentColor = 'yellow' | 'cyan';
 
@@ -37,7 +38,7 @@ export type TicketAccentColor = 'yellow' | 'cyan';
           width="48"
           height="48"
         />
-        <h1>Tickets: <span class="text-glow-{{ accentClass() }}"> {{ ticketCount() }}</span></h1>
+        <h1>Tickets: <span class="text-glow-{{ accentClass() }}"> {{ ticketsCount() }}</span></h1>
       </div>
     </div>
   `,
@@ -119,18 +120,18 @@ export type TicketAccentColor = 'yellow' | 'cyan';
 })
 export class TicketHeaderComponent {
   private router = inject(Router);
+  private userStatusService = inject(UserStatusService);
 
-  ticketCount = input.required<number>();
   accentColor = input<TicketAccentColor>('yellow');
 
   backClick = output<void>();
 
+  ticketsCount = computed(() => this.userStatusService.wallet()?.ticketBalance ?? 0);
   accentBorder = computed(() => this.accentColor() === 'cyan' ? 'cyan-500' : 'yellow-500');
   accentClass = computed(() => this.accentColor());
 
   onBackClick(): void {
     this.backClick.emit();
-    // Default navigation if no handler
     this.router.navigate(['/main']);
   }
 }

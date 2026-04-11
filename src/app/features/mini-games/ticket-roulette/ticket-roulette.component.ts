@@ -22,7 +22,6 @@ interface Ticket {
   template: `
     <div class="game-wrapper hide-nav">
       <app-ticket-header
-        [ticketCount]="ticketsCount()"
         [accentColor]="'cyan'"
         (backClick)="goBack()"
       />
