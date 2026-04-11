@@ -26,23 +26,22 @@ interface Prize {
   template: `
     <section class="game-wrapper hide-nav" aria-label="Juego de ruleta aleatoria">
       <button
-        class="back-btn lg-icon-btn absolute top-3 left-3 w-11 h-11 z-50 text-white hover:-translate-x-0.5"
+        class="back-btn absolute top-3 left-3 w-12 h-12 flex items-center justify-center rounded-full bg-white/5 backdrop-blur border border-white/10 z-50 transition-transform hover:-translate-x-0.5"
         (click)="goBack()"
         aria-label="Volver"
       >
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-5 h-5">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
 
-       <header class="w-full max-w-md px-4 pt-6 pb-4 text-center">
-         <div class="header glass !p-2 !mb-3 inline-flex items-center gap-3 border-yellow-500/30 shadow-lg accent-amber">
-           <img ngSrc="mini-games/tickets/tickets.webp" alt="Tickets" class="w-10 h-10 object-contain opacity-80 drop-shadow-md" width="40" height="40">
-           <h1 class="text-lg font-bold">Tickets: <span class="text-glow-yellow">{{ ticketsCount() }}</span></h1>
-         </div>
-         <h1 class="mt-2 text-white text-3xl font-black tracking-[0.08em] leading-tight">SUPER LUCKY SPIN</h1>
-         <p class="mt-1.5 text-sm text-white/75">Gira la ruleta y gana una recompensa aleatoria</p>
-       </header>
+      <div class="header glass !p-2 !mb-4 inline-flex items-center gap-3 border-yellow-500/30 shadow-lg accent-amber">
+        <img ngSrc="mini-games/tickets/tickets.webp" alt="Tickets" class="w-12 h-12 object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 drop-shadow-md transition-all" width="48" height="48">
+        <h1>Tickets: <span class="text-glow-yellow"> {{ ticketsCount() }}</span></h1>
+      </div>
+
+      <h1 class="text-white text-3xl font-black tracking-[0.08em] leading-tight mb-1">SUPER LUCKY SPIN</h1>
+      <p class="text-sm text-white/75 mb-4">Gira la ruleta y gana una recompensa aleatoria</p>
 
       <div class="roulette-shell lg-panel lg-shimmer lg-accent-ring" role="group" aria-label="Ruleta de premios">
         <div class="pointer" aria-hidden="true"></div>
@@ -107,21 +106,49 @@ interface Prize {
     :host {
       display: block;
       min-height: 100vh;
-      background: var(--color-dark-background);
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
       color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
     }
 
-     .game-wrapper {
-       display: flex;
-       flex-direction: column;
-       align-items: center;
-       justify-content: flex-start;
-       min-height: 100vh;
-       padding: 1rem 0 0.5rem;
-       position: relative;
-       overflow: hidden;
-       gap: 0.5rem;
-     }
+    .game-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 0.75rem 1rem 1rem;
+      position: relative;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 
+        inset 0 0 20px rgba(255, 255, 255, 0.05),
+        0 8px 32px rgba(0, 0, 0, 0.3);
+      border-radius: 24px;
+    }
+
+    .header {
+      padding: 1rem 2rem;
+      margin-bottom: 1rem;
+      border-radius: 40px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      letter-spacing: 1.5px;
+      font-weight: 400;
+      color: white;
+    }
+    .header span {
+      color: #facc15;
+      font-weight: 700;
+    }
 
     .roulette-shell {
       position: relative;

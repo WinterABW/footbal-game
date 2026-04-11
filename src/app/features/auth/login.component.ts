@@ -44,11 +44,6 @@ import { AuthService } from '../../core/services/auth.service';
           </p>
         </div>
 
-        <!-- Dev Skip Button -->
-        <button (click)="skipLogin()" 
-                class="mb-4 w-full py-2 text-[10px] font-bold text-white/20 uppercase tracking-widest border border-white/5 rounded-xl hover:bg-white/5 hover:text-white/40 transition-all">
-          ⏩ Saltar (Dev)
-        </button>
 
         <!-- Compact Tabs - Using official lg-tab-bar -->
          <div class="lg-tab-bar mb-6">

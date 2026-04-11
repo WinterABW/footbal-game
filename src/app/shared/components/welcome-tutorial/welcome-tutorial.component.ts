@@ -84,7 +84,7 @@ import { OnboardingService } from '../../../core/services/onboarding.service';
                   (click)="skip()"
                   class="text-[11px] text-white/30 hover:text-white/60 transition-colors py-1"
                 >
-                  Saltar tutorial
+                  Saltar
                 </button>
               }
             </div>
