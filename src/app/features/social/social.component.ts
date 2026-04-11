@@ -3,6 +3,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
 import { UserStatusService } from '../../core/services/user-status.service';
 import { UserInfoService, ReferInfoResponse } from '../../core/services/user-info.service';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-social',
@@ -200,8 +201,9 @@ import { UserInfoService, ReferInfoResponse } from '../../core/services/user-inf
 export class SocialComponent implements OnInit {
   private userStatusService = inject(UserStatusService);
   private userInfoService = inject(UserInfoService);
+  private errorHandler = inject(ErrorHandlerService);
 
-  readonly referrealId = this.userStatusService.referrealId;
+  readonly userId = this.userStatusService.userStatus;
   readonly referInfo = signal<ReferInfoResponse | null>(null);
 
   readonly socialTabs: GlassTab[] = [
@@ -212,7 +214,7 @@ export class SocialComponent implements OnInit {
 
   activeTab = signal<string>('misReferidos');
 
-  private readonly baseUrl = 'https://t.me/football/start?startapp=';
+  private readonly baseUrl = 'https://footbal-game-six.vercel.app/welcome?referrealId=';
 
   async ngOnInit(): Promise<void> {
     await this.loadReferInfo();
@@ -226,9 +228,9 @@ export class SocialComponent implements OnInit {
   }
 
   getReferralUrl(): string | null {
-    const refId = this.referrealId();
-    if (!refId) return null;
-    return `${this.baseUrl}${refId}`;
+    const user = this.userId();
+    if (!user?.id) return null;
+    return `${this.baseUrl}${user.id}`;
   }
 
   async shareReferralLink(): Promise<void> {
@@ -238,15 +240,29 @@ export class SocialComponent implements OnInit {
       return;
     }
 
+    const shareText = '¡Únete a Football Game y gana premios! ';
+    const shareUrl = `${shareText}${url}`;
+
+    // Intentar Web Share API primero
     if (navigator.share) {
       try {
-        await navigator.share({ url });
+        await navigator.share({ 
+          url: shareUrl,
+          title: 'Football Game',
+          text: shareText
+        });
+        return;
       } catch {
-        // User cancelled or share failed — silently ignore
+        // Fallback si falla
       }
-    } else {
-      await this.copyToClipboard(url);
     }
+
+    // Fallback 1: Copiar al portapapeles
+    await this.copyToClipboard(url);
+    
+    // Fallback 2: Abrir WhatsApp directo (más confiable en móvil)
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareUrl)}`;
+    window.open(whatsappUrl, '_blank');
   }
 
   async copyReferralLink(): Promise<void> {
@@ -261,8 +277,9 @@ export class SocialComponent implements OnInit {
   private async copyToClipboard(text: string): Promise<void> {
     try {
       await navigator.clipboard.writeText(text);
+      this.errorHandler.showToast('Enlace copiado', 'success');
     } catch {
-      console.error('Failed to copy to clipboard');
+      this.errorHandler.showToast('Error al copiar enlace', 'error');
     }
   }
 }
