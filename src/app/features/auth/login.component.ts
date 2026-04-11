@@ -107,9 +107,26 @@ import { AuthService } from '../../core/services/auth.service';
 
               <div class="space-y-2">
                 <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Teléfono</label>
-                <input type="tel" [(ngModel)]="phone" name="reg-phone" 
-                       class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
-                       placeholder="Tu número de teléfono">
+                <div class="flex gap-2">
+                  <!-- Country Prefix Select -->
+                  <div class="relative w-24">
+                    <select [(ngModel)]="countryPrefix" name="country-prefix"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-2 text-white text-sm focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all appearance-none cursor-pointer">
+                      @for (country of countries; track country.code) {
+                        <option [value]="country.prefix" class="bg-slate-900 text-white">
+                          {{ country.prefix }} {{ country.flag }}
+                        </option>
+                      }
+                    </select>
+                    <svg class="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-white/40 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                  <!-- Phone Input -->
+                  <input type="tel" [(ngModel)]="phone" name="reg-phone" 
+                         class="flex-1 bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                         placeholder="Tu número de teléfono">
+                </div>
               </div>
 
               <div class="space-y-2">
@@ -153,9 +170,34 @@ export class LoginComponent {
   phone = '';
   pass = '';
   refId = '';
+  countryPrefix = '+54'; // Default: Argentina
   isLoading = signal(false);
   showPassword = signal(false);
   error = signal<string | null>(null);
+
+  // Country prefixes for Latin America & Caribbean
+  countries = [
+    { code: 'AR', name: 'Argentina', prefix: '+54', flag: '🇦🇷' },
+    { code: 'BO', name: 'Bolivia', prefix: '+591', flag: '🇧🇴' },
+    { code: 'BR', name: 'Brasil', prefix: '+55', flag: '🇧🇷' },
+    { code: 'CL', name: 'Chile', prefix: '+56', flag: '🇨🇱' },
+    { code: 'CO', name: 'Colombia', prefix: '+57', flag: '🇨🇴' },
+    { code: 'CR', name: 'Costa Rica', prefix: '+506', flag: '🇨🇷' },
+    { code: 'CU', name: 'Cuba', prefix: '+53', flag: '🇨🇺' },
+    { code: 'DO', name: 'Rep. Dominicana', prefix: '+1', flag: '🇩🇴' },
+    { code: 'EC', name: 'Ecuador', prefix: '+593', flag: '🇪🇨' },
+    { code: 'SV', name: 'El Salvador', prefix: '+503', flag: '🇸🇻' },
+    { code: 'GT', name: 'Guatemala', prefix: '+502', flag: '🇬🇹' },
+    { code: 'HN', name: 'Honduras', prefix: '+504', flag: '🇭🇳' },
+    { code: 'MX', name: 'México', prefix: '+52', flag: '🇲🇽' },
+    { code: 'NI', name: 'Nicaragua', prefix: '+505', flag: '🇳🇮' },
+    { code: 'PA', name: 'Panamá', prefix: '+507', flag: '🇵🇦' },
+    { code: 'PY', name: 'Paraguay', prefix: '+595', flag: '🇵🇾' },
+    { code: 'PE', name: 'Perú', prefix: '+51', flag: '🇵🇪' },
+    { code: 'PR', name: 'Puerto Rico', prefix: '+1', flag: '🇵🇷' },
+    { code: 'UY', name: 'Uruguay', prefix: '+598', flag: '🇺🇾' },
+    { code: 'VE', name: 'Venezuela', prefix: '+58', flag: '🇻🇪' },
+  ];
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -196,13 +238,15 @@ export class LoginComponent {
     this.isLoading.set(true);
     this.error.set(null);
     try {
+      // Full phone number with country prefix
+      const fullPhone = `${this.countryPrefix}${this.phone.replace(/^\+?\d/i, '')}`;
       // refId is optional, so we can pass null or undefined if not provided by a field
       const refId = undefined; // Or null, depending on backend preference for optional unset values
 
       const result = await this.authService.register(
         this.name, // username
         this.pass, // password
-        this.phone, // phone
+        fullPhone, // phone with prefix
         refId // refId (optional)
       );
       if (result.success) {

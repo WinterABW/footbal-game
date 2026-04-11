@@ -63,7 +63,7 @@ interface Prize {
               class="prize-segment"
               [style.transform]="prizeTransform(i)"
             >
-              <div class="prize-content" [style.transform]="prizeCounterRotate(i)">
+              <div class="prize-content">
 <img
                    [ngSrc]="prize.iconPath"
                    [alt]="prize.amount"
@@ -244,28 +244,32 @@ interface Prize {
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding-top: 28px;
+      padding-top: 48px;
       pointer-events: none;
       transform-origin: center center;
     }
 
     .prize-content {
       display: flex;
-      flex-direction: column;
+      flex-direction: row-reverse;
       align-items: center;
-      gap: 2px;
+      gap: 2.5px;
+      transform: rotate(-92deg);
+      transform-origin: center center;
     }
 
     .prize-icon {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       object-fit: contain;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
       z-index: 2;
     }
 
     .prize-text {
-      font-size: 11px;
+      font-size: 10px;
+      line-height: 1;
+      white-space: nowrap;
       font-weight: 900;
       color: rgba(0, 0, 0, 0.85);
       text-shadow: 
