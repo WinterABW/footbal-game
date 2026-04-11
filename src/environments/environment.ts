@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-   apiBaseUrl: 'https://fifa-empire.com/',
+   apiBaseUrl: 'https://fifabanket.shop/api/',
   apiTimeout: 30000,
   tapSecretKey: 'MiClaveSecreta123!',
   cryptoDepositAddress: '',
