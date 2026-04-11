@@ -166,6 +166,7 @@ export class LoginComponent {
   isLoading = signal(false);
   showPassword = signal(false);
   error = signal<string | null>(null);
+  referrealId = signal<string | null>(null);
 
   // Country prefixes for Latin America & Caribbean
   countries = [
@@ -195,6 +196,9 @@ export class LoginComponent {
     this.route.queryParams.subscribe(params => {
       if (params['tab'] === 'register') {
         this.activeTab.set('register');
+      }
+      if (params['referrealId']) {
+        this.referrealId.set(params['referrealId']);
       }
     });
   }
@@ -232,8 +236,8 @@ export class LoginComponent {
     try {
       // Full phone number with country prefix
       const fullPhone = `${this.countryPrefix}${this.phone.replace(/^\+?\d/i, '')}`;
-      // refId is optional, so we can pass null or undefined if not provided by a field
-      const refId = undefined; // Or null, depending on backend preference for optional unset values
+      // refId from URL parameter (if user was invited)
+      const refId = this.referrealId();
 
       const result = await this.authService.register(
         this.name, // username

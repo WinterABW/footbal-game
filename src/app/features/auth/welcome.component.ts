@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-welcome',
@@ -161,13 +161,22 @@ import { Router } from '@angular/router';
 })
 export class WelcomeComponent {
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+  referrealId = this.route.snapshot.queryParamMap.get('referrealId');
 
   goToRegister() {
-    this.router.navigate(['/login'], { queryParams: { tab: 'register' } });
+    const queryParams = this.referrealId 
+      ? { tab: 'register', referrealId: this.referrealId }
+      : { tab: 'register' };
+    this.router.navigate(['/login'], { queryParams });
   }
 
   goToLogin() {
-    this.router.navigate(['/login']);
+    const queryParams = this.referrealId 
+      ? { referrealId: this.referrealId }
+      : {};
+    this.router.navigate(['/login'], { queryParams });
   }
 
    goToGuest() {
