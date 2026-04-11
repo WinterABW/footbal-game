@@ -240,37 +240,33 @@ export class SocialComponent implements OnInit {
       return;
     }
 
-    const shareText = '¡Únete a Football Game y gana premios! ';
-    const shareUrl = `${shareText}${url}`;
+    const shareData: ShareData = {
+      title: 'Football Game',
+      text: '¡Únete a Football Game y gana premios!',
+      url,
+    };
 
-    // Verificar si estamos en Telegram Mini App
+    // Prioridad: share sheet nativo del sistema (WhatsApp, Telegram, SMS, etc.)
+    if (navigator.share) {
+      try {
+        if (!navigator.canShare || navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+          return;
+        }
+      } catch {
+        // Fallback si falla o el usuario cancela
+      }
+    }
+
+    // Fallback en WebView/restricciones: compartir por Telegram dentro del Mini App
     const tg = (window as any).Telegram?.WebApp;
     if (tg?.openTelegramLink) {
-      // En Telegram: usar share de Telegram
-      const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`;
+      const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareData.text ?? '')}`;
       tg.openTelegramLink(telegramShareUrl);
       return;
     }
 
-    // Verificar si Web Share API está disponible y funciona
-    if (navigator.share) {
-      try {
-        // Probar si puede compartir
-        if (navigator.canShare?.({ url: shareUrl, text: shareText, title: 'Football Game' })) {
-          await navigator.share({ 
-            url: shareUrl,
-            title: 'Football Game',
-            text: shareText
-          });
-          return;
-        }
-      } catch (err) {
-        console.log('Web Share failed, falling back');
-        // Fallback si falla
-      }
-    }
-
-    // Fallback: Copiar al portapapeles y mostrar toast
+    // Último fallback: copiar enlace
     await this.copyToClipboard(url);
   }
 
