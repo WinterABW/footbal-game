@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { UserStatusService } from '../../../core/services/user-status.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { GameService } from '../../../core/services/game.service';
+import { TicketHeaderComponent } from '../ticket-header/ticket-header.component';
 
 interface Ticket {
   id: number;
@@ -17,19 +18,14 @@ interface Ticket {
 @Component({
   selector: 'app-ticket-roulette',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImage, TicketHeaderComponent],
   template: `
     <div class="game-wrapper hide-nav">
-      <button class="back-btn absolute top-3 left-3 w-12 h-12 flex items-center justify-center rounded-full bg-white/5 backdrop-blur border border-white/10 z-50 transition-transform hover:-translate-x-0.5" (click)="goBack()" aria-label="Volver">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-
-      <div class="header glass !py-2 !px-4 !mb-4 !inline-flex items-center gap-3 border-cyan-500/30 shadow-lg accent-cyan-bg">
-        <img ngSrc="mini-games/tickets/tickets.webp" alt="Tickets" class="w-12 h-12 object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 drop-shadow-md transition-all" width="48" height="48">
-        <h1>Tickets: <span class="text-glow-cyan"> {{ ticketsCount() }}</span></h1>
-      </div>
+      <app-ticket-header
+        [ticketCount]="ticketsCount()"
+        [accentColor]="'cyan'"
+        (backClick)="goBack()"
+      />
 
       <div class="glass-board shadow-glow">
         <div class="selector-arrow left"></div>

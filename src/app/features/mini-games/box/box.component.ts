@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { UserStatusService } from '../../../core/services/user-status.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { GameService } from '../../../core/services/game.service';
+import { TicketHeaderComponent } from '../ticket-header/ticket-header.component';
 
 interface BallBox {
   id: number;
@@ -14,20 +15,14 @@ interface BallBox {
 
 @Component({
   selector: 'app-box',
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImage, TicketHeaderComponent],
   template: `
     <div class="game-wrapper hide-nav">
-      <!-- Botón Atrás -->
-       <button class="back-btn absolute top-3 left-3 w-12 h-12 flex items-center justify-center rounded-full bg-white/5 backdrop-blur border border-white/10 z-50 transition-transform hover:-translate-x-0.5" (click)="goBack()" aria-label="Volver">
-         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-6 h-6">
-           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-         </svg>
-       </button>
-
-      <div class="header glass !p-2 !mb-4 inline-flex items-center gap-3 border-yellow-500/30 shadow-lg accent-amber">
-        <img ngSrc="mini-games/tickets/tickets.webp" alt="Jugadores" class="w-12 h-12 object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 drop-shadow-md transition-all" width="48" height="48">
-        <h1>Tickets: <span class="text-glow-yellow"> {{ balance() }}</span></h1>
-      </div>
+      <app-ticket-header
+        [ticketCount]="balance()"
+        [accentColor]="'yellow'"
+        (backClick)="goBack()"
+      />
 
       <div class="grid-container !gap-4 !mb-6">
         @for (box of boxes(); track box.id) {
