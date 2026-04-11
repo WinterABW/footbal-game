@@ -144,14 +144,30 @@ import { AuthService } from '../../core/services/auth.service';
                 </div>
               </div>
 
-              <div class="space-y-2">
+<div class="space-y-2">
                 <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Contraseña</label>
                 <input type="password" [(ngModel)]="pass" name="reg-pass"
                        class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
                        placeholder="Tu contraseña">
-              </div>
+               </div>
 
-               <button type="submit" [disabled]="isLoading()" 
+<div class="space-y-2">
+                <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Repetir Contraseña</label>
+                <input type="password" [(ngModel)]="confirmPass" name="reg-confirm-pass"
+                       class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                       placeholder="Repite tu contraseña">
+               </div>
+
+              <!-- Terms Checkbox -->
+              <label class="flex items-center gap-2.5 cursor-pointer group">
+                <input type="checkbox" [(ngModel)]="acceptTerms" name="acceptTerms"
+                       class="w-4 h-4 shrink-0 rounded bg-white/5 border border-white/10">
+                <span class="text-[9px] text-white/50 leading-tight">
+                  Acepto los <a href="/terms" class="text-cyan-400 hover:text-cyan-300 underline">términos y condiciones</a>
+                </span>
+              </label>
+
+                <button type="submit" [disabled]="isLoading()"
                          class="w-full lg-btn-primary py-2.5 px-4 text-sm uppercase tracking-wider active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed text-glow-cyan">
                    {{ isLoading() ? 'Creando...' : 'Crear cuenta' }}
                  </button>
@@ -177,6 +193,8 @@ export class LoginComponent {
   name = '';
   phone = '';
   pass = '';
+  confirmPass = '';
+  acceptTerms = false;
   countryPrefix = '+57'; // Default: Colombia
   isLoading = signal(false);
   showPassword = signal(false);
@@ -254,6 +272,18 @@ export class LoginComponent {
     // Validate required fields: phone and pass
     if (!this.phone || !this.pass) {
       this.error.set('Todos los campos son requeridos');
+      return;
+    }
+
+    // Validate passwords match
+    if (this.pass !== this.confirmPass) {
+      this.error.set('Las contraseñas no coinciden');
+      return;
+    }
+
+    // Validate terms acceptance
+    if (!this.acceptTerms) {
+      this.error.set('Debes aceptar los términos y condiciones');
       return;
     }
 
