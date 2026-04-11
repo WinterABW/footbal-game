@@ -70,11 +70,31 @@ import { AuthService } from '../../core/services/auth.service';
         <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
           @if (activeTab() === 'login') {
             <form (ngSubmit)="onLogin()" class="space-y-3">
+              <!-- Phone Number Field -->
               <div class="space-y-2">
-                 <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Nombre de Usuario</label>
-                <input type="text" [(ngModel)]="username" name="ident" 
-                       class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
-                       placeholder="Tu nombre de usuario">
+                <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Número de Teléfono</label>
+                <div class="flex gap-2">
+                  <!-- Country Prefix Selector -->
+                  <div class="relative w-28">
+                    <select [(ngModel)]="countryPrefix" name="countryPrefix"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-2 text-white text-sm appearance-none focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all cursor-pointer">
+                      @for (country of countries; track country.code) {
+                        <option [value]="country.prefix" class="bg-slate-900 text-white">
+                          {{ country.prefix }} {{ country.flag }}
+                        </option>
+                      }
+                    </select>
+                    <svg class="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-white/40 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                  <!-- Phone Input -->
+                  <input type="tel" [(ngModel)]="phone" name="login-phone" 
+                         inputmode="numeric" pattern="[0-9]*"
+                         (input)="onPhoneInput($event)"
+                         class="flex-1 bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                         placeholder="Tu número de teléfono">
+                </div>
               </div>
 
               <div class="space-y-2">
@@ -99,21 +119,14 @@ import { AuthService } from '../../core/services/auth.service';
           } @else {
             <form (ngSubmit)="onRegister()" class="space-y-3">
               <div class="space-y-2">
-                <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Nombre de Usuario</label>
-                <input type="text" [(ngModel)]="name" name="reg-username" 
-                       class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
-                       placeholder="Tu nombre de usuario">
-              </div>
-
-              <div class="space-y-2">
-                <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Teléfono</label>
+                <label class="text-[8px] font-bold text-white/30 uppercase tracking-wider ml-1">Número de Teléfono</label>
                 <div class="flex gap-2">
                   <!-- Country Prefix Select -->
-                  <div class="relative w-24">
-                    <select [(ngModel)]="countryPrefix" name="country-prefix"
+                  <div class="relative w-28">
+                    <select [(ngModel)]="countryPrefix" name="countryPrefixRegister"
                             class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-2 text-white text-sm focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all appearance-none cursor-pointer">
                       @for (country of countries; track country.code) {
-                        <option [value]="country.prefix" class="bg-slate-900 text-white">
+                        <option [value]="country.prefix" [selected]="country.prefix === countryPrefix" class="bg-slate-900 text-white">
                           {{ country.prefix }} {{ country.flag }}
                         </option>
                       }
@@ -124,6 +137,8 @@ import { AuthService } from '../../core/services/auth.service';
                   </div>
                   <!-- Phone Input -->
                   <input type="tel" [(ngModel)]="phone" name="reg-phone" 
+                         inputmode="numeric" pattern="[0-9]*"
+                         (input)="onPhoneInput($event)"
                          class="flex-1 bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
                          placeholder="Tu número de teléfono">
                 </div>
@@ -168,6 +183,13 @@ export class LoginComponent {
   error = signal<string | null>(null);
   referrealId = signal<string | null>(null);
 
+  // Filter to only allow numbers in phone input
+  onPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, '');
+    this.phone = input.value;
+  }
+
   // Country prefixes for Latin America & Caribbean
   countries = [
     { code: 'AR', name: 'Argentina', prefix: '+54', flag: '🇦🇷' },
@@ -177,7 +199,6 @@ export class LoginComponent {
     { code: 'CO', name: 'Colombia', prefix: '+57', flag: '🇨🇴' },
     { code: 'CR', name: 'Costa Rica', prefix: '+506', flag: '🇨🇷' },
     { code: 'CU', name: 'Cuba', prefix: '+53', flag: '🇨🇺' },
-    { code: 'DO', name: 'Rep. Dominicana', prefix: '+1', flag: '🇩🇴' },
     { code: 'EC', name: 'Ecuador', prefix: '+593', flag: '🇪🇨' },
     { code: 'SV', name: 'El Salvador', prefix: '+503', flag: '🇸🇻' },
     { code: 'GT', name: 'Guatemala', prefix: '+502', flag: '🇬🇹' },
@@ -187,7 +208,7 @@ export class LoginComponent {
     { code: 'PA', name: 'Panamá', prefix: '+507', flag: '🇵🇦' },
     { code: 'PY', name: 'Paraguay', prefix: '+595', flag: '🇵🇾' },
     { code: 'PE', name: 'Perú', prefix: '+51', flag: '🇵🇪' },
-    { code: 'PR', name: 'Puerto Rico', prefix: '+1', flag: '🇵🇷' },
+    { code: 'US', name: 'Estados Unidos', prefix: '+1', flag: '🇺🇸' },
     { code: 'UY', name: 'Uruguay', prefix: '+598', flag: '🇺🇾' },
     { code: 'VE', name: 'Venezuela', prefix: '+58', flag: '🇻🇪' },
   ];
@@ -204,14 +225,19 @@ export class LoginComponent {
   }
 
   async onLogin() {
-    if (!this.username || !this.pass) {
+    if (!this.phone || !this.pass) {
       this.error.set('Campos requeridos vacíos');
       return;
     }
     this.isLoading.set(true);
     this.error.set(null);
     try {
-      const result = await this.authService.login(this.username, this.pass);
+      // Full phone number with country prefix (for username)
+      const cleanPrefix = this.countryPrefix.replace(/-/g, '');
+      const phoneNumber = String(cleanPrefix) + String(this.phone).replace(/^\+?\d/i, '');
+      
+      // Phone is used as username for login
+      const result = await this.authService.login(phoneNumber, this.pass);
       if (result.success) {
         this.router.navigate(['/main']);
       } else {
@@ -225,8 +251,8 @@ export class LoginComponent {
   }
 
   async onRegister() {
-    // Validate required fields: name (username), phone, pass (password)
-    if (!this.name || !this.phone || !this.pass) {
+    // Validate required fields: phone and pass
+    if (!this.phone || !this.pass) {
       this.error.set('Todos los campos son requeridos');
       return;
     }
@@ -234,15 +260,16 @@ export class LoginComponent {
     this.isLoading.set(true);
     this.error.set(null);
     try {
-      // Full phone number with country prefix
-      const fullPhone = `${this.countryPrefix}${this.phone.replace(/^\+?\d/i, '')}`;
+      // Full phone number with country prefix (used as username)
+      const cleanPrefix = this.countryPrefix.replace(/-/g, '');
+      const phoneNumber = String(cleanPrefix) + String(this.phone).replace(/^\+?\d/i, '');
       // refId from URL parameter (if user was invited)
       const refId = this.referrealId();
 
       const result = await this.authService.register(
-        this.name, // username
+        phoneNumber, // username = phone (as string)
         this.pass, // password
-        fullPhone, // phone with prefix
+        null, // phone (already used as username)
         refId // refId (optional)
       );
       if (result.success) {

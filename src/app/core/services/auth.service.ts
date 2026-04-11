@@ -81,10 +81,13 @@ export class AuthService {
     this.authToken.set(null);
   }
 
-  async login(username: string, password: string): Promise<{ success: boolean; error?: string }> {
+  async login(username: string, password: string, phone?: string): Promise<{ success: boolean; error?: string }> {
     try {
       const url = `${this.getBaseUrl()}Auth/login`;
-      const response = await lastValueFrom(this.http.post(url, { username, password })) as AuthResponse | string | null;
+      const body: { username: string; password: string; phone?: string } = { username, password };
+      if (phone) body.phone = phone;
+      
+      const response = await lastValueFrom(this.http.post(url, body)) as AuthResponse | string | null;
 
       let user: { id?: number; username: string; isGuest: boolean } = { username, isGuest: false };
       let token: string;
