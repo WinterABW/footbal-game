@@ -95,6 +95,10 @@ export class UserInfoService {
   }
 
   async updateSettings(settings: SettingsInfo): Promise<{ success: boolean; error?: string; data?: SettingsInfo }> {
+    // AUDITORÍA: Registrar acción antes del call HTTP
+    console.log(`[AUDIT] updateSettings:`, settings);
+    localStorage.setItem(`audit_log_${Date.now()}`, JSON.stringify({ action: 'updateSettings', params: settings, time: Date.now() }));
+
     try {
       const url = `${this.getBaseUrl()}UserInfo/updateSettings`;
       const body = { language: settings.language, vibration: settings.vibration };
@@ -107,6 +111,10 @@ export class UserInfoService {
       return { success: false, error: 'Failed to update settings' };
     } catch (error: unknown) {
       const httpError = error as HttpErrorResponse;
+      
+      // Mostrar error al usuario
+      console.error('[ERROR] updateSettings failed:', error);
+      
       if (httpError?.status === 401) {
         return { success: false, error: 'Unauthorized' };
       }
@@ -168,18 +176,31 @@ export class UserInfoService {
   }
 
   async purchaseSkill(skillId: number): Promise<{ success: boolean; error?: string; message?: string }> {
+    // AUDITORÍA: Registrar acción financiera antes del call HTTP
+    console.log(`[AUDIT] purchaseSkill:`, { skillId });
+    localStorage.setItem(`audit_log_${Date.now()}`, JSON.stringify({ action: 'purchaseSkill', params: { skillId }, time: Date.now() }));
+
     try {
       const url = `${this.getBaseUrl()}Game/purchaseSkill`;
       const body = { skillId };
       const response = await this.http.post<{ success: boolean; message?: string }>(url, body).toPromise();
 
       if (response) {
+        // SEGURIDAD: Validar respuesta del backend
+        if (typeof response.success !== 'boolean') {
+          console.error('[SECURITY] Backend devolvió datos corruptos en purchaseSkill:', response);
+          return { success: false, error: 'Respuesta inválida del servidor' };
+        }
         return { success: response.success, message: response.message };
       }
 
       return { success: false, error: 'Failed to purchase skill' };
     } catch (error: unknown) {
       const httpError = error as HttpErrorResponse;
+      
+      // Mostrar error al usuario
+      console.error('[ERROR] purchaseSkill failed:', error);
+      
       if (httpError?.status === 401) {
         return { success: false, error: 'Unauthorized' };
       }

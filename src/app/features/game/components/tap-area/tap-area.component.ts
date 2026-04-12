@@ -3,6 +3,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { TapService } from '../../../../core/services/tap.service';
 import { UserStatusService } from '../../../../core/services/user-status.service';
+import { EnergyService } from '../../../../core/services/energy.service';
 
 interface FloatingNumber {
   id: number; value: number; x: number; y: number;
@@ -88,6 +89,7 @@ export class TapAreaComponent {
 
   private userStatusService = inject(UserStatusService);
   private tapSvc = inject(TapService);
+  private energySvc = inject(EnergyService);
   private router = inject(Router);
 
   floatingNumbers = signal<FloatingNumber[]>([]);
@@ -121,6 +123,15 @@ export class TapAreaComponent {
   }
 
   tap(event: MouseEvent) {
+    // SEGURIDAD: Verificar energía ANTES de cualquier acción (usando EnergyService)
+    const energia = this.energySvc.energy() ?? 0;
+    if (energia <= 0) {
+      // Sin energía: mostrar mensaje de error pero NO tocante
+      this.noEnergyMessage.set('⚡ Sin energía');
+      setTimeout(() => this.noEnergyMessage.set(''), 1500);
+      return;
+    }
+
     this.playPopSound();
 
     const earnedCoins = this.tapValue();

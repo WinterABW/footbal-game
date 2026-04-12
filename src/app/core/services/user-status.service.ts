@@ -115,6 +115,21 @@ export class UserStatusService {
 
     if (result.success && result.data) {
       const data = result.data;
+
+      // SEGURIDAD: Validar datos recibidos del backend
+      if (!data || typeof data.wallet?.principalBalance !== 'number' || data.wallet.principalBalance < 0) {
+        console.error('[SECURITY] Backend devolvió datos corruptos en wallet:', data?.wallet);
+        this.error.set('Datos del servidor corrupto');
+        this.isLoading.set(false);
+        return;
+      }
+      if (typeof data.wallet?.totalTooks !== 'number' || data.wallet.totalTooks < 0) {
+        console.error('[SECURITY] Backend devolvió datos corruptos en totalTooks:', data?.wallet);
+        this.error.set('Datos del servidor corrupto');
+        this.isLoading.set(false);
+        return;
+      }
+
       this.userStatus.set(data);
       this.referrealId.set(data.referrealId);
       this.wallet.set(data.wallet);

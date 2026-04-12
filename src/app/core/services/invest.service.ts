@@ -121,12 +121,22 @@ export class InvestService {
   }
 
   async buyPlayer(articleId: number, timestamp: number, token: string, uid: number): Promise<{ success: boolean; error?: string; message?: string }> {
+    // AUDITORÍA: Registrar acción financiera antes del call HTTP
+    console.log(`[AUDIT] buyPlayer:`, { articleId, uid, timestamp });
+    localStorage.setItem(`audit_log_${Date.now()}`, JSON.stringify({ action: 'buyPlayer', params: { articleId, uid, timestamp }, time: Date.now() }));
+
     try {
       const url = `${this.getBaseUrl()}Invest/addInvestment`;
       const response = await withRetry(
         () => this.http.post<ApiMessageResponse>(url, { articleId, timestamp, token, uid }).toPromise(),
         { maxAttempts: 3, baseDelayMs: 500 }
       );
+
+      // SEGURIDAD: Validar respuesta del backend
+      if (!response || typeof response.message !== 'string') {
+        console.error('[SECURITY] Backend devolvió datos corruptos en buyPlayer:', response);
+        return { success: false, error: 'Respuesta inválida del servidor' };
+      }
 
       if (response) {
         return { success: true, message: response.message };
@@ -139,6 +149,9 @@ export class InvestService {
       const serverMessage = httpError?.error && typeof httpError.error === 'object' && 'message' in httpError.error
         ? (httpError.error as ApiMessageResponse).message
         : null;
+
+      // Mostrar error al usuario
+      console.error('[ERROR] buyPlayer failed:', serverMessage ?? error);
 
       if (httpError?.status === 400) {
         return { success: false, error: serverMessage ?? 'Solicitud no válida' };
