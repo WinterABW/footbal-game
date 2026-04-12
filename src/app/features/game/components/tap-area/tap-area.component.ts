@@ -129,9 +129,7 @@ export class TapAreaComponent {
 
     const earnedCoins = this.tapValue();
     this.tapSvc.addTap(1);
-    
-    // Acumular energía consumida - se envía junto con addTooks
-    this.energySvc.consumeEnergy(1);
+    // Energy se resta automáticamente: wallet.energy - pendingTaps
 
     // Ball interaction (fluid 3D spring effect)
     if (this.ballImage) {

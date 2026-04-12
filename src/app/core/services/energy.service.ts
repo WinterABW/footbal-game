@@ -1,6 +1,7 @@
 import { Injectable, inject, computed, signal, effect } from '@angular/core';
 import { UserStatusService } from './user-status.service';
 import { UserInfoService } from './user-info.service';
+import { TapService } from './tap.service';
 
 export interface EnergyData {
   currentEnergy: number;
@@ -14,11 +15,11 @@ export class EnergyService {
   private userStatusService = inject(UserStatusService);
   private userInfo = inject(UserInfoService);
 
-  // Energy actual = wallet.energy - pending consumida (como coins con pendingTaps)
+  // Energy actual = wallet.energy - pendingTaps (cada tap = 1 energía)
   readonly energy = computed(() => {
     const walletEnergy = this.userStatusService.wallet()?.energy ?? 0;
-    const pending = this.pendingEnergyConsumption();
-    return Math.max(0, walletEnergy - pending);
+    const pendingTaps = this.tapService.pendingTapsCount();
+    return Math.max(0, walletEnergy - pendingTaps);
   });
   
   // MaxEnergy cargada desde el backend (skillId: 2 = max_energy)
@@ -29,8 +30,8 @@ export class EnergyService {
   private _tapPower = signal<number>(1);
   readonly tapPower = computed(() => this._tapPower());
 
-  // Pending energy consumption (se envía junto con addTooks)
-  private pendingEnergyConsumption = signal<number>(0);
+  // Inyectar TapService para obtener pendingTaps
+  private tapService = inject(TapService);
 
   // Flags para evitar llamadas concurrentes
   private _isLoadingMaxEnergy = false;
@@ -157,26 +158,6 @@ export class EnergyService {
       this.loadMaxEnergy(),
       this.loadTapPower(),
     ]);
-  }
-
-  // Consumir energía - acumula pending (se envía junto con addTooks)
-  consumeEnergy(amount: number = 1): void {
-    this.pendingEnergyConsumption.update(e => e + amount);
-  }
-
-  // Getter para energía pendiente
-  getPendingEnergyCount(): number {
-    return this.pendingEnergyConsumption();
-  }
-
-  // Reset pending energy (llamado desde TapService cuando flush tiene éxito)
-  resetPendingEnergy(): void {
-    this.pendingEnergyConsumption.set(0);
-  }
-
-  //Getter para pending energy (para TapService)
-  pendingEnergy(): number {
-    return this.pendingEnergyConsumption();
   }
 
   async purchaseBoost(boostId: number): Promise<{ success: boolean; message: string }> {

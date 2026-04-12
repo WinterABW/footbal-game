@@ -4,7 +4,6 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { EncryptionService } from './encryption.service';
 import { UserStatusService } from '../../core/services/user-status.service';
-import { EnergyService } from './energy.service';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -15,7 +14,6 @@ export class TapService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private encryptionService = inject(EncryptionService);
-  private energyService = inject(EnergyService);
   private readonly baseUrl = environment.apiBaseUrl;
   private readonly secretKey = environment.tapSecretKey;
   private readonly PENDING_TAPS_KEY = 'pendingTaps';
@@ -31,41 +29,29 @@ export class TapService {
   private pendingTaps = signal<number>(0);
 
   constructor() {
-    // Initialize pending taps from localStorage SOLO al iniciar (no en cada tap)
-    const storedPending = localStorage.getItem(this.PENDING_TAPS_KEY);
-    if (storedPending) {
-      const pendingCount = parseInt(storedPending, 10);
-      if (!isNaN(pendingCount)) {
-        this.pendingTaps.set(pendingCount);
-      }
-    }
+    // Restaurar taps pendientes desde localStorage al iniciar la app
+    this.restorePendingTaps();
 
-    // Persistir a localStorage solo cuando el usuario sale de la app
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        this.persistPendingTaps();
-      } else {
-        this.restorePendingTaps(); // Restaurar al volver
-      }
+    // Usar 'pagehide' que es más fiable para guardar el estado antes de salir
+    window.addEventListener('pagehide', () => {
+      this.persistPendingTaps();
     });
   }
 
-  // Persistir taps pendientes a localStorage (solo cuando se necesita)
+  // Persistir taps pendientes a localStorage
   private persistPendingTaps() {
     const count = this.pendingTaps();
-    if (count > 0) {
-      localStorage.setItem(this.PENDING_TAPS_KEY, count.toString());
-    }
+    localStorage.setItem(this.PENDING_TAPS_KEY, count.toString());
+    console.log(`[TapService] Persisted ${count} taps to localStorage on pagehide.`);
   }
 
-  // Restaurar taps desde localStorage (para cuando vuelve a la app)
+  // Restaurar taps desde localStorage
   private restorePendingTaps() {
     const stored = localStorage.getItem(this.PENDING_TAPS_KEY);
     if (stored) {
       const count = parseInt(stored, 10);
       if (!isNaN(count) && count > 0) {
         this.pendingTaps.set(count);
-        localStorage.setItem(this.PENDING_TAPS_KEY, '0'); // Limpiar después de restore
       }
     }
   }
@@ -114,53 +100,58 @@ export class TapService {
     this.isFlushing = true;
     this.lastFlushTime = Date.now();
 
-    const timestamp = Math.floor(Date.now() / 1000);
-    const payload = `${userId}:${timestamp}:${this.secretKey}`;
-    
-    // AUDITORÍA: Registrar acción financiera antes del call HTTP
-    console.log(`[AUDIT] addTooks:`, { userId, amount: pendingCount, timestamp });
-    
     try {
-      const token = await this.encryptionService.sha256(payload);
+      const timestamp = Math.floor(Date.now() / 1000);
+      const payload = `${userId}:${timestamp}:${this.secretKey}`;
+      
+      console.log(`[AUDIT] addTooks:`, { userId, amount: pendingCount, timestamp });
+      
+      const currentEnergy = this.userStatusService.wallet()?.energy ?? 0;
+      const energyAfterTaps = currentEnergy - pendingCount;
 
-      const url = `${this.baseUrl}Game/addTooks`;
-      await firstValueFrom(
-        this.http.post(url, { amount: pendingCount, token, timestamp })
-      );
-      console.log(`Sent ${pendingCount} taps to API`);
+      // ATOMICIDAD: Solo procesar si hay suficiente energía. O ambas o ninguna.
+      if (energyAfterTaps >= 0) {
+        // 1. Enviar Taps
+        const tooksToken = await this.encryptionService.sha256(payload);
+        const tooksUrl = `${this.baseUrl}Game/addTooks`;
+        await firstValueFrom(
+          this.http.post(tooksUrl, { amount: pendingCount, token: tooksToken, timestamp })
+        );
+        console.log(`Sent ${pendingCount} taps to API`);
 
-      // También enviar energía consumida (si hay)
-      const pendingEnergy = this.energyService.pendingEnergy();
-      if (pendingEnergy > 0) {
-        try {
-          const energyToken = await this.encryptionService.sha256(
-            `${userId}:${timestamp + 1}:${this.secretKey}`
-          );
-          const energyUrl = `${this.baseUrl}Game/updateEnergyState`;
-          await firstValueFrom(
-            this.http.post(energyUrl, { energy: pendingEnergy, token: energyToken, timestamp: timestamp + 1 })
-          );
-          console.log(`Sent ${pendingEnergy} energy to API`);
-          this.energyService.resetPendingEnergy();
-        } catch (energyError) {
-          console.error('Energy flush failed:', energyError);
-        }
+        // 2. Enviar actualización de Energía
+        const energyToken = await this.encryptionService.sha256(
+          `${userId}:${timestamp + 1}:${this.secretKey}`
+        );
+        const energyUrl = `${this.baseUrl}Game/updateEnergyState`;
+        await firstValueFrom(
+          this.http.post(energyUrl, { energy: energyAfterTaps, token: energyToken, timestamp: timestamp + 1 })
+        );
+        console.log(`Sent final energy state ${energyAfterTaps} to API.`);
+
+        // 3. Solo resetear pendingTaps DESPUÉS de que ambas llamadas son exitosas
+        this.pendingTaps.set(0);
+        localStorage.setItem(this.PENDING_TAPS_KEY, '0');
+      
+      } else {
+        // No había suficiente energía para los taps pendientes. No se hace nada.
+        console.warn(`Not enough energy for pending taps. Taps: ${pendingCount}, Energy: ${currentEnergy}. Flush skipped.`);
       }
 
-      // Solo resetear DESPUÉS de exitoso respuesta
-      this.pendingTaps.set(0);
-      localStorage.setItem(this.PENDING_TAPS_KEY, '0');
-
-      // Refresh user status to update wallet
+      // Siempre recargar el estado del usuario para mantener la sincronización
       await this.userStatusService.loadUserStatus();
-    } catch (error) {
-      // NO restaurar aquí porque pendingTaps nunca se reseteó
+
+    } catch (error: any) {
+      // Si cualquiera de las llamadas falla, no se resetean los pendingTaps
+      // y se reintentará en el siguiente flush.
       const httpError = error as HttpErrorResponse;
       if (httpError?.error && typeof httpError.error === 'object' && 'message' in httpError.error) {
-        console.error('AddTooks failed:', (httpError.error as { message: string }).message);
+        console.error('Taps/Energy flush failed:', (httpError.error as { message: string }).message);
       } else {
-        console.error('AddTooks failed:', error);
+        console.error('Taps/Energy flush failed:', error);
       }
+      // Igualmente intentamos refrescar el estado del usuario para no quedar desincronizados
+      await this.userStatusService.loadUserStatus();
     } finally {
       this.isFlushing = false;
     }

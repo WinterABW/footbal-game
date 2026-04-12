@@ -5,6 +5,7 @@ import { UserStatusService } from '../../../../../core/services/user-status.serv
 import { EnergyService } from '../../../../../core/services/energy.service';
 import { UserInfoService, SkillLevelInfo } from '../../../../../core/services/user-info.service';
 import { ErrorHandlerService } from '../../../../../core/services/error-handler.service';
+import { TapService } from '../../../../../core/services/tap.service';
 import { BalanceComponent } from '../../../../../shared/components/balance/balance.component';
 import { GlassSheetComponent } from '../../../../../shared/ui/glass-sheet/glass-sheet.component';
 
@@ -262,6 +263,7 @@ export class BoostComponent implements OnInit {
     private energyService = inject(EnergyService);
     private userInfoService = inject(UserInfoService);
     private errorHandler = inject(ErrorHandlerService);
+    private tapService = inject(TapService);
 
     // Balance desde el servidor
     balanceAmount = computed(() => this.userStatusService.userStatus()?.wallet?.principalBalance ?? 0);
@@ -402,9 +404,15 @@ export class BoostComponent implements OnInit {
             this.purchaseSuccess.set(result.success);
 
             if (result.success) {
-                await this.userStatusService.loadUserStatus();
+                // Primero, forzar el flush de taps pendientes para sincronizar el estado
+                // antes de recargar los datos de las habilidades.
+                // flushPendingTaps se encarga de recargar el estado del usuario.
+                await this.tapService.flushPendingTaps();
+                
+                // Ahora, recargar los datos dependientes que puedan haber cambiado.
                 await this.loadSkillPrices();
-                await this.energyService.loadMaxEnergy(); // Recargar maxEnergy desde backend
+                await this.energyService.loadMaxEnergy(); // Esto tiene guardias internas, es seguro llamarlo.
+                
                 this.errorHandler.showSuccessToast('¡Mejora aplicada con éxito!');
                 setTimeout(() => this.closeSheet(), 800);
             }
