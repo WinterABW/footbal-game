@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } 
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { UserStatusService } from '../../../../../core/services/user-status.service';
+import { EnergyService } from '../../../../../core/services/energy.service';
 import { UserInfoService, SkillLevelInfo } from '../../../../../core/services/user-info.service';
 import { ErrorHandlerService } from '../../../../../core/services/error-handler.service';
 import { BalanceComponent } from '../../../../../shared/components/balance/balance.component';
@@ -10,8 +11,8 @@ import { GlassSheetComponent } from '../../../../../shared/ui/glass-sheet/glass-
 // Las 3 skills siempre son las mismas
 const SKILLS = [
     { id: 1, name: 'Energy Plus', description: '+50 energía instantánea', type: 'instant', icon: 'game/energy/thunder.webp' },
-    { id: 4, name: 'Max Energy', description: '+100 energía máxima permanente', type: 'permanent', icon: 'game/energy/aumento.png' },
-    { id: 5, name: 'Tap Power', description: '+1 valor por toque permanente', type: 'permanent', icon: 'game/energy/touch.webp' },
+    { id: 2, name: 'Max Energy', description: '+100 energía máxima permanente', type: 'permanent', icon: 'game/energy/aumento.png' },
+    { id: 3, name: 'Tap Power', description: '+1 valor por toque permanente', type: 'permanent', icon: 'game/energy/touch.webp' },
 ];
 
 interface BoostDisplay {
@@ -233,8 +234,8 @@ interface BoostDisplay {
       <button
         class="w-full lg-btn-primary py-3.5 text-base font-bold flex items-center justify-center gap-2
                transition-all duration-200"
-        [class.opacity-50]="balanceAmount() < +(boost.cost)"
-        [disabled]="balanceAmount() < +(boost.cost)"
+        [class.opacity-50]="(balanceAmount() < +(boost.cost)) || isPurchasing()"
+        [disabled]="(balanceAmount() < +(boost.cost)) || isPurchasing()"
         (click)="purchaseBoost()"
         type="button"
         aria-label="Confirmar mejora"
@@ -258,6 +259,7 @@ export class BoostComponent implements OnInit {
 
     private router = inject(Router);
     private userStatusService = inject(UserStatusService);
+    private energyService = inject(EnergyService);
     private userInfoService = inject(UserInfoService);
     private errorHandler = inject(ErrorHandlerService);
 
@@ -272,12 +274,13 @@ export class BoostComponent implements OnInit {
     // Mapping de boostId a skillId
     private readonly boostToSkillId: Record<number, number> = {
         1: 1,  // Energy Plus → skillId 1
-        4: 2,  // Max Energy → skillId 2
-        5: 3,  // Tap Power → skillId 3
+        2: 2,  // Max Energy → skillId 2
+        3: 3,  // Tap Power → skillId 3
     };
 
     async ngOnInit(): Promise<void> {
         // Cargar precios de las 3 skills
+        // Nota: loadMaxEnergy() ya se llama desde GameLayoutComponent cuando el usuario está logueado
         try {
             await this.loadSkillPrices();
         } catch {
@@ -345,6 +348,7 @@ export class BoostComponent implements OnInit {
     selectedBoost = signal<BoostDisplay | null>(null);
     isBoostDetailOpen = signal(false);
     isHowItWorksOpen = signal(false);
+    isPurchasing = signal(false);
     purchaseMessage = signal<string | null>(null);
     purchaseSuccess = signal(false);
 
@@ -355,8 +359,8 @@ export class BoostComponent implements OnInit {
     getBoostIcon(id: number): string {
         const icons: Record<number, string> = {
             1: 'game/energy/thunder.webp',
-            4: 'game/energy/aumento.png',
-            5: 'game/energy/touch.webp',
+            2: 'game/energy/aumento.png',
+            3: 'game/energy/touch.webp',
         };
         return icons[id] || 'game/energy/thunder.webp';
     }
@@ -372,6 +376,7 @@ export class BoostComponent implements OnInit {
     selectBoost(item: BoostDisplay): void {
         this.selectedBoost.set(item);
         this.purchaseMessage.set(null);
+        this.purchaseSuccess.set(false);
         this.isBoostDetailOpen.set(true);
     }
 
@@ -381,31 +386,36 @@ export class BoostComponent implements OnInit {
         this.purchaseMessage.set(null);
     }
 
-    purchaseBoost(): void {
+    async purchaseBoost(): Promise<void> {
         const boost = this.selectedBoost();
         if (!boost) return;
-
-        const skillId = this.boostToSkillId[boost.id];
         
-        this.userInfoService.purchaseSkill(skillId)
-            .then(result => {
-                const message = result.message ?? (result.success ? '¡Compra exitosa!' : result.error) ?? 'Error desconocido';
-                this.purchaseMessage.set(message);
-                this.purchaseSuccess.set(result.success);
+        if (this.isPurchasing()) return;
+        
+        const skillId = this.boostToSkillId[boost.id];
+        this.isPurchasing.set(true);
+        
+        try {
+            const result = await this.energyService.purchaseBoost(skillId);
+            const message = result.message ?? (result.success ? '¡Compra exitosa!' : 'Error desconocido');
+            this.purchaseMessage.set(message);
+            this.purchaseSuccess.set(result.success);
 
-                if (result.success) {
-                    this.userStatusService.loadUserStatus();
-                    this.loadSkillPrices();
-                    this.errorHandler.showSuccessToast('¡Mejora aplicada con éxito!');
-                    setTimeout(() => this.closeSheet(), 800);
-                }
-            })
-            .catch(err => {
-                console.error('Purchase boost failed:', err);
-                this.purchaseMessage.set('Error de conexión. Intenta de nuevo.');
-                this.purchaseSuccess.set(false);
-                this.errorHandler.showErrorToast(err, 'boost_purchase');
-            });
+            if (result.success) {
+                await this.userStatusService.loadUserStatus();
+                await this.loadSkillPrices();
+                await this.energyService.loadMaxEnergy(); // Recargar maxEnergy desde backend
+                this.errorHandler.showSuccessToast('¡Mejora aplicada con éxito!');
+                setTimeout(() => this.closeSheet(), 800);
+            }
+        } catch (error) {
+            console.error('Purchase boost failed', error);
+            this.purchaseMessage.set('Error de conexión. Intenta de nuevo.');
+            this.purchaseSuccess.set(false);
+            this.errorHandler.showErrorToast('Error de conexión al comprar impulso', 'boost_purchase');
+        } finally {
+            this.isPurchasing.set(false);
+        }
     }
 
     currentLevel = computed(() => {

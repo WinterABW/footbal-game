@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ApiMessageResponse } from '../../models/user.model';
+import { EncryptionService } from './encryption.service';
+// import { UserStatusService } from './user-status.service'; // Removed
 
 export interface ReferInfoResponse {
   earnLastMonth: number;
@@ -66,6 +68,8 @@ export interface UserStatusResponse {
 })
 export class UserInfoService {
   private http = inject(HttpClient);
+  private encryptionService = inject(EncryptionService);
+  // private userStatusService = inject(UserStatusService); // Removed
 
   private getBaseUrl(): string {
     return environment.apiBaseUrl;
@@ -175,14 +179,18 @@ export class UserInfoService {
     }
   }
 
-  async purchaseSkill(skillId: number): Promise<{ success: boolean; error?: string; message?: string }> {
+  async purchaseSkill(skillId: number, userId: number): Promise<{ success: boolean; error?: string; message?: string }> {
     // AUDITORÍA: Registrar acción financiera antes del call HTTP
-    console.log(`[AUDIT] purchaseSkill:`, { skillId });
-    localStorage.setItem(`audit_log_${Date.now()}`, JSON.stringify({ action: 'purchaseSkill', params: { skillId }, time: Date.now() }));
+    console.log(`[AUDIT] purchaseSkill:`, { skillId, userId });
+    localStorage.setItem(`audit_log_${Date.now()}`, JSON.stringify({ action: 'purchaseSkill', params: { skillId, userId }, time: Date.now() }));
 
     try {
-      const url = `${this.getBaseUrl()}Game/purchaseSkill`;
-      const body = { skillId };
+      const timestamp = Math.floor(Date.now() / 1000); // Use seconds as per tap.service.ts
+      const payload = `${userId}:${timestamp}:${this.encryptionService.getSecretKey()}`;
+      const token = await this.encryptionService.sha256(payload);
+
+      const url = `${this.getBaseUrl()}Game/upgradeSkills`;
+      const body = { skillId, timestamp, token };
       const response = await this.http.post<{ success: boolean; message?: string }>(url, body).toPromise();
 
       if (response) {

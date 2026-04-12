@@ -65,6 +65,7 @@ export class GameLayoutComponent {
       const userStatus = this.userStatusService.userStatus();
       if (userStatus) {
         this.onboarding.startOnboardingIfNeeded();
+        // maxEnergy se carga en BoostComponent después de loadUserStatus()
       }
     });
   }
