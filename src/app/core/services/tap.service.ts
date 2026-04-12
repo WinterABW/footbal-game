@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { EncryptionService } from './encryption.service';
 import { UserStatusService } from '../../core/services/user-status.service';
+import { EnergyService } from './energy.service';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -14,6 +15,7 @@ export class TapService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private encryptionService = inject(EncryptionService);
+  private energyService = inject(EnergyService);
   private readonly baseUrl = environment.apiBaseUrl;
   private readonly secretKey = environment.tapSecretKey;
   private readonly PENDING_TAPS_KEY = 'pendingTaps';
@@ -126,6 +128,24 @@ export class TapService {
         this.http.post(url, { amount: pendingCount, token, timestamp })
       );
       console.log(`Sent ${pendingCount} taps to API`);
+
+      // También enviar energía consumida (si hay)
+      const pendingEnergy = this.energyService.pendingEnergy();
+      if (pendingEnergy > 0) {
+        try {
+          const energyToken = await this.encryptionService.sha256(
+            `${userId}:${timestamp + 1}:${this.secretKey}`
+          );
+          const energyUrl = `${this.baseUrl}Game/updateEnergyState`;
+          await firstValueFrom(
+            this.http.post(energyUrl, { energy: pendingEnergy, token: energyToken, timestamp: timestamp + 1 })
+          );
+          console.log(`Sent ${pendingEnergy} energy to API`);
+          this.energyService.resetPendingEnergy();
+        } catch (energyError) {
+          console.error('Energy flush failed:', energyError);
+        }
+      }
 
       // Solo resetear DESPUÉS de exitoso respuesta
       this.pendingTaps.set(0);

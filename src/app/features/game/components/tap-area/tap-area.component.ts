@@ -124,10 +124,9 @@ export class TapAreaComponent {
   }
 
   tap(event: MouseEvent) {
-    // SEGURIDAD: Verificar energía ANTES de cualquier acción (usando EnergyService)
+    // SEGURIDAD: Verificar energía ANTES de cualquier acción
     const energia = this.energySvc.energy() ?? 0;
     if (energia <= 0) {
-      // Sin energía: mostrar mensaje de error pero NO tocante
       this.noEnergyMessage.set('⚡ Sin energía');
       setTimeout(() => this.noEnergyMessage.set(''), 1500);
       return;
@@ -137,6 +136,9 @@ export class TapAreaComponent {
 
     const earnedCoins = this.tapValue();
     this.tapSvc.addTap(1);
+    
+    // Acumular energía consumida - se envía junto con addTooks
+    this.energySvc.consumeEnergy(1);
 
     // Ball interaction (fluid 3D spring effect)
     if (this.ballImage) {

@@ -14,8 +14,12 @@ export class EnergyService {
   private userStatusService = inject(UserStatusService);
   private userInfo = inject(UserInfoService);
 
-  // Signals conectados directamente a UserStatusService
-  readonly energy = computed(() => this.userStatusService.wallet()?.energy ?? 0);
+  // Energy actual = wallet.energy - pending consumida (como coins con pendingTaps)
+  readonly energy = computed(() => {
+    const walletEnergy = this.userStatusService.wallet()?.energy ?? 0;
+    const pending = this.pendingEnergyConsumption();
+    return Math.max(0, walletEnergy - pending);
+  });
   
   // MaxEnergy cargada desde el backend (skillId: 2 = max_energy)
   private _maxEnergy = signal<number>(500);
@@ -24,6 +28,9 @@ export class EnergyService {
   // TapPower valor por cada desde el backend (skillId: 3 = tap_power)
   private _tapPower = signal<number>(1);
   readonly tapPower = computed(() => this._tapPower());
+
+  // Pending energy consumption (se envía junto con addTooks)
+  private pendingEnergyConsumption = signal<number>(0);
 
   // Flags para evitar llamadas concurrentes
   private _isLoadingMaxEnergy = false;
@@ -150,6 +157,26 @@ export class EnergyService {
       this.loadMaxEnergy(),
       this.loadTapPower(),
     ]);
+  }
+
+  // Consumir energía - acumula pending (se envía junto con addTooks)
+  consumeEnergy(amount: number = 1): void {
+    this.pendingEnergyConsumption.update(e => e + amount);
+  }
+
+  // Getter para energía pendiente
+  getPendingEnergyCount(): number {
+    return this.pendingEnergyConsumption();
+  }
+
+  // Reset pending energy (llamado desde TapService cuando flush tiene éxito)
+  resetPendingEnergy(): void {
+    this.pendingEnergyConsumption.set(0);
+  }
+
+  //Getter para pending energy (para TapService)
+  pendingEnergy(): number {
+    return this.pendingEnergyConsumption();
   }
 
   async purchaseBoost(boostId: number): Promise<{ success: boolean; message: string }> {
