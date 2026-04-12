@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { TapService } from '../../../../core/services/tap.service';
 import { UserStatusService } from '../../../../core/services/user-status.service';
 import { EnergyService } from '../../../../core/services/energy.service';
+import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 
 interface FloatingNumber {
   id: number; value: number; x: number; y: number;
@@ -24,13 +25,6 @@ interface FloatingNumber {
           </div>
         }
       </div>
-
-      <!-- No Energy Message -->
-      @if (noEnergyMessage()) {
-        <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[200] liquid-glass-card px-8 py-4 border-red-500/20 bg-red-500/10 text-red-400 text-xs font-black uppercase tracking-widest animate-shake">
-          {{ noEnergyMessage() }}
-        </div>
-      }
 
       <!-- Main Ball Tap Area -->
       <div data-tutorial-id="tap-area" class="relative tap-area-container group mt-4 w-[320px] h-[320px] md:w-[460px] md:h-[460px]" 
@@ -90,11 +84,11 @@ export class TapAreaComponent {
   private userStatusService = inject(UserStatusService);
   private tapSvc = inject(TapService);
   private energySvc = inject(EnergyService);
+  private errorHandler = inject(ErrorHandlerService);
   private router = inject(Router);
 
   floatingNumbers = signal<FloatingNumber[]>([]);
   private floatingNumberIdCounter = 0;
-  noEnergyMessage = signal('');
   isSmallScreen = signal(false);
   animationsActive = signal(false);
   private activityTimeout: any;
@@ -127,8 +121,7 @@ export class TapAreaComponent {
     // SEGURIDAD: Verificar energía ANTES de cualquier acción
     const energia = this.energySvc.energy() ?? 0;
     if (energia <= 0) {
-      this.noEnergyMessage.set('⚡ Sin energía');
-      setTimeout(() => this.noEnergyMessage.set(''), 1500);
+      this.errorHandler.showErrorToast('⚡ Sin energía');
       return;
     }
 

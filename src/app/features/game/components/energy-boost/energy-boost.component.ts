@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { EnergyService } from '../../../../core/services/energy.service';
 
 @Component({
   selector: 'app-energy-boost',
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImage, DecimalPipe],
   template: `
     <section class="flex flex-row items-center justify-between w-full z-20 relative p-1 mt-2 px-2">
 
@@ -19,7 +19,7 @@ import { EnergyService } from '../../../../core/services/energy.service';
         <div class="flex flex-col min-w-0 pb-0.5">
           <span class="text-[9px] font-bold text-white/50 capitalize tracking-wide leading-none mb-1">Energía</span>
           <p class="text-[14px] font-black text-white tracking-wide leading-none text-glow-emerald">
-            {{ energy() }}<span class="text-[10px] text-white/40 font-semibold ml-0.5">/ {{ maxEnergy() }}</span>
+            {{ energy() | number:'1.0-0' }}<span class="text-[10px] text-white/40 font-semibold ml-0.5">/ {{ maxEnergy() | number:'1.0-0' }}</span>
           </p>
         </div>
       </article>

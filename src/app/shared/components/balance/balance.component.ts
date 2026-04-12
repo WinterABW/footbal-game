@@ -11,7 +11,7 @@ import { TapService } from '../../../core/services/tap.service';
          <img ngSrc="shared/balance/coin.webp" alt="coin" class="w-full h-full object-contain" width="48" height="48">
       </div>
       <p class="text-4xl font-black text-white tracking-tighter text-glow-amber">
-        {{ coins() | number }}
+        {{ coins() | number:'1.0-0' }}
       </p>
     </section>
   `,
