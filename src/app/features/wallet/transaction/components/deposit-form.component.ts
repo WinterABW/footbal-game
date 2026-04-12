@@ -3,17 +3,30 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
+import { WalletService, FinanceMethod } from '../../../../core/services/wallet.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { SuccessOverlayComponent } from './success-overlay.component';
+import { DepositResponseModalComponent } from './deposit-response-modal.component';
 import { CryptoDepositModalComponent } from '../../crypto-deposit-modal.component';
 import { PaymentScreenComponent } from '../payment-screen.component';
 
 @Component({
   selector: 'app-deposit-form',
-  imports: [CommonModule, SuccessOverlayComponent, CryptoDepositModalComponent, PaymentScreenComponent],
+  imports: [CommonModule, SuccessOverlayComponent, DepositResponseModalComponent, CryptoDepositModalComponent, PaymentScreenComponent],
   template: `
     <div class="h-full flex flex-col relative w-full overflow-hidden bg-transparent">
       @if (showSuccess()) {
-        <app-success-overlay [message]="'¡Depósito de ' + amount() + ' monedas solicitado con éxito!'" />
+        <app-success-overlay [message]="'¡Depósito de ' + amount() + ' monedas en proceso de verificación!'" />
+      }
+
+      @if (showDepositResponse()) {
+        <app-deposit-response-modal
+          [responseMessage]="depositResponseMessage()"
+          [txnId]="depositTxnId()"
+          [orderNumber]="depositOrderNumber()"
+          [invoiceUrl]="depositInvoiceUrl()"
+          (close)="onDepositResponseClose()"
+        />
       }
 
       @if (showPaymentScreen()) {
@@ -31,7 +44,10 @@ import { PaymentScreenComponent } from '../payment-screen.component';
           [currency]="selectedMethod()"
           [address]="cryptoAddress()"
           [logo]="methodLogo()!"
-          (close)="showCryptoModal.set(false)"
+          [isLoading]="isSubmitting()"
+          [errorMessage]="modalErrorMessage()"
+          (close)="onModalClose()"
+          (confirm)="onCryptoConfirm($event)"
         />
       }
 
@@ -260,6 +276,8 @@ import { PaymentScreenComponent } from '../payment-screen.component';
 export class DepositFormComponent {
   private router = inject(Router);
   private errorHandler = inject(ErrorHandlerService);
+  private walletService = inject(WalletService);
+  private authService = inject(AuthService);
 
   currency = input.required<string>();
   network = input<string>('');
@@ -267,6 +285,22 @@ export class DepositFormComponent {
   amount = signal(0);
   selectedChannel = signal<string>('Nequi-1');
   selectedNetwork = signal<string>('TRC20');
+
+  // Phase 3.3: isSubmitting signal for crypto submit flow
+  isSubmitting = signal(false);
+  
+  // Phase 3.2: cryptoConfigured computed based on environment
+  cryptoConfigured = computed(() => !!environment.cryptoDepositAddress);
+  
+  // Phase 2.2: error message for modal
+  modalErrorMessage = signal('');
+
+  // Deposit response modal signals
+  showDepositResponse = signal(false);
+  depositResponseMessage = signal('');
+  depositTxnId = signal('');
+  depositOrderNumber = signal('');
+  depositInvoiceUrl = signal('');
 
   readonly usdtNetworks = [
     { id: 'TRC20', label: 'USDT (TRC20)' },
@@ -354,17 +388,150 @@ export class DepositFormComponent {
     }
 
     if (['USDT', 'BTC', 'TRX', 'BNB'].includes(this.selectedMethod())) {
-      const envAddress = (environment as any).cryptoDepositAddress ?? '';
-      if (!envAddress) {
-        this.errorHandler.showToast('Crypto deposit not configured. Contact support.', 'error');
-        return;
-      }
-      this.cryptoAddress.set(envAddress);
-      this.showCryptoModal.set(true);
+      // Direct API call for crypto - skip modal
+      this.processCryptoDeposit();
     } else {
       this.orderNumber.set(this.resolveOrderNumber());
       this.qrImage.set(this.resolvedQrImage());
       this.showPaymentScreen.set(true);
     }
   }
+
+  // Direct crypto deposit process
+  async processCryptoDeposit() {
+    const amount = this.amount();
+    if (amount < this.minAmount()) {
+      this.errorHandler.showToast(`Monto mínimo ${this.minAmount()} ${this.selectedMethod()}`, 'error');
+      return;
+    }
+
+    const user = this.authService.user();
+    const token = this.authService.authToken();
+
+    if (!user?.id || !token) {
+      this.errorHandler.showErrorToast('Sesión expirada');
+      return;
+    }
+
+    // Map method string to FinanceMethod enum based on selection and network
+    let financeMethod: number;
+    
+    if (this.selectedMethod() === 'USDT') {
+      // USDT can be TRC20 (5) or BEP20 (6)
+      financeMethod = this.selectedNetwork() === 'BEP20' ? 6 : 5;
+    } else if (this.selectedMethod() === 'TRX') {
+      financeMethod = 7;
+    } else if (this.selectedMethod() === 'BNB') {
+      financeMethod = 8;
+    } else if (this.selectedMethod() === 'BTC') {
+      financeMethod = 9;
+    } else {
+      financeMethod = 5; // Default to USDT TRC20
+    }
+
+    this.isSubmitting.set(true);
+
+    // Call addDeposit directly
+    this.walletService.addDeposit({
+      amountUSD: amount,
+      method: financeMethod,
+      token: token,
+      uid: user.id,
+      transactionId: null as any
+    }).then((result) => {
+      this.isSubmitting.set(false);
+      
+      if (result.success) {
+        // Show deposit response modal with backend data
+        this.depositResponseMessage.set(result.message || 'Tu depósito está siendo procesado');
+        this.depositTxnId.set(result.txnId || '');
+        this.depositOrderNumber.set(result.orderNumber || '');
+        this.depositInvoiceUrl.set(result.invoiceUrl || '');
+        this.showDepositResponse.set(true);
+      } else {
+        this.errorHandler.showErrorToast(result.error || 'Error al procesar el depósito');
+      }
+    }).catch((err) => {
+      this.isSubmitting.set(false);
+      this.errorHandler.showErrorToast('Error de conexión. Intenta de nuevo.');
+    });
+  }
+
+  // Phase 3.4: Handle crypto confirmation from modal
+  onCryptoConfirm(event: { amount: number; method: string }) {
+    // Prevent duplicate submits
+    if (this.isSubmitting()) {
+      return;
+    }
+
+    this.isSubmitting.set(true);
+    this.modalErrorMessage.set('');
+
+    // Map method string to FinanceMethod enum based on selection and network
+    let financeMethod: number;
+    
+    if (this.selectedMethod() === 'USDT') {
+      // USDT can be TRC20 (5) or BEP20 (6)
+      financeMethod = this.selectedNetwork() === 'BEP20' ? 6 : 5;
+    } else if (this.selectedMethod() === 'TRX') {
+      financeMethod = 7;
+    } else if (this.selectedMethod() === 'BNB') {
+      financeMethod = 8;
+    } else if (this.selectedMethod() === 'BTC') {
+      financeMethod = 9;
+    } else {
+      financeMethod = 5; // Default to USDT TRC20
+    }
+
+    // Get user data from authService
+    const user = this.authService.user();
+    const token = this.authService.authToken();
+
+    if (!user?.id || !token) {
+      this.isSubmitting.set(false);
+      this.modalErrorMessage.set('Sesión expirada. Por favor, inicia sesión nuevamente.');
+      return;
+    }
+
+    // Phase 3.4: Call WalletService.addDeposit with transactionId as null
+    this.walletService.addDeposit({
+      amountUSD: this.amount(),
+      method: financeMethod,
+      token: token,
+      uid: user.id,
+      transactionId: null as any  // null for crypto - pending blockchain confirmation
+    }).then((result) => {
+      this.isSubmitting.set(false);
+      
+      if (result.success) {
+        // Show deposit response modal with backend data
+        this.showCryptoModal.set(false);
+        this.depositResponseMessage.set(result.message || 'Tu depósito está siendo procesado');
+        this.depositTxnId.set(result.txnId || '');
+        this.depositOrderNumber.set(result.orderNumber || '');
+        this.depositInvoiceUrl.set(result.invoiceUrl || '');
+        this.showDepositResponse.set(true);
+      } else {
+        // Phase 3.5: Error - keep modal open, show error message
+        this.modalErrorMessage.set(result.error || 'Error al procesar el depósito');
+      }
+    }).catch((err) => {
+      this.isSubmitting.set(false);
+      this.modalErrorMessage.set('Error de conexión. Intenta de nuevo.');
+    });
+  }
+
+  // Phase 2.4: Handle modal close
+  onModalClose() {
+    this.showCryptoModal.set(false);
+    this.modalErrorMessage.set('');
+    this.isSubmitting.set(false);
+  }
+
+  // Handle deposit response modal close
+  onDepositResponseClose() {
+    this.showDepositResponse.set(false);
+    this.showSuccess.set(true);
+  }
+
 }

@@ -42,7 +42,7 @@ import { NgOptimizedImage } from '@angular/common';
         <div class="w-[calc(100%-3rem)] h-px bg-white/[0.04]"></div>
 
         <!-- Address -->
-        <div class="flex flex-col gap-2 px-6 pt-4 pb-6 w-full relative z-10">
+        <div class="flex flex-col gap-2 px-6 pt-4 pb-4 w-full relative z-10">
           <span class="text-[7px] font-black text-white/15 uppercase tracking-[0.25em]">Dirección de Depósito</span>
           <div class="bg-black/40 backdrop-blur-3xl border border-white/[0.08] rounded-xl p-4 flex items-center gap-3 relative">
             <code class="flex-1 text-[10px] font-black text-white/60 tracking-wider break-all leading-relaxed uppercase">{{ address() }}</code>
@@ -55,6 +55,44 @@ import { NgOptimizedImage } from '@angular/common';
             <div class="text-center text-[9px] font-black text-emerald-400 uppercase tracking-[0.3em] animate-fade-in text-glow-emerald mt-1">Dirección Copiada</div>
           }
         </div>
+
+        <!-- Disclaimer about blockchain confirmation -->
+        <div class="px-6 pb-3 w-full relative z-10" data-testid="disclaimer">
+          <p class="text-[8px] font-black text-white/25 uppercase tracking-wider text-center leading-relaxed">
+            El crédito ocurrirá después de la confirmación de la red blockchain
+          </p>
+        </div>
+
+        <!-- Error Message Display -->
+        @if (errorMessage() && errorMessage().length > 0) {
+          <div class="px-6 pb-3 w-full relative z-10" data-testid="error-message">
+            <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-3 text-center">
+              <p class="text-[9px] font-black text-red-400 uppercase tracking-wider">{{ errorMessage() }}</p>
+            </div>
+            <button 
+              (click)="onRetry()" 
+              data-testid="retry-btn"
+              class="mt-2 w-full py-2 px-4 rounded-lg bg-white/10 hover:bg-white/20 border border-white/[0.08] text-white/70 active:scale-95 transition-all">
+              <span class="text-[9px] font-black uppercase tracking-widest">Reintentar</span>
+            </button>
+          </div>
+        }
+
+        <!-- Confirmation Button -->
+        <div class="px-6 pb-6 w-full relative z-10">
+          <button 
+            (click)="onConfirm()" 
+            [disabled]="isLoading()"
+            data-testid="confirm-btn"
+            class="w-full py-3.5 px-6 rounded-xl font-black text-sm uppercase tracking-widest transition-all duration-300 active:scale-[0.97] text-white btn-confirm"
+            [class.opacity-50]="isLoading()"
+            [class.cursor-not-allowed]="isLoading()">
+            @if (isLoading()) {
+              <span data-testid="loading-spinner" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span>
+            }
+            {{ isLoading() ? 'Procesando...' : 'Confirmar que/envié los fondos' }}
+          </button>
+        </div>
       </div>
     </div>
   `,
@@ -66,6 +104,30 @@ import { NgOptimizedImage } from '@angular/common';
     @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .text-glow { text-shadow: 0 0 12px rgba(255, 255, 255, 0.25); }
     .text-glow-emerald { text-shadow: 0 0 10px rgba(52, 211, 153, 0.4); }
+    .btn-confirm {
+      background: rgba(0, 212, 255, 0.13);
+      backdrop-filter: blur(32px) saturate(200%);
+      -webkit-backdrop-filter: blur(32px) saturate(200%);
+      border: 1px solid rgba(0, 212, 255, 0.28);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.15),
+        0 0 24px rgba(0, 212, 255, 0.18),
+        0 0 60px rgba(0, 212, 255, 0.08),
+        0 8px 32px rgba(0, 0, 0, 0.40);
+    }
+    .btn-confirm:hover:not(:disabled) {
+      background: rgba(0, 212, 255, 0.20);
+      border-color: rgba(0, 212, 255, 0.45);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 0 32px rgba(0, 212, 255, 0.28),
+        0 12px 40px rgba(0, 0, 0, 0.45);
+    }
+    .btn-confirm:active:not(:disabled) {
+      background: rgba(0, 212, 255, 0.10);
+      transform: scale(0.97);
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -74,6 +136,13 @@ export class CryptoDepositModalComponent {
   address = input.required<string>();
   logo = input.required<string>();
   close = output<void>();
+  
+  // Phase 2.1: New outputs and inputs
+  confirm = output<{ amount: number; method: string }>();
+  isLoading = input<boolean>(false);
+  
+  // Phase 2.2: Error message signal
+  errorMessage = input<string>('');
 
   showCopiedMessage = signal(false);
 
@@ -84,6 +153,18 @@ export class CryptoDepositModalComponent {
 
   onClose() { this.close.emit(); }
   onBackdropClick(event: MouseEvent) { if ((event.target as HTMLElement).classList.contains('fixed')) this.onClose(); }
+
+  onConfirm() {
+    if (this.isLoading()) return;
+    // Emit with amount and method - the amount will be passed from parent
+    this.confirm.emit({ amount: 0, method: this.currency() });
+  }
+
+  onRetry() {
+    // Clear error message by setting empty - parent should handle this
+    // For now, just emit close to allow retry from beginning, or we could emit a specific retry event
+    this.close.emit();
+  }
 
   async copyAddress() {
     await navigator.clipboard.writeText(this.address());

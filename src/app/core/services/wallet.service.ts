@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { ApiMessageResponse } from '../../models/user.model';
+import { ApiMessageResponse, DepositResponse } from '../../models/user.model';
 
 export enum TransactionCoin {
   COINS = 1,
@@ -21,12 +21,30 @@ export enum TransactionReason {
 }
 
 export enum FinanceMethod {
-  COP = 1,
-  USDT = 2,
-  TRX = 3,
-  BNB = 4,
-  BTC = 5,
+  COP = 0,      // Nequi 1
+  NEQUI_2 = 1,  // Nequi 2
+  NEQUI_3 = 2,  // Nequi 3
+  DAVIPLATA = 3,
+  PAYPAL = 4,
+  USDT_TRC20 = 5,
+  USDT_BEP20 = 6,
+  TRX = 7,
+  BNB = 8,
+  BTC = 9,
 }
+
+export const FinanceMethodLabels: Record<number, string> = {
+  0: 'Nequi 1',
+  1: 'Nequi 2',
+  2: 'Nequi 3',
+  3: 'Daviplata',
+  4: 'Paypal',
+  5: 'USDT (TRC20)',
+  6: 'USDT (BEP20)',
+  7: 'TRX',
+  8: 'BNB',
+  9: 'BTC',
+};
 
 export enum FincanceNetworks {
   Nequi = 1,
@@ -55,7 +73,7 @@ export interface DepositRequest {
   timestamp: number;
   token: string;
   uid: number;
-  transactionId: string; 
+  transactionId: string | null; 
 }
 
 @Injectable({
@@ -117,8 +135,8 @@ async addWithdrawal(params: {
     method: FinanceMethod;
     token: string;
     uid: number;
-    transactionId: string;
-  }): Promise<{ success: boolean; error?: string; message?: string }> {
+    transactionId: string | null;
+  }): Promise<{ success: boolean; error?: string; message?: string; invoiceUrl?: string; txnId?: string; orderNumber?: string }> {
     try {
       const url = `${this.getBaseUrl()}Wallet/addDeposit`;
       const body: DepositRequest = {
@@ -130,10 +148,16 @@ async addWithdrawal(params: {
         transactionId: params.transactionId,
       };
 
-      const response = await this.http.post<ApiMessageResponse>(url, body).toPromise();
+      const response = await this.http.post<DepositResponse>(url, body).toPromise();
 
       if (response) {
-        return { success: true, message: response.message };
+        return { 
+          success: true, 
+          message: response.message,
+          invoiceUrl: response.invoiceUrl,
+          txnId: response.txnId,
+          orderNumber: response.orderNumber
+        };
       }
 
       return { success: false, error: 'No se recibió respuesta del servidor' };

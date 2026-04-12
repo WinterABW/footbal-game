@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal, computed, input, vi
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { UserStatusService } from '../../../../core/services/user-status.service';
-import { WalletService, FinanceMethod, FincanceNetworks } from '../../../../core/services/wallet.service';
+import { WalletService } from '../../../../core/services/wallet.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { SuccessOverlayComponent } from './success-overlay.component';
 import { BalanceComponent } from '../../../../shared/components/balance/balance.component';
@@ -167,20 +167,20 @@ export class WithdrawFormComponent {
     return logoMap[this.currency()] || null;
   });
 
-  private methodMap: Record<string, FinanceMethod> = {
-    'Nequi': FinanceMethod.COP, 'Daviplata': FinanceMethod.COP,
-    'Plin': FinanceMethod.COP, 'Yape': FinanceMethod.COP,
-    'Paypal': FinanceMethod.COP,
-    'USDT': FinanceMethod.USDT, 'TRX': FinanceMethod.TRX,
-    'BNB': FinanceMethod.BNB, 'BTC': FinanceMethod.BTC,
+  private methodMap: Record<string, number> = {
+    'Nequi': 0, 'Daviplata': 3,
+    'Plin': 0, 'Yape': 0,
+    'Paypal': 4,
+    'USDT': 5, 'TRX': 7,
+    'BNB': 8, 'BTC': 9,
   };
 
-  private networkMap: Record<string, FincanceNetworks> = {
-    'Nequi': FincanceNetworks.Nequi, 'Daviplata': FincanceNetworks.Daviplata,
-    'Plin': FincanceNetworks.Plin, 'Yape': FincanceNetworks.Yape,
-    'Paypal': FincanceNetworks.Paypal,
-    'USDT': FincanceNetworks.TRON, 'TRX': FincanceNetworks.TRON,
-    'BNB': FincanceNetworks.BSC, 'BTC': FincanceNetworks.Bitcoin,
+  private networkMap: Record<string, number> = {
+    'Nequi': 1, 'Daviplata': 2,
+    'Plin': 3, 'Yape': 4,
+    'Paypal': 8,
+    'USDT': 5, 'TRX': 5,
+    'BNB': 6, 'BTC': 7,
   };
 
   presetAmounts = computed(() => {
@@ -246,8 +246,8 @@ export class WithdrawFormComponent {
 
     const result = await this.walletService.addWithdrawal({
       amountCOP: amount,
-      selectedCoin: this.methodMap[this.currency()] ?? FinanceMethod.COP,
-      selectedNetwork: this.networkMap[this.currency()] ?? FincanceNetworks.Nequi,
+      selectedCoin: this.methodMap[this.currency()] ?? 0,
+      selectedNetwork: this.networkMap[this.currency()] ?? 1,
       token,
       uid: user.id,
       walletAdress: this.selectedAccount(),

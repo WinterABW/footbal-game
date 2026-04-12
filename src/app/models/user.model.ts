@@ -17,6 +17,13 @@ export interface ApiMessageResponse {
   message: string;
 }
 
+export interface DepositResponse {
+  invoiceUrl?: string;
+  txnId?: string;
+  orderNumber?: string;
+  message: string;
+}
+
 export interface ProfileResponse {
   createdAt: string;
   id: number | string;

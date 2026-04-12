@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { WalletService, FinanceMethod } from '../../../core/services/wallet.service';
+import { WalletService } from '../../../core/services/wallet.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserStatusService } from '../../../core/services/user-status.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
@@ -165,13 +165,13 @@ export class PaymentScreenComponent {
 
   currencyLabel = computed(() => this.currency() === 'Paypal' ? 'USD' : 'COP');
 
-   private methodMap: Record<string, FinanceMethod> = {
-    'Nequi': FinanceMethod.COP, 'Daviplata': FinanceMethod.COP,
-    'Plin': FinanceMethod.COP, 'Yape': FinanceMethod.COP,
-    'Paypal': FinanceMethod.COP,
-    'USDT': FinanceMethod.USDT, 'TRX': FinanceMethod.TRX,
-    'BNB': FinanceMethod.BNB, 'BTC': FinanceMethod.BTC,
-  };
+   private methodMap: Record<string, number> = {
+    'Nequi': 0, 'Daviplata': 3,
+    'Plin': 0, 'Yape': 0,
+    'Paypal': 4,
+    'USDT': 5, 'TRX': 7,
+    'BNB': 8, 'BTC': 9,
+   };
 
   onReferenceChange(event: Event) {
     const value = (event.target as HTMLInputElement).value;
@@ -214,7 +214,7 @@ export class PaymentScreenComponent {
 
     const result = await this.walletService.addDeposit({
       amountUSD: this.amount(),
-      method: this.methodMap[this.currency()] ?? FinanceMethod.COP,
+      method: this.methodMap[this.currency()] ?? 0,
       token,
       uid: user.id,
       transactionId: this.reference(),
