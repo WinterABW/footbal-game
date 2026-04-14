@@ -96,7 +96,7 @@ export class InvestService {
     if (filters.isBuyed !== undefined) params.set('isBuyed', filters.isBuyed.toString());
 
     const queryString = params.toString();
-    const url = `${this.getBaseUrl()}Invest/getPlayers${queryString ? '?' + queryString : ''}`;
+    const url = `${this.getBaseUrl()}Invest/GetPlayers${queryString ? '?' + queryString : ''}`;
 
     const promise = withRetry(
       () => this.http.get<InvestApiPlayer[]>(url).toPromise(),
