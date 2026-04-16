@@ -19,27 +19,23 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
   template: `
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
         
-        <!-- Floating Header Controls -->
+<!-- Floating Header Controls -->
         <div class="absolute top-0 left-0 right-0 z-20 px-5 mt-[calc(env(safe-area-inset-top,0px)+1rem)] flex flex-row justify-between items-center pointer-events-none">
-            <a routerLink="/main"
-                class="w-10 h-10 lg-module-card flex items-center justify-center active:scale-90 transition-transform pointer-events-auto"
-                aria-label="Volver">
-                <svg class="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-            </a>
-            <div class="pointer-events-auto flex items-center gap-3">
+            @if (showScrollToTopButton()) {
+                <button (click)="scrollToTop()"
+                    class="w-10 h-10 lg-module-card flex items-center justify-center active:scale-90 transition-all duration-300"
+                    aria-label="Volver arriba">
+                    <svg class="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                    </svg>
+                </button>
+            } @else {
+                <div class="w-10"></div>
+            }
+            <div class="pointer-events-auto">
                 <app-per-hour-earnings />
-                @if (showScrollToTopButton()) {
-                    <button (click)="scrollToTop()"
-                        class="w-10 h-10 lg-module-card flex items-center justify-center active:scale-90 transition-all duration-300"
-                        aria-label="Volver arriba">
-                        <svg class="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                        </svg>
-                    </button>
-                }
             </div>
+        </div>
         </div>
 
         <div class="flex-1 w-full relative z-10 flex flex-col overflow-y-auto no-scrollbar pt-safe-top pb-32 px-5 gap-2" #scrollContainer
