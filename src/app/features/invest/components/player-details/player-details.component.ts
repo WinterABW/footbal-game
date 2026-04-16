@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, HostListener, input, output, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, HostListener, input, output, viewChild, type ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import type { InvestApiPlayer, InvestBoughtPlayer } from '../../../../models/invest.model';
 
@@ -205,15 +205,15 @@ import type { InvestApiPlayer, InvestBoughtPlayer } from '../../../../models/inv
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlayerDetailsComponent implements AfterViewInit {
+export class PlayerDetailsComponent {
   player = input.required<InvestApiPlayer>();
   confirm = output<InvestApiPlayer>();
   close = output<void>();
   loading = input(false);
   isBought = input(false);
 
-  @ViewChild('modalWrapper') modalWrapper!: ElementRef;
-  @ViewChild('closeBtn') closeBtn!: ElementRef;
+  modalWrapper = viewChild.required<ElementRef>('modalWrapper');
+  closeBtn = viewChild.required<ElementRef>('closeBtn');
 
   age = computed(() => this.player().age);
   dailyEarnings = computed(() => this.player().interest * 24);
@@ -225,7 +225,8 @@ export class PlayerDetailsComponent implements AfterViewInit {
   });
 
   ngAfterViewInit() {
-    if (this.closeBtn) this.closeBtn.nativeElement.focus();
+    const btn = this.closeBtn();
+    if (btn) btn.nativeElement.focus();
   }
 
   @HostListener('keydown', ['$event'])
@@ -233,7 +234,9 @@ export class PlayerDetailsComponent implements AfterViewInit {
     if (event.key === 'Escape') { this.onClose(); return; }
     if (event.key === 'Tab') {
       event.preventDefault();
-      const els = this.modalWrapper.nativeElement.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      const wrapper = this.modalWrapper();
+      if (!wrapper) return;
+      const els = wrapper.nativeElement.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
       if (els.length === 0) return;
       const first = els[0] as HTMLElement;
       const last = els[els.length - 1] as HTMLElement;
