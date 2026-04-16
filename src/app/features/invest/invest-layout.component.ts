@@ -97,7 +97,7 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
 
         @if (showScrollToTopButton()) {
             <button (click)="scrollToTop()"
-                class="fixed bottom-32 right-6 w-12 h-12 lg-module-card flex items-center justify-center z-50 shadow-teal-500/20 active:scale-90 transition-all duration-300"
+                class="fixed bottom-8 right-6 w-12 h-12 lg-module-card flex items-center justify-center z-50 shadow-teal-500/20 active:scale-90 transition-all duration-300"
                 aria-label="Volver arriba">
                 <svg class="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
