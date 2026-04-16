@@ -5,7 +5,6 @@ import { ProductCardComponent } from './components/product/product-card.componen
 import { ProductCardVerticalComponent } from './components/product-vertical/product-card-vertical.component';
 import { PlayerDetailsComponent } from './components/player-details/player-details.component';
 import { PerHourEarningsComponent } from '../game/components/per-hour-earnings/per-hour-earnings.component';
-import { RouterLink } from '@angular/router';
 import type { InvestApiPlayer, InvestBoughtPlayer } from '../../models/invest.model';
 import { GlassTabBarComponent, GlassTab } from '../../shared/ui';
 import { InvestService } from '../../core/services/invest.service';
@@ -15,7 +14,7 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-invest-layout',
-  imports: [NgOptimizedImage, BalanceComponent, ProductCardComponent, ProductCardVerticalComponent, PlayerDetailsComponent, PerHourEarningsComponent, RouterLink, GlassTabBarComponent],
+  imports: [NgOptimizedImage, BalanceComponent, ProductCardComponent, ProductCardVerticalComponent, PlayerDetailsComponent, PerHourEarningsComponent, GlassTabBarComponent],
   template: `
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
         
@@ -35,7 +34,6 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
             <div class="pointer-events-auto">
                 <app-per-hour-earnings />
             </div>
-        </div>
         </div>
 
         <div class="flex-1 w-full relative z-10 flex flex-col overflow-y-auto no-scrollbar pt-safe-top pb-32 px-5 gap-2" #scrollContainer
