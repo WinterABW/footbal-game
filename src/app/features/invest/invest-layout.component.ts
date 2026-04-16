@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed, ViewChild, ElementRef, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed, viewChild, type ElementRef, effect } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { BalanceComponent } from '../../shared/components/balance/balance.component';
 import { ProductCardComponent } from './components/product/product-card.component';
@@ -22,7 +22,7 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
         <div class="absolute top-0 left-0 right-0 z-20 px-5 mt-[calc(env(safe-area-inset-top,0px)+1rem)] flex flex-row justify-between items-center pointer-events-none">
             @if (showScrollToTopButton()) {
                 <button (click)="scrollToTop()"
-                    class="w-10 h-10 lg-module-card flex items-center justify-center active:scale-90 transition-all duration-300"
+                    class="w-10 h-10 lg-module-card flex items-center justify-center active:scale-90 transition-all duration-300 pointer-events-auto"
                     aria-label="Volver arriba">
                     <svg class="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
@@ -159,7 +159,7 @@ export class InvestLayoutComponent {
     }
   }
 
-  @ViewChild('scrollContainer') scrollContainer!: ElementRef;
+  scrollContainer = viewChild.required<ElementRef>('scrollContainer');
 
   readonly investTabs: GlassTab[] = [
     { id: 'jugadores', label: 'Mercado' },
@@ -222,6 +222,9 @@ export class InvestLayoutComponent {
   }
 
   scrollToTop() {
-    this.scrollContainer.nativeElement.scrollTo({ top: 0, behavior: 'smooth' });
+    const container = this.scrollContainer();
+    if (container) {
+      container.nativeElement.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 }
