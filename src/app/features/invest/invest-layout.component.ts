@@ -28,8 +28,17 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
             </a>
-            <div class="pointer-events-auto">
+            <div class="pointer-events-auto flex items-center gap-3">
                 <app-per-hour-earnings />
+                @if (showScrollToTopButton()) {
+                    <button (click)="scrollToTop()"
+                        class="w-10 h-10 lg-module-card flex items-center justify-center active:scale-90 transition-all duration-300"
+                        aria-label="Volver arriba">
+                        <svg class="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                    </button>
+                }
             </div>
         </div>
 
@@ -94,16 +103,6 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
                 }
             </div>
         </div>
-
-        @if (showScrollToTopButton()) {
-            <button (click)="scrollToTop()"
-                class="fixed bottom-8 right-6 w-12 h-12 lg-module-card flex items-center justify-center z-50 shadow-teal-500/20 active:scale-90 transition-all duration-300"
-                aria-label="Volver arriba">
-                <svg class="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                </svg>
-            </button>
-        }
 
         @if (selectedPlayer()) {
           <app-player-details 
