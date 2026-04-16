@@ -183,6 +183,8 @@ export class AuthService {
         const user: any = { username: response.username, isGuest: response.isGuest };
         if (response.id) user.id = response.id;
         this.saveAuthStorage(user, response.token);
+        // Flag para mostrar bonus de bienvenida solo a usuarios nuevos registrados
+        localStorage.setItem('welcome_bonus_pending', 'true');
         await this.userStatusService.loadUserStatus();
         
         // Update user with ID from userStatus if not present

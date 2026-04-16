@@ -158,23 +158,28 @@ export class OnboardingService {
   readonly isLastStep = computed(() => this._currentStep() === ONBOARDING_STEPS.length - 1);
 
   /**
-   * Verifica si el usuario es primera vez combinando:
-   * 1. createdAt del backend (cuenta reciente < 10 min)
+   * Verifica si el usuario es primera vez:
+   * 1. Flag local de registro nuevo (welcome_bonus_pending)
    * 2. localStorage flag (no completó onboarding antes)
    */
   isFirstTimeUser(): boolean {
     if (!this.storage.isBrowser) return false;
 
-    // Si ya completó el onboarding, no es primera vez
+    // Si ya completó el onboarding antes, no mostrar
     if (this.storage.get<boolean>(ONBOARDING_KEY)) {
       return false;
     }
 
-    // Verificar si la cuenta es reciente
+    // Verificar si tiene bonus de bienvenida pendiente (registro nuevo)
+    // No mostrar si ya se vio antes (flag = 'seen')
+    const welcomeBonusStatus = localStorage.getItem('welcome_bonus_pending');
+    if (welcomeBonusStatus === 'true') {
+      return true;
+    }
+
+    // Vérificar también account age (fallback)
     const userStatus = this.userStatusService.userStatus();
     if (!userStatus?.createdAt) {
-      // Si no hay status cargado, no podemos determinar si es primera vez, asumimos que no.
-      // O si no tiene createdAt, no es un usuario recién creado.
       return false;
     }
 
@@ -221,6 +226,8 @@ export class OnboardingService {
   claimBonusAndClose(): void {
     this._bonusClaimed.set(true);
     this._showBonusClaim.set(false);
+    // Eliminar flag de bonus pendiente después de reclamar
+    localStorage.removeItem('welcome_bonus_pending');
   }
 
   /**
@@ -232,14 +239,21 @@ export class OnboardingService {
 
   /**
    * Marca el onboarding como completado en localStorage
-   * y muestra el modal de bonus claim
+   * y muestra el modal de bonus claim SOLO si es registro nuevo
    */
   completeOnboarding(): void {
     this._isActive.set(false);
     this._currentStep.set(0);
     this.storage.set(ONBOARDING_KEY, true);
-    // Show bonus claim after tutorial completes
-    this._showBonusClaim.set(true);
+    
+    // Solo mostrar bonus si es usuario registrado nuevo (flag existe)
+    const hasWelcomeBonus = localStorage.getItem('welcome_bonus_pending') === 'true';
+    if (hasWelcomeBonus) {
+      // Importante: marcar el flag como visto para que no se muestre otra vez
+      // (aunque el usuario skipee el bono)
+      localStorage.setItem('welcome_bonus_pending', 'seen');
+      this._showBonusClaim.set(true);
+    }
   }
 
   /**

@@ -245,7 +245,7 @@ export class LoginComponent {
     try {
       // Full phone number with country prefix (for username)
       const cleanPrefix = this.countryPrefix.replace(/-/g, '');
-      const phoneNumber = String(cleanPrefix) + String(this.phone).replace(/^\+?\d/i, '');
+      const phoneNumber = cleanPrefix + this.phone;
       
       // Phone is used as username for login
       const result = await this.authService.login(phoneNumber, this.pass);
@@ -284,14 +284,14 @@ export class LoginComponent {
     try {
       // Full phone number with country prefix (used as username)
       const cleanPrefix = this.countryPrefix.replace(/-/g, '');
-      const phoneNumber = String(cleanPrefix) + String(this.phone).replace(/^\+?\d/i, '');
+      const phoneNumber = cleanPrefix + this.phone;
       // refId from URL parameter (if user was invited)
       const refId = this.referrealId();
 
       const result = await this.authService.register(
         phoneNumber, // username = phone (as string)
         this.pass, // password
-        null, // phone (already used as username)
+        phoneNumber, // phone (full number with prefix)
         refId // refId (optional)
       );
       if (result.success) {
