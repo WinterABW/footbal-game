@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input, output, computed } from '@angular/core';
+import { NgOptimizedImage, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-product-card-vertical',
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImage, DecimalPipe],
   template: `
     @if (product(); as player) {
       <article class="lg-module-card p-3 flex flex-col gap-2 border border-white/10 hover:border-amber-500/40 active:scale-[0.98] transition-all duration-300 cursor-pointer bg-white/5 backdrop-blur-2xl rounded-2xl">
@@ -27,12 +27,12 @@ import { NgOptimizedImage } from '@angular/common';
           <span class="text-[7px] font-bold text-amber-400/60 text-glow-amber uppercase tracking-widest">Élite</span>
           <h3 class="text-[10px] font-black text-white tracking-tight truncate">{{ player.name }}</h3>
           
-          <!-- Earnings -->
+          <!-- Earnings por hora -->
           <div class="flex items-center gap-1 mt-0.5">
             <div class="w-3.5 h-3.5 rounded-full bg-amber-500/20 flex items-center justify-center">
                <img ngSrc="shared/balance/coin.webp" alt="coin" width="10" height="10" class="object-contain">
             </div>
-            <span class="text-[8px] font-bold text-white/80 text-glow-amber">+{{ player.interest || 0 }}</span>
+            <span class="text-[8px] font-bold text-white/80 text-glow-amber">+{{ hourlyEarnings() | number:'1.0-0' }}</span>
             <span class="text-[6px] text-white/40 font-medium">/hora</span>
           </div>
         </div>
@@ -53,6 +53,12 @@ import { NgOptimizedImage } from '@angular/common';
 export class ProductCardVerticalComponent {
   buy = output<any>();
   product = input<any>();
+
+  hourlyEarnings = computed(() => {
+    const p = this.product();
+    if (!p) return 0;
+    return (p.interest / 100) * p.price / 24;
+  });
 
   onBuy(event: Event) {
     event.stopPropagation();
