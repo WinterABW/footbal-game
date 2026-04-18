@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, signal, inject, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, inject, computed, OnInit, effect } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { UserStatusService } from '../../core/services/user-status.service';
+import { SupportService } from '../../services/support.service';
 import { Transaction } from '../../models/transaction.model';
 import { SupportChatComponent } from './support-chat.component';
 import { BalanceWalletComponent } from '../../shared/components/balance-wallet/balance-wallet.component';
@@ -20,8 +21,14 @@ interface Deposit {
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
 
       <!-- Support button (floating top-right) -->
-      <button (click)="navigateToSupport()" class="absolute top-0 right-5 mt-[calc(env(safe-area-inset-top,0px)+1.5rem)] z-20 w-12 h-12 lg-icon-btn flex items-center justify-center active:scale-90 transition-transform p-0.5">
-        <img ngSrc="shared/icons/support.webp" alt="Soporte" width="32" height="32" class="rounded-full object-cover w-full h-full" />
+      <button (click)="navigateToSupport()" 
+              class="absolute top-0 right-5 mt-[calc(env(safe-area-inset-top,0px)+1.5rem)] z-20 w-12 h-12 lg-icon-btn flex items-center justify-center active:scale-90 transition-all p-0.5"
+              [style.outline]="hasPendingMessages() ? '2px solid #ef4444' : 'none'"
+              [style.outline-offset]="'2px'"
+              [class.animate-pulse]="hasPendingMessages()">
+        <div class="relative w-full h-full">
+          <img ngSrc="shared/icons/support.webp" alt="Soporte" width="32" height="32" class="rounded-full object-cover w-full h-full" />
+        </div>
       </button>
 
       <div class="flex-1 w-full relative z-10 flex flex-col overflow-y-auto no-scrollbar pb-24 px-5 gap-2" style="padding-top: calc(var(--safe-top, 0px) + 0.75rem);">
@@ -299,9 +306,10 @@ interface Deposit {
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WalletComponent {
+export class WalletComponent implements OnInit {
   private router = inject(Router);
   private userStatusService = inject(UserStatusService);
+  private supportService = inject(SupportService);
 
   readonly walletTabs: GlassTab[] = [
     { id: 'depositar', label: 'Depositar' },
@@ -313,6 +321,7 @@ export class WalletComponent {
   activeTab = computed(() => this.activeTabStr() as 'depositar' | 'historial' | 'retirar');
 
   showSupportChat = signal(false);
+  hasPendingMessages = this.supportService.hasPending;
   readonly balance = computed(() => this.userStatusService.wallet()?.principalBalance ?? 0);
 
   readonly depositMethods: Deposit[] = [
@@ -368,7 +377,18 @@ export class WalletComponent {
   isSheetOpen = signal(false);
   sheetContent = signal<'default' | 'colombia' | 'cryptos' | 'cryptos-withdraw' | 'externos' | 'peru' | 'usdt-networks' | 'usdt-networks-withdraw'>('default');
 
-  constructor() { }
+  constructor() {
+    // Debug effect - MUST be in constructor or injection context
+    effect(() => {
+      console.log('[Wallet] hasPendingMessages signal changed:', this.hasPendingMessages());
+    });
+  }
+
+  ngOnInit() {
+    // Check for pending messages on wallet initialization
+    console.log('[Wallet] Checking pending messages...');
+    this.supportService.checkForPendingMessages();
+  }
 
   navigateToSupport() { this.showSupportChat.set(true); }
   onCloseChat() { this.showSupportChat.set(false); }

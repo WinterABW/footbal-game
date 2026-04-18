@@ -105,6 +105,7 @@ export class SupportChatComponent implements OnInit, OnDestroy {
   
   // Bind directly to service signals
   messages = this.supportService.messages;
+  hasPending = this.supportService.hasPending;
   newMessage = signal('');
   
   constructor() {

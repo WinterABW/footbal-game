@@ -85,11 +85,11 @@ export class SupportService {
     // Fetch immediately on start (full history)
     this.fetchMessages();
     
-    // Then run periodic pending checks
+    // Then run periodic full fetches
     const ms = interval || this.pollingIntervalMs;
     
     this.pollingTimer = setInterval(() => {
-      this.checkForPendingMessages();
+      this.fetchMessages();
     }, ms);
   }
 
