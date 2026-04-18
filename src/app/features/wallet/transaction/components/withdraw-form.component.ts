@@ -168,19 +168,10 @@ export class WithdrawFormComponent {
   });
 
   private methodMap: Record<string, number> = {
-    'Nequi': 0, 'Daviplata': 3,
-    'Plin': 0, 'Yape': 0,
-    'Paypal': 4,
-    'USDT': 5, 'TRX': 7,
-    'BNB': 8, 'BTC': 9,
-  };
-
-  private networkMap: Record<string, number> = {
-    'Nequi': 1, 'Daviplata': 2,
-    'Plin': 3, 'Yape': 4,
-    'Paypal': 8,
-    'USDT': 5, 'TRX': 5,
-    'BNB': 6, 'BTC': 7,
+    'Crypto': 0,
+    'Nequi': 1,
+    'Daviplata': 4,
+    'Paypal': 5,
   };
 
   presetAmounts = computed(() => {
@@ -246,8 +237,7 @@ export class WithdrawFormComponent {
 
     const result = await this.walletService.addWithdrawal({
       amountCOP: amount,
-      selectedCoin: this.methodMap[this.currency()] ?? 0,
-      selectedNetwork: this.networkMap[this.currency()] ?? 1,
+      methodId: this.methodMap[this.currency()] ?? 0,
       token,
       uid: user.id,
       walletAdress: this.selectedAccount(),

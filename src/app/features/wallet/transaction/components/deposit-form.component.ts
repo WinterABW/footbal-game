@@ -51,6 +51,49 @@ import { PaymentScreenComponent } from '../payment-screen.component';
         />
       }
 
+      <!-- Pending Deposit Modal (404 case) -->
+      @if (showPendingDeposit()) {
+        <div class="fixed inset-0 z-[300] flex items-center justify-center p-6 animate-fade-in">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-2xl"></div>
+          
+          <div class="relative w-full max-w-sm overflow-hidden bg-white/[0.03] backdrop-blur-3xl rounded-[40px] p-8 flex flex-col items-center shadow-[0_40px_100px_rgba(0,0,0,0.8)] border border-white/10 animate-scale-up">
+            <!-- Top highlight line -->
+            <span class="absolute top-0 left-[20%] right-[20%] h-px bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none"></span>
+            
+            <!-- Icon -->
+            <div class="w-20 h-20 rounded-full bg-amber-500/10 border-2 border-amber-500/40 flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(245,158,11,0.25)]">
+              <svg class="w-10 h-10 text-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,0.6)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+
+            <h2 class="text-xl font-black text-white tracking-tight uppercase text-glow-amber text-center mb-4">Depósito en Curso</h2>
+            
+            <p class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] text-center leading-relaxed mb-6">{{ pendingDepositMessage() }}</p>
+
+            <!-- Invoice URL -->
+            @if (pendingDepositInvoiceUrl()) {
+              <div class="w-full flex flex-col gap-3 mb-6">
+                <div class="flex flex-col gap-1 p-3 bg-white/[0.02] rounded-xl border border-white/5">
+                  <span class="text-[8px] font-black text-white/20 uppercase tracking-[0.2em]">Enlace de Factura</span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[9px] font-bold text-cyan-400 uppercase tracking-wider truncate flex-1">{{ pendingDepositInvoiceUrl() }}</span>
+                    <button (click)="copyPendingInvoiceUrl()" class="flex-shrink-0 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/[0.08] text-white/70 active:scale-95 transition-all">
+                      <span class="text-[8px] font-black uppercase tracking-widest">Copiar</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Close Button -->
+            <button (click)="onPendingDepositClose()" class="w-full py-3 px-6 rounded-xl font-black text-sm uppercase tracking-widest transition-all duration-300 active:scale-[0.97] text-white bg-amber-500/20 border border-amber-500/40 hover:bg-amber-500/30">
+              Entendido
+            </button>
+          </div>
+        </div>
+      }
+
       <header class="w-full relative z-10 pt-safe-top mt-8 px-6 flex justify-between items-center py-6 mb-4">
         <button (click)="goBack()" class="w-12 h-12 lg-icon-btn active:scale-90 transition-transform">
           <svg class="w-6 h-6 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
@@ -270,6 +313,11 @@ import { PaymentScreenComponent } from '../payment-screen.component';
       animation: shimmer 2.4s infinite linear;
     }
     @keyframes shimmer { 0% { background-position: 200% center; } 100% { background-position: -200% center; } }
+    .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .animate-scale-up { animation: scaleUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    @keyframes scaleUp { from { transform: scale(0.6) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    .text-glow-amber { text-shadow: 0 0 25px rgba(251, 191, 36, 0.6); }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -294,6 +342,11 @@ export class DepositFormComponent {
   
   // Phase 2.2: error message for modal
   modalErrorMessage = signal('');
+
+  // Pending deposit (404 case)
+  showPendingDeposit = signal(false);
+  pendingDepositInvoiceUrl = signal('');
+  pendingDepositMessage = signal('');
 
   // Deposit response modal signals
   showDepositResponse = signal(false);
@@ -413,20 +466,28 @@ export class DepositFormComponent {
       return;
     }
 
-    // Map method string to FinanceMethod enum based on selection and network
+    // Map method string to FinanceMethod enum based on selection
     let financeMethod: number;
     
-    if (this.selectedMethod() === 'USDT') {
-      // USDT can be TRC20 (5) or BEP20 (6)
-      financeMethod = this.selectedNetwork() === 'BEP20' ? 6 : 5;
-    } else if (this.selectedMethod() === 'TRX') {
-      financeMethod = 7;
-    } else if (this.selectedMethod() === 'BNB') {
-      financeMethod = 8;
-    } else if (this.selectedMethod() === 'BTC') {
-      financeMethod = 9;
+    if (this.selectedMethod() === 'Crypto') {
+      // All crypto deposits use method 0 (CRYPTO)
+      financeMethod = 0;
+    } else if (this.selectedMethod() === 'Nequi') {
+      // Map Nequi channel to enum: Nequi-1=1, Nequi-2=2, Nequi-3=3
+      const channel = this.selectedChannel();
+      if (channel === 'Nequi-2') {
+        financeMethod = 2;
+      } else if (channel === 'Nequi-3') {
+        financeMethod = 3;
+      } else {
+        financeMethod = 1; // Nequi-1 default
+      }
+    } else if (this.selectedMethod() === 'Daviplata') {
+      financeMethod = 4;
+    } else if (this.selectedMethod() === 'Paypal') {
+      financeMethod = 5;
     } else {
-      financeMethod = 5; // Default to USDT TRC20
+      financeMethod = 0; // Default to Crypto
     }
 
     this.isSubmitting.set(true);
@@ -447,9 +508,20 @@ export class DepositFormComponent {
         this.depositTxnId.set(result.txnId || '');
         this.depositOrderNumber.set(result.orderNumber || '');
         this.depositInvoiceUrl.set(result.invoiceUrl || '');
+        
+        // Open invoiceUrl in new tab if available (crypto deposits)
+        if (result.invoiceUrl) {
+          window.open(result.invoiceUrl, '_blank');
+        }
+        
         this.showDepositResponse.set(true);
       } else {
-        this.errorHandler.showErrorToast(result.error || 'Error al procesar el depósito');
+        // Handle pending deposit error (404)
+        if (result.message && result.message.includes('pendiente')) {
+          this.errorHandler.showErrorToast(result.message);
+        } else {
+          this.errorHandler.showErrorToast(result.error || 'Error al procesar el depósito');
+        }
       }
     }).catch((err) => {
       this.isSubmitting.set(false);
@@ -467,20 +539,28 @@ export class DepositFormComponent {
     this.isSubmitting.set(true);
     this.modalErrorMessage.set('');
 
-    // Map method string to FinanceMethod enum based on selection and network
+    // Map method string to FinanceMethod enum based on selection
     let financeMethod: number;
     
-    if (this.selectedMethod() === 'USDT') {
-      // USDT can be TRC20 (5) or BEP20 (6)
-      financeMethod = this.selectedNetwork() === 'BEP20' ? 6 : 5;
-    } else if (this.selectedMethod() === 'TRX') {
-      financeMethod = 7;
-    } else if (this.selectedMethod() === 'BNB') {
-      financeMethod = 8;
-    } else if (this.selectedMethod() === 'BTC') {
-      financeMethod = 9;
+    if (this.selectedMethod() === 'Crypto') {
+      // All crypto deposits use method 0 (CRYPTO)
+      financeMethod = 0;
+    } else if (this.selectedMethod() === 'Nequi') {
+      // Map Nequi channel to enum: Nequi-1=1, Nequi-2=2, Nequi-3=3
+      const channel = this.selectedChannel();
+      if (channel === 'Nequi-2') {
+        financeMethod = 2;
+      } else if (channel === 'Nequi-3') {
+        financeMethod = 3;
+      } else {
+        financeMethod = 1; // Nequi-1 default
+      }
+    } else if (this.selectedMethod() === 'Daviplata') {
+      financeMethod = 4;
+    } else if (this.selectedMethod() === 'Paypal') {
+      financeMethod = 5;
     } else {
-      financeMethod = 5; // Default to USDT TRC20
+      financeMethod = 0; // Default to Crypto
     }
 
     // Get user data from authService
@@ -510,14 +590,46 @@ export class DepositFormComponent {
         this.depositTxnId.set(result.txnId || '');
         this.depositOrderNumber.set(result.orderNumber || '');
         this.depositInvoiceUrl.set(result.invoiceUrl || '');
+        
+        // Open invoiceUrl in new tab if available (crypto deposits)
+        if (result.invoiceUrl) {
+          window.open(result.invoiceUrl, '_blank');
+        }
+        
         this.showDepositResponse.set(true);
       } else {
-        // Phase 3.5: Error - keep modal open, show error message
-        this.modalErrorMessage.set(result.error || 'Error al procesar el depósito');
+        // Check if it's a pending deposit (has invoiceUrl in error response)
+        if (result.invoiceUrl) {
+          this.showCryptoModal.set(false);
+          this.pendingDepositMessage.set(result.message || 'Ya existe un depósito pendiente');
+          this.pendingDepositInvoiceUrl.set(result.invoiceUrl);
+          this.showPendingDeposit.set(true);
+        } else {
+          // Phase 3.5: Error - keep modal open, show error message
+          this.modalErrorMessage.set(result.error || 'Error al procesar el depósito');
+        }
       }
-    }).catch((err) => {
+    }).catch((err: unknown) => {
       this.isSubmitting.set(false);
-      this.modalErrorMessage.set('Error de conexión. Intenta de nuevo.');
+      
+      // Handle HTTP errors with server message
+      const httpErr = err as { status?: number; error?: { message?: string; invoiceUrl?: string } };
+      if (httpErr?.status === 404 && httpErr?.error?.message) {
+        // Check if there's an invoiceUrl in the error
+        const invoiceUrl = httpErr?.error?.invoiceUrl;
+        if (invoiceUrl) {
+          this.showCryptoModal.set(false);
+          this.pendingDepositMessage.set(httpErr.error.message);
+          this.pendingDepositInvoiceUrl.set(invoiceUrl);
+          this.showPendingDeposit.set(true);
+        } else {
+          this.modalErrorMessage.set(httpErr.error.message);
+        }
+      } else if (httpErr?.error?.message) {
+        this.modalErrorMessage.set(httpErr.error.message);
+      } else {
+        this.modalErrorMessage.set('Error de conexión. Intenta de nuevo.');
+      }
     });
   }
 
@@ -532,6 +644,22 @@ export class DepositFormComponent {
   onDepositResponseClose() {
     this.showDepositResponse.set(false);
     this.showSuccess.set(true);
+    setTimeout(() => this.router.navigate(['/wallet']), 1500);
+  }
+
+  // Pending deposit modal handlers
+  onPendingDepositClose() {
+    this.showPendingDeposit.set(false);
+    this.pendingDepositInvoiceUrl.set('');
+    this.pendingDepositMessage.set('');
+    this.showCryptoModal.set(false);
+    this.showSuccess.set(true);
+    setTimeout(() => this.router.navigate(['/wallet']), 1500);
+  }
+
+  async copyPendingInvoiceUrl() {
+    await navigator.clipboard.writeText(this.pendingDepositInvoiceUrl());
+    this.errorHandler.showSuccessToast('URL copiada');
   }
 
 }

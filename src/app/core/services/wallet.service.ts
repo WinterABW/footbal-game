@@ -21,29 +21,21 @@ export enum TransactionReason {
 }
 
 export enum FinanceMethod {
-  COP = 0,      // Nequi 1
-  NEQUI_2 = 1,  // Nequi 2
-  NEQUI_3 = 2,  // Nequi 3
-  DAVIPLATA = 3,
-  PAYPAL = 4,
-  USDT_TRC20 = 5,
-  USDT_BEP20 = 6,
-  TRX = 7,
-  BNB = 8,
-  BTC = 9,
+  CRYPTO = 0,
+  NEQUI_1 = 1,
+  NEQUI_2 = 2,
+  NEQUI_3 = 3,
+  DAVIPLATA = 4,
+  PAYPAL = 5,
 }
 
 export const FinanceMethodLabels: Record<number, string> = {
-  0: 'Nequi 1',
-  1: 'Nequi 2',
-  2: 'Nequi 3',
-  3: 'Daviplata',
-  4: 'Paypal',
-  5: 'USDT (TRC20)',
-  6: 'USDT (BEP20)',
-  7: 'TRX',
-  8: 'BNB',
-  9: 'BTC',
+  0: 'Crypto',
+  1: 'Nequi 1',
+  2: 'Nequi 2',
+  3: 'Nequi 3',
+  4: 'Daviplata',
+  5: 'PayPal',
 };
 
 export enum FincanceNetworks {
@@ -59,8 +51,7 @@ export enum FincanceNetworks {
 
 export interface WithdrawalRequest {
   amountCOP: number;
-  selectedCoin: FinanceMethod;
-  selectedNetwork: FincanceNetworks;
+  methodId: number;
   timestamp: number;
   token: string;
   uid: number;
@@ -88,8 +79,7 @@ export class WalletService {
 
 async addWithdrawal(params: {
     amountCOP: number;
-    selectedCoin: FinanceMethod;
-    selectedNetwork: FincanceNetworks;
+    methodId: number;
     token: string;
     uid: number;
     walletAdress: string;
@@ -98,8 +88,7 @@ async addWithdrawal(params: {
       const url = `${this.getBaseUrl()}Wallet/addWithdrawl`;
       const body: WithdrawalRequest = {
         amountCOP: params.amountCOP,
-        selectedCoin: params.selectedCoin,
-        selectedNetwork: params.selectedNetwork,
+        methodId: params.methodId,
         timestamp: Date.now(),
         token: params.token,
         uid: params.uid,
@@ -173,6 +162,18 @@ async addWithdrawal(params: {
       }
       if (httpError?.status === 401) {
         return { success: false, error: 'Sesión expirada. Inicia sesión nuevamente.' };
+      }
+      if (httpError?.status === 404) {
+        // Deposit already pending - return the message and invoiceUrl from backend
+        const invoiceUrl = httpError?.error && typeof httpError.error === 'object' && 'invoiceUrl' in httpError.error
+          ? (httpError.error as { invoiceUrl?: string }).invoiceUrl
+          : undefined;
+        return { 
+          success: false, 
+          error: serverMessage ?? 'Ya existe un depósito pendiente', 
+          message: serverMessage ?? 'Ya existe un depósito pendiente. Por favor, espera a que se procese antes de crear uno nuevo.',
+          invoiceUrl: invoiceUrl
+        };
       }
       return { success: false, error: serverMessage ?? 'No se pudo procesar el depósito. Intenta de nuevo.' };
     }

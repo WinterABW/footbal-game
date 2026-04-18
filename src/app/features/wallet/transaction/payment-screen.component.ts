@@ -165,13 +165,12 @@ export class PaymentScreenComponent {
 
   currencyLabel = computed(() => this.currency() === 'Paypal' ? 'USD' : 'COP');
 
-   private methodMap: Record<string, number> = {
-    'Nequi': 0, 'Daviplata': 3,
-    'Plin': 0, 'Yape': 0,
-    'Paypal': 4,
-    'USDT': 5, 'TRX': 7,
-    'BNB': 8, 'BTC': 9,
-   };
+private methodMap: Record<string, number> = {
+    'Crypto': 0,
+    'Nequi': 1,
+    'Daviplata': 4,
+    'Paypal': 5,
+  };
 
   onReferenceChange(event: Event) {
     const value = (event.target as HTMLInputElement).value;
