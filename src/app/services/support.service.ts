@@ -9,7 +9,7 @@ import { ApiMessage, SupportMessage, HasPendingMessagesResponse, SendMessageRequ
 export class SupportService {
   private http = inject(HttpClient);
   private baseUrl = environment.apiBaseUrl;
-  private pollingIntervalMs = environment.supportChatPollingInterval || 3000;
+  private pollingIntervalMs = environment.supportChatPollingInterval || 5000;
   
   // Timer reference for polling
   private pollingTimer: ReturnType<typeof setInterval> | null = null;
