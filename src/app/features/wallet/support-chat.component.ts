@@ -1,10 +1,8 @@
-import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, output, signal, inject, OnInit, OnDestroy, effect } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-interface Message {
-  id: number; text: string; timestamp: Date; sender: 'user' | 'support';
-}
+import { SupportService } from '../../services/support.service';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-support-chat',
@@ -41,14 +39,14 @@ interface Message {
       <main class="relative z-10 flex-1 overflow-y-auto no-scrollbar px-5 py-5 flex flex-col gap-4">
         @for (message of messages(); track message.id) {
           <div class="flex animate-fade-in"
-               [class.justify-end]="message.sender === 'user'" 
-               [class.justify-start]="message.sender === 'support'">
+               [class.justify-end]="!message.isFromSupport" 
+               [class.justify-start]="message.isFromSupport">
             <div class="max-w-[80%] lg-module-card p-4 text-[13px] font-medium leading-relaxed"
-                 [class.rounded-br-md]="message.sender === 'user'"
-                 [class.rounded-bl-md]="message.sender === 'support'">
-              <p class="text-white/90">{{ message.text }}</p>
+                 [class.rounded-br-md]="!message.isFromSupport"
+                 [class.rounded-bl-md]="message.isFromSupport">
+              <p class="text-white/90">{{ message.content }}</p>
               <span class="text-[8px] font-bold text-white/20 uppercase tracking-widest mt-2 block"
-                    [class.text-right]="message.sender === 'user'">{{ formatTime(message.timestamp) }}</span>
+                    [class.text-right]="!message.isFromSupport">{{ formatTime(message.timestamp) }}</span>
             </div>
           </div>
         }
@@ -56,7 +54,7 @@ interface Message {
 
       <!-- Footer -->
       <footer class="relative z-10 w-full px-5 py-3 border-t border-white/5">
-        <form (ngSubmit)="sendMessage()" class="flex items-center gap-3">
+        <form (ngSubmit)="onSendMessage()" class="flex items-center gap-3">
           <div class="flex-1 h-12 lg-module-card overflow-hidden">
             <input 
               type="text" 
@@ -99,33 +97,51 @@ interface Message {
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SupportChatComponent {
+export class SupportChatComponent implements OnInit, OnDestroy {
   closeChat = output<void>();
-
-  messages = signal<Message[]>([
-    { id: 1, text: '¡Hola! 👋 ¿En qué podemos ayudarte hoy?', timestamp: new Date(), sender: 'support' },
-    { id: 2, text: 'Tengo un problema con un depósito que no se ha reflejado en mi cuenta.', timestamp: new Date(Date.now() - 2 * 60000), sender: 'user' },
-    { id: 3, text: 'Entendido. Por favor, bríndame el número de orden o la referencia de la transacción para poder verificarlo.', timestamp: new Date(Date.now() - 1 * 60000), sender: 'support' }
-  ]);
-
+  
+  private supportService = inject(SupportService);
+  private errorHandler = inject(ErrorHandlerService);
+  
+  // Bind directly to service signals
+  messages = this.supportService.messages;
   newMessage = signal('');
-
-  onClose() { this.closeChat.emit(); }
-
-  sendMessage() {
-    const text = this.newMessage().trim();
-    if (text) {
-      const message: Message = { id: Date.now(), text, timestamp: new Date(), sender: 'user' };
-      this.messages.update(m => [...m, message]);
-      this.newMessage.set('');
-      setTimeout(() => {
-        const reply: Message = { id: Date.now() + 1, text: 'Estamos verificando la información. Un operador te atenderá en breve.', timestamp: new Date(), sender: 'support' };
-        this.messages.update(m => [...m, reply]);
-      }, 1500);
-    }
+  
+  constructor() {
+    // Watch for send errors and show toast
+    effect(() => {
+      const error = this.supportService.sendError();
+      if (error) {
+        this.errorHandler.showErrorToast(error, 'support_chat');
+      }
+    });
   }
 
-  formatTime(date: Date): string {
+  ngOnInit() {
+    // Start polling when component initializes
+    this.supportService.startPolling();
+  }
+  
+  ngOnDestroy() {
+    // Stop polling when component is destroyed
+    this.supportService.stopPolling();
+  }
+  
+  onClose() {
+    this.closeChat.emit();
+  }
+  
+  onSendMessage() {
+    const text = this.newMessage().trim();
+    if (text) {
+      this.supportService.sendMessage(text);
+      // Clear input on success (service handles optimistic UI)
+      this.newMessage.set('');
+    }
+  }
+  
+  formatTime(timestamp: string | Date): string {
+    const date = new Date(timestamp);
     return date.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
   }
 }

@@ -4,4 +4,5 @@ export const environment = {
   apiTimeout: 30000,
   tapSecretKey: 'MiClaveSecreta123!',
   cryptoDepositAddress: '',
+  supportChatPollingInterval: 3000,
 };
