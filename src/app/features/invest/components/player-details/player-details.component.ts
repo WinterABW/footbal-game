@@ -13,7 +13,7 @@ import type { InvestApiPlayer, InvestBoughtPlayer } from '../../../../models/inv
     <div class="fixed inset-0 z-[160] flex items-end justify-center" role="dialog" aria-modal="true" aria-labelledby="player-title" [attr.tabindex]="-1" #modalWrapper>
        <div class="w-full max-w-lg relative overflow-hidden max-h-[88vh] rounded-t-[28px] animate-sheet-up"
            style="background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 50%, #0a0a12 100%); border-top: 1px solid rgba(255,255,255,0.08);"
-           [style.boxShadow]="player().isVIP ? '0 -24px 80px rgba(0,0,0,0.8), 0 0 120px rgba(255,208,96,0.08)' : '0 -24px 80px rgba(0,0,0,0.8), 0 0 120px rgba(0,212,255,0.03)'">
+           [style.boxShadow]="player().isVIP ? '0 -24px 80px rgba(0,0,0,0.8), 0 0 120px rgba(255,208,96,0.08), 0 0 200px rgba(255,208,96,0.05)' : '0 -24px 80px rgba(0,0,0,0.8), 0 0 120px rgba(0,212,255,0.03)'">
 
         <!-- Top accent line -->
         <div class="absolute top-0 left-0 right-0 h-[2px]"
@@ -35,7 +35,8 @@ import type { InvestApiPlayer, InvestBoughtPlayer } from '../../../../models/inv
             <div class="relative w-20 h-20 flex-shrink-0">
               <div class="w-full h-full rounded-2xl overflow-hidden relative"
                    [style.background]="player().isVIP ? 'linear-gradient(135deg, rgba(255,208,96,0.25), rgba(245,158,11,0.2))' : 'linear-gradient(135deg, rgba(0,212,255,0.15), rgba(255,208,96,0.1))'"
-                   style="border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+                   [style.border]="player().isVIP ? '1px solid rgba(255,208,96,0.5)' : '1px solid rgba(255,255,255,0.08)'"
+                   [style.boxShadow]="player().isVIP ? 'inset 0 0 10px rgba(255,208,96,0.4), 0 8px 24px rgba(0,0,0,0.5)' : '0 8px 24px rgba(0,0,0,0.5)'">
                 <img [src]="player().imagen" [alt]="player().name"
                      class="w-full h-full object-contain p-1"
                      width="80" height="80">
@@ -43,7 +44,7 @@ import type { InvestApiPlayer, InvestBoughtPlayer } from '../../../../models/inv
               @if (player().isVIP) {
                 <div class="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 rounded-full"
                      style="background: linear-gradient(135deg, #f59e0b, #fbbf24); box-shadow: 0 2px 8px rgba(245,158,11,0.5);">
-                  <span class="text-[8px] font-black text-black tracking-wider">VIP</span>
+                  <span class="text-[8px] font-black text-black tracking-wider" style="text-shadow: 0 0 4px rgba(255,255,255,0.8);">VIP</span>
                 </div>
               }
             </div>
@@ -149,7 +150,7 @@ import type { InvestApiPlayer, InvestBoughtPlayer } from '../../../../models/inv
               <button (click)="onClose()"
                 class="flex-1 py-3 text-sm font-bold text-white rounded-2xl active:scale-[0.97] transition-all duration-150 cursor-pointer"
                 [style.background]="player().isVIP ? 'linear-gradient(135deg, #fbbf24, #f59e0b)' : 'linear-gradient(135deg, #06b6d4, #10b981)'"
-                [style.boxShadow]="player().isVIP ? '0 4px 20px rgba(251,191,36,0.35), 0 0 40px rgba(245,158,11,0.15)' : '0 4px 20px rgba(6,182,212,0.35), 0 0 40px rgba(16,185,129,0.15)'">
+                [style.boxShadow]="player().isVIP ? 'inset 0 0 15px rgba(255,255,255,0.2), 0 4px 30px rgba(251,191,36,0.5), 0 0 60px rgba(245,158,11,0.2)' : '0 4px 20px rgba(6,182,212,0.35), 0 0 40px rgba(16,185,129,0.15)'">
                 Ok
               </button>
             } @else {
@@ -165,7 +166,7 @@ import type { InvestApiPlayer, InvestBoughtPlayer } from '../../../../models/inv
                 [disabled]="loading()"
                 class="flex-1 py-3 text-sm font-bold text-white rounded-2xl active:scale-[0.97] transition-all duration-150 cursor-pointer relative"
                 [style.background]="player().isVIP ? 'linear-gradient(135deg, #fbbf24, #f59e0b)' : 'linear-gradient(135deg, #06b6d4, #10b981)'"
-                [style.boxShadow]="player().isVIP ? '0 4px 20px rgba(251,191,36,0.35), 0 0 40px rgba(245,158,11,0.15)' : '0 4px 20px rgba(6,182,212,0.35), 0 0 40px rgba(16,185,129,0.15)'"
+                [style.boxShadow]="player().isVIP ? 'inset 0 0 15px rgba(255,255,255,0.2), 0 4px 30px rgba(251,191,36,0.5), 0 0 60px rgba(245,158,11,0.2)' : '0 4px 20px rgba(6,182,212,0.35), 0 0 40px rgba(16,185,129,0.15)'"
                 [class.opacity-70]="loading()"
                 [class.pointer-events-none]="loading()">
                 @if (loading()) {
