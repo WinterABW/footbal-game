@@ -636,8 +636,8 @@ export class DepositFormComponent {
     this.pendingDepositInvoiceUrl.set('');
     this.pendingDepositMessage.set('');
     this.showCryptoModal.set(false);
-    this.showSuccess.set(true);
-    setTimeout(() => this.router.navigate(['/wallet']), 1500);
+    // Do NOT show success, just navigate
+    this.router.navigate(['/wallet']);
   }
 
   async copyPendingInvoiceUrl() {
