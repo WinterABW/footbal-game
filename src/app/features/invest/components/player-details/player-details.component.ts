@@ -113,16 +113,25 @@ import type { InvestApiPlayer, InvestBoughtPlayer } from '../../../../models/inv
               <!-- Fila 1: Hora + Día -->
               <div class="text-center py-1.5 rounded-xl" style="background: rgba(255,255,255,0.03);">
                 <p class="text-[9px] font-semibold uppercase tracking-wider mb-0.5" style="color: rgba(255,255,255,0.25);">Hora</p>
-                <p class="text-sm font-black text-white tabular-nums">+{{ hourlyEarnings() | number:'1.0-0' }}</p>
+                <div class="flex items-center justify-center gap-1">
+                  <img src="shared/balance/coin.webp" alt="" width="12" height="12" class="object-contain" aria-hidden="true">
+                  <p class="text-sm font-black text-white tabular-nums">+{{ hourlyEarnings() | number:'1.0-0' }}</p>
+                </div>
               </div>
               <div class="text-center py-1.5 rounded-xl" style="background: rgba(255,255,255,0.03);">
                 <p class="text-[9px] font-semibold uppercase tracking-wider mb-0.5" style="color: rgba(255,255,255,0.25);">D&iacute;a</p>
-                <p class="text-sm font-black text-white tabular-nums">+{{ dailyEarnings() | number:'1.0-0' }}</p>
+                <div class="flex items-center justify-center gap-1">
+                  <img src="shared/balance/coin.webp" alt="" width="12" height="12" class="object-contain" aria-hidden="true">
+                  <p class="text-sm font-black text-white tabular-nums">+{{ dailyEarnings() | number:'1.0-0' }}</p>
+                </div>
               </div>
               <!-- Fila 2: Total + ROI -->
               <div class="text-center py-1.5 rounded-xl" style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.12);">
                 <p class="text-[9px] font-semibold uppercase tracking-wider mb-0.5" style="color: rgba(16,185,129,0.5);">Total</p>
-                <p class="text-sm font-black tabular-nums" style="color: #34d399;">+{{ totalEarnings() | number:'1.0-0' }}</p>
+                <div class="flex items-center justify-center gap-1">
+                  <img src="shared/balance/coin.webp" alt="" width="12" height="12" class="object-contain" aria-hidden="true">
+                  <p class="text-sm font-black tabular-nums" style="color: #34d399;">+{{ totalEarnings() | number:'1.0-0' }}</p>
+                </div>
               </div>
               <div class="text-center py-1.5 rounded-xl" style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.12);">
                 <p class="text-[9px] font-semibold uppercase tracking-wider mb-0.5" style="color: rgba(16,185,129,0.5);">ROI</p>
