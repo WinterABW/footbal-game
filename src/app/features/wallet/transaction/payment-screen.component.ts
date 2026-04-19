@@ -1,9 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal, inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { WalletService } from '../../../core/services/wallet.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { UserStatusService } from '../../../core/services/user-status.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-payment-screen',
@@ -143,17 +140,18 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentScreenComponent {
-  private router = inject(Router);
   private walletService = inject(WalletService);
   private authService = inject(AuthService);
-  private userStatusService = inject(UserStatusService);
-  private errorHandler = inject(ErrorHandlerService);
 
   currency = input.required<string>();
   amount = input.required<number>();
   orderNumber = input.required<string>();
-   qrImage = input.required<string>();
-   goBack = output<void>();
+  qrImage = input.required<string>();
+  goBack = output<void>();
+  
+  // Success/error outputs to emit results back to parent
+  depositSuccess = output<{ message: string; txnId: string; orderNumber: string; invoiceUrl: string }>();
+  depositError = output<string>();
 
    reference = signal('');
    copied = signal(false);
@@ -181,35 +179,32 @@ private methodMap: Record<string, number> = {
     this.goBack.emit();
   }
 
-   async onCopy() {
-     await navigator.clipboard.writeText(this.orderNumber());
-     this.copied.set(true);
-     this.errorHandler.showSuccessToast('Copiado');
-     setTimeout(() => this.copied.set(false), 2000);
-   }
+async onCopy() {
+      await navigator.clipboard.writeText(this.orderNumber());
+      this.copied.set(true);
+      setTimeout(() => this.copied.set(false), 2000);
+    }
 
-   async onPaste() {
-     try {
-       const text = await navigator.clipboard.readText();
-       this.reference.set(text);
-       this.errorHandler.showSuccessToast('Pegado');
-     } catch {
-       this.errorHandler.showErrorToast('No se pudo pegar');
-     }
-   }
+    async onPaste() {
+      try {
+        const text = await navigator.clipboard.readText();
+        this.reference.set(text);
+      } catch {
+        // Silent fail for paste
+      }
+    }
 
-   async onConfirm() {
-    if (!this.isValidReference()) return;
+async onConfirm() {
+     if (!this.isValidReference()) return;
 
-     const user = this.authService.user();
-     const token = this.authService.authToken();
-     if (!user?.id || !token) {
-       this.errorHandler.showErrorToast('Sesión expirada');
-       return;
-     }
+      const user = this.authService.user();
+      const token = this.authService.authToken();
+      if (!user?.id || !token) {
+        this.depositError.emit('Sesión expirada');
+        return;
+      }
 
-     this.isProcessing.set(true);
-     this.errorHandler.showToast('Depósito confirmado y procesándose', 'success');
+      this.isProcessing.set(true);
 
     const result = await this.walletService.addDeposit({
       amountUSD: this.amount(),
@@ -219,14 +214,19 @@ private methodMap: Record<string, number> = {
       transactionId: this.reference(),
     });
 
-     this.isProcessing.set(false);
+      this.isProcessing.set(false);
 
-     if (!result.success) {
-       this.errorHandler.showErrorToast(result.error ?? 'Error al procesar el depósito');
-       return;
-     }
+      if (!result.success) {
+        this.depositError.emit(result.error ?? 'Error al procesar el depósito');
+        return;
+      }
 
-    await this.userStatusService.loadUserStatus();
-    this.router.navigate(['/wallet']);
-  }
+    // Emit success event with all details for parent to show modal
+    this.depositSuccess.emit({
+      message: result.message ?? 'Depósito confirmado',
+      txnId: result.txnId ?? '',
+      orderNumber: result.orderNumber ?? '',
+      invoiceUrl: result.invoiceUrl ?? ''
+    });
+   }
 }

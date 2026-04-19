@@ -5,6 +5,7 @@ import { environment } from '../../../../../environments/environment';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
 import { WalletService, FinanceMethod } from '../../../../core/services/wallet.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { UserStatusService } from '../../../../core/services/user-status.service';
 import { SuccessOverlayComponent } from './success-overlay.component';
 import { DepositResponseModalComponent } from './deposit-response-modal.component';
 import { CryptoDepositModalComponent } from '../../crypto-deposit-modal.component';
@@ -36,6 +37,8 @@ import { PaymentScreenComponent } from '../payment-screen.component';
           [orderNumber]="orderNumber()"
           [qrImage]="qrImage()"
           (goBack)="showPaymentScreen.set(false)"
+          (depositSuccess)="onPaymentSuccess($event)"
+          (depositError)="onPaymentError($event)"
         />
       }
 
@@ -338,6 +341,7 @@ export class DepositFormComponent {
   private errorHandler = inject(ErrorHandlerService);
   private walletService = inject(WalletService);
   private authService = inject(AuthService);
+  private userStatusService = inject(UserStatusService);
 
   currency = input.required<string>();
   network = input<string>('');
@@ -633,6 +637,28 @@ methodLogo = computed(() => {
   onDepositResponseClose() {
     this.showDepositResponse.set(false);
     this.showSuccess.set(true);
+    setTimeout(() => this.router.navigate(['/wallet']), 1500);
+  }
+
+  // Handle payment screen success - show same modal as crypto
+  async onPaymentSuccess(event: { message: string; txnId: string; orderNumber: string; invoiceUrl: string }) {
+    this.showPaymentScreen.set(false);
+    
+    // Refresh user status before showing modal
+    await this.userStatusService.loadUserStatus();
+    
+    this.depositResponseMessage.set(event.message);
+    this.depositTxnId.set(event.txnId);
+    this.depositOrderNumber.set(event.orderNumber);
+    this.depositInvoiceUrl.set(event.invoiceUrl);
+    this.showDepositResponse.set(true);
+  }
+
+  // Handle payment screen error - show as error in modal or as pending
+  onPaymentError(event: string) {
+    this.showPaymentScreen.set(false);
+    this.errorHandler.showErrorToast(event);
+    // Navigate back to wallet after showing error
     setTimeout(() => this.router.navigate(['/wallet']), 1500);
   }
 
