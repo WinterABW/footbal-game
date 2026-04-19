@@ -625,7 +625,7 @@ export class MotionsComponent implements AfterViewInit, OnDestroy {
 
   ngOnInit() {
     const activeTab = this.activeTab();
-    const categoryId = activeTab === 'History' ? null : this.missionTabKeys.indexOf(activeTab);
+    const categoryId = this.motionsService.getCategoryId(activeTab);
     this.motionsService.fetchMissions(categoryId);
   }
 
@@ -709,7 +709,7 @@ export class MotionsComponent implements AfterViewInit, OnDestroy {
   closeHistoryModal() { this.motionsService.closeHistoryModal(); }
   setActiveTab(tab: string) {
     this.motionsService.setActiveTab(tab);
-    const categoryId = tab === 'History' ? null : this.missionTabKeys.indexOf(tab);
+    const categoryId = this.motionsService.getCategoryId(tab);
     this.motionsService.fetchMissions(categoryId);
     // Load completed missions for History tab statistics
     if (tab === 'History') {

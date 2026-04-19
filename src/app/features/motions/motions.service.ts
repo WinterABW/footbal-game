@@ -80,8 +80,18 @@ export class MotionsService {
     claimedAt: null,
   });
 
-  // UI state (matching API categories: 0-whatsapp, 1-facebook, 2-tiktok, 3-youtube, 4-daily, 5-referral)
-  private readonly missionTabKeys = ['Whatsapp', 'Facebook', 'TikTok', 'Youtube', 'Daily', 'Referral', 'History'];
+  // UI state: visual order displayed to user, API uses categoryId (0-whatsapp, 1-facebook, 2-tiktok, 3-youtube, 4-daily, 5-referral, null-History)
+  private readonly missionTabKeys = ['Daily', 'Referral', 'Whatsapp', 'Facebook', 'TikTok', 'Youtube', 'History'];
+  // Map visual tab index to API categoryId
+  private readonly tabIndexToCategoryId: Record<number, number | null> = {
+    0: 4,   // Daily (visual idx 0) -> categoryId 4
+    1: 5,   // Referral (visual idx 1) -> categoryId 5
+    2: 0,   // Whatsapp (visual idx 2) -> categoryId 0
+    3: 1,   // Facebook (visual idx 3) -> categoryId 1
+    4: 2,   // TikTok (visual idx 4) -> categoryId 2
+    5: 3,   // Youtube (visual idx 5) -> categoryId 3
+    6: null, // History (visual idx 6) -> null
+  };
    private readonly activeTab = signal<string>('Daily');
    private readonly selectedMission = signal<Mission | null>(null);
    private readonly showHistoryModal = signal<boolean>(false);
@@ -199,7 +209,7 @@ export class MotionsService {
     console.log('[MotionsService] fetchMissions called with categoryId:', categoryId);
     try {
       let params = new HttpParams();
-      if (categoryId !== null && categoryId !== undefined && categoryId !== 6) {
+      if (categoryId !== null && categoryId !== undefined) {
         params = params.set('Category', categoryId.toString());
       }
       console.log('[MotionsService] Calling API with params:', params.toString());
@@ -387,6 +397,12 @@ export class MotionsService {
   // Getters for non-signal data
   getMissionTabKeys() {
     return this.missionTabKeys;
+  }
+
+  // Convert visual tab index to API categoryId
+  getCategoryId(tabName: string): number | null {
+    const visualIndex = this.missionTabKeys.indexOf(tabName);
+    return this.tabIndexToCategoryId[visualIndex] ?? null;
   }
 
   // Methods to update state
