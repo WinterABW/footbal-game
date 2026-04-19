@@ -137,16 +137,16 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
 
                 <!-- Commission Levels List -->
                 <div class="flex flex-col gap-2">
-                  <div class="lg-module-card p-3.5 flex items-center justify-between active:scale-[0.98] transition-transform">
-                    <span class="text-[11px] font-black text-white tracking-wide uppercase">Nivel 1: Gana el 5%</span>
+                  <div class="lg-module-card lg-module-card--highlight-emerald p-3.5 flex items-center justify-between active:scale-[0.98] transition-transform">
+                    <span class="text-[11px] font-black text-emerald-400 tracking-wide uppercase text-glow-emerald">Nivel 1: Gana el 5%</span>
                     <span class="text-[11px] font-black text-white/20">--</span>
                   </div>
-                  <div class="lg-module-card p-3.5 flex items-center justify-between active:scale-[0.98] transition-transform">
-                    <span class="text-[11px] font-black text-white tracking-wide uppercase">Nivel 2: Gana el 3%</span>
+                  <div class="lg-module-card lg-module-card--highlight-emerald p-3.5 flex items-center justify-between active:scale-[0.98] transition-transform">
+                    <span class="text-[11px] font-black text-emerald-400 tracking-wide uppercase text-glow-emerald">Nivel 2: Gana el 3%</span>
                     <span class="text-[11px] font-black text-white/20">--</span>
                   </div>
-                  <div class="lg-module-card p-3.5 flex items-center justify-between active:scale-[0.98] transition-transform">
-                    <span class="text-[11px] font-black text-white tracking-wide uppercase">Nivel 3: Gana el 1%</span>
+                  <div class="lg-module-card lg-module-card--highlight-emerald p-3.5 flex items-center justify-between active:scale-[0.98] transition-transform">
+                    <span class="text-[11px] font-black text-emerald-400 tracking-wide uppercase text-glow-emerald">Nivel 3: Gana el 1%</span>
                     <span class="text-[11px] font-black text-white/20">--</span>
                   </div>
                 </div>
@@ -163,21 +163,21 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
 
                 <!-- Earnings Metrics 2x2 Grid -->
                 <div class="grid grid-cols-2 gap-3">
-                  <div class="lg-module-card p-3">
+                  <div class="lg-module-card lg-module-card--highlight-emerald p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Total</span>
-                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ referInfo()?.earnTotal ?? '--' }}</span>
+                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.earnTotal ?? '--' }}</span>
                   </div>
-                  <div class="lg-module-card p-3 border-emerald-500/30 accent-emerald">
+                  <div class="lg-module-card lg-module-card--highlight-emerald p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Hoy</span>
                     <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.earnToday ?? '--' }}</span>
                   </div>
-                  <div class="lg-module-card p-3">
+                  <div class="lg-module-card lg-module-card--highlight-emerald p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Último mes</span>
-                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ referInfo()?.earnLastMonth ?? '--' }}</span>
+                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.earnLastMonth ?? '--' }}</span>
                   </div>
-                  <div class="lg-module-card p-3">
+                  <div class="lg-module-card lg-module-card--highlight-emerald p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Última semana</span>
-                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ referInfo()?.earnLastWeek ?? '--' }}</span>
+                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.earnLastWeek ?? '--' }}</span>
                   </div>
                 </div>
               </div>
