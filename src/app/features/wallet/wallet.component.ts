@@ -3,6 +3,7 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { UserStatusService } from '../../core/services/user-status.service';
 import { SupportService } from '../../services/support.service';
+import { WalletService } from '../../services/wallet.service';
 import { Transaction } from '../../models/transaction.model';
 import { SupportChatComponent } from './support-chat.component';
 import { BalanceWalletComponent } from '../../shared/components/balance-wallet/balance-wallet.component';
@@ -107,35 +108,63 @@ interface Deposit {
             </div>
           } @else if (activeTab() === 'historial') {
             <div class="flex flex-col gap-4 animate-slide-up pb-8">
-              @if (historyTransactions().length === 0) {
+
+              <!-- Filter Buttons -->
+              <div class="lg-tab-bar p-1 bg-white/5 backdrop-blur-3xl rounded-full border border-white/10 self-center mb-2">
+                <button (click)="historyFilter.set('all')" [class.lg-tab-item--active]="historyFilter() === 'all'" class="lg-tab-item flex-1 py-2 px-4 text-[10px] font-black uppercase tracking-widest transition-all">Todos</button>
+                <button (click)="historyFilter.set('deposit')" [class.lg-tab-item--active]="historyFilter() === 'deposit'" class="lg-tab-item flex-1 py-2 px-4 text-[10px] font-black uppercase tracking-widest transition-all">Depósitos</button>
+                <button (click)="historyFilter.set('withdrawal')" [class.lg-tab-item--active]="historyFilter() === 'withdrawal'" class="lg-tab-item flex-1 py-2 px-4 text-[10px] font-black uppercase tracking-widest transition-all">Retiros</button>
+              </div>
+
+              @if (isLoadingHistory()) {
+                <div class="lg-panel p-16 text-center opacity-50 border-white/5">
+                  <p class="text-[9px] font-black text-white uppercase tracking-[0.4em]">Cargando...</p>
+                </div>
+              } @else if (historyTransactions().length === 0) {
                 <div class="lg-panel p-16 text-center opacity-20 border-white/5">
                   <p class="text-[9px] font-black text-white uppercase tracking-[0.4em]">Empty Ledger</p>
                 </div>
               } @else {
                 @for (tx of historyTransactions(); track tx.id) {
-                  <div class="lg-module-card p-6 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[32px]">
-                    <div class="flex justify-between items-start mb-6">
-                      <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-sm border border-white/5">
-                          {{ tx.type === 'deposit' ? '📥' : '📤' }}
+                  <div class="lg-module-card p-3 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl group transition-all hover:bg-white/10 hover:border-white/20 active:scale-[0.99]">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-3">
+                        <!-- Icon -->
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center border"
+                            [ngClass]="{
+                              'bg-cyan-500/10 border-cyan-500/20': tx.type === 'deposit',
+                              'bg-pink-500/10 border-pink-500/20': tx.type === 'withdrawal'
+                            }">
+                          @if (tx.type === 'deposit') {
+                            <svg class="w-5 h-5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M12 2v10m0 0l-4-4m4 4l4-4"/>
+                              <path d="M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6"/>
+                            </svg>
+                          } @else {
+                            <svg class="w-5 h-5 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M12 12v-10m0 0l-4 4m4-4l4 4"/>
+                              <path d="M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6"/>
+                            </svg>
+                          }
                         </div>
+                        <!-- Info -->
                         <div>
-                          <h4 class="text-[10px] font-black text-white uppercase tracking-wider">{{ tx.type === 'deposit' ? 'Inbound' : 'Outbound' }}</h4>
-                          <span class="text-[8px] text-white/20 font-black uppercase tracking-[0.2em] mt-1 block">{{ tx.formattedDate }}</span>
+                          <h4 class="text-[11px] font-black text-white uppercase tracking-wider">{{ tx.method }}</h4>
+                          <span class="text-[8px] text-white/40 font-semibold uppercase tracking-[0.1em] mt-0.5 block">{{ tx.formattedDate }}</span>
                         </div>
                       </div>
-                      <span class="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-[0.2em] border backdrop-blur-md"
-                        [class.bg-emerald-500/10]="tx.status === 'completed'" [class.text-emerald-400]="tx.status === 'completed'" [class.border-emerald-500/20]="tx.status === 'completed'"
-                        [class.bg-amber-500/10]="tx.status === 'pending'" [class.text-amber-400]="tx.status === 'pending'" [class.border-amber-500/20]="tx.status === 'pending'">
-                        {{ tx.statusLabel }}
-                      </span>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-white/5">
-                      <span class="text-[8px] font-black text-white/10 uppercase tracking-[0.3em]">{{ tx.method }}</span>
-                      <span class="text-2xl font-black tracking-tighter text-glow" [class.text-emerald-400]="tx.type === 'deposit'" [class.text-red-400]="tx.type === 'withdrawal'">
-                        {{ tx.type === 'deposit' ? '+' : '-' }}{{ tx.amount | number }} <span class="text-[9px] opacity-40 ml-0.5 uppercase tracking-normal">{{ tx.currency }}</span>
-                      </span>
+                      <!-- Amount & Status -->
+                      <div class="flex flex-col items-end">
+                        <span class="text-base font-black tracking-tighter text-glow" [class.text-emerald-400]="tx.type === 'deposit'" [class.text-red-400]="tx.type === 'withdrawal'">
+                          {{ tx.type === 'deposit' ? '+' : '-' }}{{ tx.amount | number:'1.2-2' }} <span class="text-[9px] opacity-50 uppercase tracking-normal">{{ tx.currency }}</span>
+                        </span>
+                        <span class="mt-1 px-2 py-0.5 rounded-md text-[7px] font-black uppercase tracking-[0.1em] border"
+                            [class.bg-emerald-500/10]="tx.status === 'completed'" [class.text-emerald-400]="tx.status === 'completed'" [class.border-emerald-500/20]="tx.status === 'completed'"
+                            [class.bg-amber-500/10]="tx.status === 'pending'" [class.text-amber-400]="tx.status === 'pending'" [class.border-amber-500/20]="tx.status === 'pending'"
+                            [class.bg-red-500/10]="tx.status === 'failed'" [class.text-red-400]="tx.status === 'failed'" [class.border-red-500/20]="tx.status === 'failed'">
+                            {{ tx.statusLabel }}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 }
@@ -331,6 +360,7 @@ export class WalletComponent implements OnInit {
   private router = inject(Router);
   private userStatusService = inject(UserStatusService);
   private supportService = inject(SupportService);
+  private walletService = inject(WalletService);
 
   readonly walletTabs: GlassTab[] = [
     { id: 'depositar', label: 'Depositar' },
@@ -340,6 +370,7 @@ export class WalletComponent implements OnInit {
 
   activeTabStr = signal<string>('depositar');
   activeTab = computed(() => this.activeTabStr() as 'depositar' | 'historial' | 'retirar');
+  historyFilter = signal<'all' | 'deposit' | 'withdrawal'>('all');
 
   showSupportChat = signal(false);
   hasPendingMessages = this.supportService.hasPending;
@@ -381,17 +412,24 @@ export class WalletComponent implements OnInit {
   }
 
   readonly transactions = signal<Transaction[]>([]);
+  readonly isLoadingHistory = signal<boolean>(false);
 
   historyTransactions = computed(() => {
     const txs = this.transactions();
-    return txs
-      .filter((t): t is Transaction => t.type === 'deposit' || t.type === 'withdrawal')
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .map(t => ({
-        ...t,
-        statusLabel: this.getStatusLabel(t.status),
-        formattedDate: this.formatDate(t.date),
-      }));
+    const filter = this.historyFilter();
+
+    const filteredTxs = txs.filter(t => {
+      if (filter === 'all') {
+        return t.type === 'deposit' || t.type === 'withdrawal';
+      }
+      return t.type === filter;
+    });
+
+    return filteredTxs.map(t => ({
+      ...t,
+      statusLabel: this.getStatusLabel(t.status),
+      formattedDate: this.formatDate(t.date),
+    }));
   });
 
   selectedDeposit = signal<Deposit | null>(null);
@@ -409,6 +447,21 @@ export class WalletComponent implements OnInit {
     // Check for pending messages on wallet initialization
     console.log('[Wallet] Checking pending messages...');
     this.supportService.checkForPendingMessages();
+    this.loadTransactionHistory();
+  }
+
+  loadTransactionHistory() {
+    this.isLoadingHistory.set(true);
+    this.walletService.getTransactionHistory(50, 50).subscribe({
+      next: (history) => {
+        this.transactions.set(history);
+        this.isLoadingHistory.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load transaction history', err);
+        this.isLoadingHistory.set(false);
+      }
+    });
   }
 
   navigateToSupport() { this.showSupportChat.set(true); }
