@@ -157,7 +157,7 @@ interface Deposit {
                     class="lg-module-card p-4 flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer backdrop-blur-2xl rounded-2xl accent-teal">
                     <div class="flex items-center gap-4">
                       <div class="w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden bg-white/5 flex items-center justify-center">
-                        <img ngSrc="wallet/colombia/nequi.png" alt="Nequi" width="32" height="32" class="w-8 h-8 object-contain drop-shadow-lg group-hover:scale-110 transition-transform">
+                        <img ngSrc="wallet/colombia/nequi.webp" alt="Nequi" width="32" height="32" class="w-8 h-8 object-contain drop-shadow-lg group-hover:scale-110 transition-transform">
                       </div>
                       <div>
                         <h3 class="text-[12px] font-black text-white tracking-widest uppercase mb-1">Nequi</h3>

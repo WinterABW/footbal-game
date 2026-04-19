@@ -433,7 +433,7 @@ resolvedQrImage = computed(() => {
 
 methodLogo = computed(() => {
       const logoMap: Record<string, string> = {
-        'Nequi': 'wallet/colombia/nequi.png', 'Daviplata': 'wallet/colombia/daviplata.png',
+        'Nequi': 'wallet/colombia/nequi.webp', 'Daviplata': 'wallet/colombia/daviplata.png',
         'BRE-B': 'wallet/colombia/bre-b.webp',
         'Plin': 'wallet/peru/plin.png', 'Yape': 'wallet/peru/yape.png',
         'Paypal': 'wallet/main/paypal.webp',
