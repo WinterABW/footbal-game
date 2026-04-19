@@ -151,7 +151,7 @@ import { PaymentScreenComponent } from '../payment-screen.component';
         <!-- Canal de Pago -->
         <div class="flex flex-col gap-2.5">
           <span class="text-[8px] font-medium text-white/20 uppercase tracking-wider px-1">
-            {{ isUSDT() ? 'Selecciona la Red' : 'Canal de Pago' }}
+            Canal de Pago
           </span>
 
           @if (isNequi()) {
@@ -184,35 +184,24 @@ import { PaymentScreenComponent } from '../payment-screen.component';
                 </button>
               }
             </div>
-          } @else if (isUSDT()) {
-            <!-- USDT: 2 network cards -->
-            <div class="grid grid-cols-2 gap-3">
-              @for (net of usdtNetworks; track net.id) {
-                <button
-                  (click)="selectedNetwork.set(net.id)"
-                  class="relative flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border backdrop-blur-2xl transition-all duration-300 active:scale-95 overflow-hidden"
-                  [style.background]="selectedNetwork() === net.id
-                    ? 'linear-gradient(to right, rgba(20,184,166,0.28) 0%, rgba(20,184,166,0.18) 25%, rgba(20,184,166,0.08) 55%, transparent 75%)'
-                    : 'rgba(255,255,255,0.04)'"
-                  [style.border-color]="selectedNetwork() === net.id ? 'rgba(20,184,166,0.40)' : 'rgba(255,255,255,0.08)'"
-                  [style.box-shadow]="selectedNetwork() === net.id ? '0 0 20px rgba(20,184,166,0.15), 0 0 40px rgba(20,184,166,0.08)' : 'none'">
-                  <div class="w-9 h-9 rounded-xl flex items-center justify-center transition-colors duration-300"
-                    [style.background]="selectedNetwork() === net.id ? 'rgba(20,184,166,0.20)' : 'rgba(255,255,255,0.05)'">
-                    @if (net.id === 'TRC20') {
-                      <img src="wallet/crypto/usdt-trc20.PNG" alt="TRC20" class="w-6 h-6 object-contain" />
-                    } @else {
-                      <img src="wallet/crypto/usdt-bep20.PNG" alt="BEP20" class="w-6 h-6 object-contain" />
-                    }
-                  </div>
-                  <span class="text-[9px] font-black uppercase tracking-widest leading-tight text-center transition-colors duration-300"
-                    [style.color]="selectedNetwork() === net.id ? 'rgb(204,251,241)' : 'rgba(255,255,255,0.35)'">
-                    {{ net.label }}
-                  </span>
-                  @if (selectedNetwork() === net.id) {
-                    <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-teal-400 shadow-[0_0_6px_rgba(20,184,166,0.8)]"></span>
-                  }
-                </button>
+          } @else if (isCrypto()) {
+            <!-- Crypto: single full-width card with logo, like other methods -->
+            <div class="relative flex items-center justify-between p-4 rounded-xl border backdrop-blur-2xl overflow-hidden"
+              style="background: linear-gradient(to right, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.18) 25%, rgba(245,158,11,0.08) 55%, transparent 75%);
+                     border-color: rgba(245,158,11,0.35);
+                     box-shadow: 0 0 15px rgba(245,158,11,0.1), 0 0 30px rgba(245,158,11,0.05);">
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[7px] font-semibold text-amber-400/70 uppercase tracking-[0.2em]">Método activo</span>
+                <span class="text-sm font-semibold text-white uppercase tracking-wider">Crypto</span>
+              </div>
+              @if (methodLogo()) {
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style="background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25);">
+                  <img [src]="methodLogo()!" alt="logo" width="28" height="28" class="w-7 h-7 object-contain drop-shadow-lg" />
+                </div>
               }
+              <!-- Glow dot -->
+              <span class="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.8)]"></span>
             </div>
           } @else {
             <!-- Other methods: single full-width card with logo -->
@@ -338,17 +327,16 @@ import { PaymentScreenComponent } from '../payment-screen.component';
 })
 export class DepositFormComponent {
   private router = inject(Router);
-  private errorHandler = inject(ErrorHandlerService);
-  private walletService = inject(WalletService);
-  private authService = inject(AuthService);
-  private userStatusService = inject(UserStatusService);
+  private errorHandler = inject(ErrorHandlerService)!;
+  private walletService = inject(WalletService)!;
+  private authService = inject(AuthService)!;
+  private userStatusService = inject(UserStatusService)!;
 
   currency = input.required<string>();
   network = input<string>('');
 
   amount = signal(0);
   selectedChannel = signal<string>('Nequi-1');
-  selectedNetwork = signal<string>('TRC20');
 
   // Phase 3.3: isSubmitting signal for crypto submit flow
   isSubmitting = signal(false);
@@ -371,11 +359,6 @@ export class DepositFormComponent {
   depositTxnId = signal('');
   depositOrderNumber = signal('');
   depositInvoiceUrl = signal('');
-
-  readonly usdtNetworks = [
-    { id: 'TRC20', label: 'USDT (TRC20)' },
-    { id: 'BEP20', label: 'USDT (BEP20)' }
-  ];
 
   readonly paymentChannels = computed(() => {
     const m = this.selectedMethod();
@@ -408,7 +391,7 @@ export class DepositFormComponent {
   isNequi = computed(() => this.selectedMethod() === 'Nequi');
   isDaviplata = computed(() => this.selectedMethod() === 'Daviplata');
   isBREB = computed(() => this.selectedMethod() === 'BRE-B');
-  isUSDT = computed(() => this.selectedMethod() === 'USDT');
+
   isCrypto = computed(() => ['USDT', 'BTC', 'TRX', 'BNB'].includes(this.selectedMethod()));
 
 resolvedQrImage = computed(() => {
@@ -435,14 +418,19 @@ resolvedQrImage = computed(() => {
     return phones[this.selectedChannel()] ?? phones['Nequi-1'];
   }
 
-methodLogo = computed(() => {
+  isCryptoMethod = computed(() => ['USDT', 'BTC', 'TRX', 'BNB'].includes(this.selectedMethod()));
+
+  methodLogo = computed(() => {
+      // If it's a crypto method, always return the generic Binance logo as per user request
+      if (this.isCryptoMethod()) {
+        return 'wallet/main/bynance.png';
+      }
+
       const logoMap: Record<string, string> = {
         'Nequi': 'wallet/colombia/nequi.webp', 'Daviplata': 'wallet/colombia/daviplata.webp',
         'BRE-B': 'wallet/colombia/bre-b.webp',
         'Plin': 'wallet/peru/plin.png', 'Yape': 'wallet/peru/yape.png',
         'Paypal': 'wallet/main/paypal.webp',
-        'USDT': 'wallet/crypto/usdt.png', 'TRX': 'wallet/crypto/trx.png',
-        'BNB': 'wallet/crypto/bnb.png', 'BTC': 'wallet/crypto/btc.png',
       };
       return logoMap[this.selectedMethod()] || null;
     });
@@ -454,7 +442,7 @@ methodLogo = computed(() => {
 
   minAmount = computed(() => this.presetValues()[0]);
 
-async onDeposit() {
+  async onDeposit() {
     if (this.amount() < this.minAmount()) {
       const amount = this.isCrypto() ? this.minAmount() : this.minAmount().toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
       this.errorHandler.showToast(`Monto mínimo ${amount} ${this.selectedMethod()}`, 'error');
@@ -472,6 +460,7 @@ async onDeposit() {
     this.qrImage.set(this.resolvedQrImage());
     this.showPaymentScreen.set(true);
   }
+
   async processCryptoDeposit() {
     const amount = this.amount();
     if (amount < this.minAmount()) {
@@ -488,29 +477,28 @@ async onDeposit() {
     }
 
     // Map method string to FinanceMethod enum based on selection
-    let financeMethod: number;
-    
-    if (this.selectedMethod() === 'Crypto') {
-      // All crypto deposits use method 0 (CRYPTO)
-      financeMethod = 0;
+    let financeMethod: FinanceMethod; // Use the enum type directly
+
+    if (this.isCrypto()) {
+      financeMethod = FinanceMethod.CRYPTO;
     } else if (this.selectedMethod() === 'Nequi') {
       // Map Nequi channel to enum: Nequi-1=1, Nequi-2=2, Nequi-3=3
       const channel = this.selectedChannel();
       if (channel === 'Nequi-2') {
-        financeMethod = 2;
+        financeMethod = FinanceMethod.NEQUI_2;
       } else if (channel === 'Nequi-3') {
-        financeMethod = 3;
+        financeMethod = FinanceMethod.NEQUI_3;
       } else {
-        financeMethod = 1; // Nequi-1 default
+        financeMethod = FinanceMethod.NEQUI_1; // Nequi-1 default
       }
     } else if (this.selectedMethod() === 'Daviplata') {
-      financeMethod = 4;
+      financeMethod = FinanceMethod.DAVIPLATA;
     } else if (this.selectedMethod() === 'Paypal') {
-      financeMethod = 5;
+      financeMethod = FinanceMethod.PAYPAL;
     } else if (this.selectedMethod() === 'BRE-B') {
-      financeMethod = 6;
+      financeMethod = FinanceMethod.BRE_B;
     } else {
-      financeMethod = 0; // Default to Crypto
+      financeMethod = FinanceMethod.CRYPTO; // Fallback, though isCrypto should cover it for selected methods
     }
 
     this.isSubmitting.set(true);
@@ -547,7 +535,6 @@ async onDeposit() {
     });
   }
 
-  // Phase 3.4: Handle crypto confirmation from modal
   onCryptoConfirm(event: { amount: number; method: string }) {
     // Prevent duplicate submits
     if (this.isSubmitting()) {
@@ -558,27 +545,28 @@ async onDeposit() {
     this.modalErrorMessage.set('');
 
     // Map method string to FinanceMethod enum based on selection
-    let financeMethod: number;
+    let financeMethod: FinanceMethod; // Use the enum type directly
     
-    if (this.selectedMethod() === 'Crypto') {
-      // All crypto deposits use method 0 (CRYPTO)
-      financeMethod = 0;
+    if (this.isCrypto()) {
+      financeMethod = FinanceMethod.CRYPTO;
     } else if (this.selectedMethod() === 'Nequi') {
       // Map Nequi channel to enum: Nequi-1=1, Nequi-2=2, Nequi-3=3
       const channel = this.selectedChannel();
       if (channel === 'Nequi-2') {
-        financeMethod = 2;
+        financeMethod = FinanceMethod.NEQUI_2;
       } else if (channel === 'Nequi-3') {
-        financeMethod = 3;
+        financeMethod = FinanceMethod.NEQUI_3;
       } else {
-        financeMethod = 1; // Nequi-1 default
+        financeMethod = FinanceMethod.NEQUI_1; // Nequi-1 default
       }
     } else if (this.selectedMethod() === 'Daviplata') {
-      financeMethod = 4;
+      financeMethod = FinanceMethod.DAVIPLATA;
     } else if (this.selectedMethod() === 'Paypal') {
-      financeMethod = 5;
+      financeMethod = FinanceMethod.PAYPAL;
+    } else if (this.selectedMethod() === 'BRE-B') {
+      financeMethod = FinanceMethod.BRE_B;
     } else {
-      financeMethod = 0; // Default to Crypto
+      financeMethod = FinanceMethod.CRYPTO; // Fallback, though isCrypto should cover it for selected methods
     }
 
     // Get user data from authService
@@ -626,21 +614,18 @@ async onDeposit() {
     });
   }
 
-  // Phase 2.4: Handle modal close
   onModalClose() {
     this.showCryptoModal.set(false);
     this.modalErrorMessage.set('');
     this.isSubmitting.set(false);
   }
 
-  // Handle deposit response modal close
   onDepositResponseClose() {
     this.showDepositResponse.set(false);
     this.showSuccess.set(true);
     setTimeout(() => this.router.navigate(['/wallet']), 1500);
   }
 
-  // Handle payment screen success - show same modal as crypto
   async onPaymentSuccess(event: { message: string; txnId: string; orderNumber: string; invoiceUrl: string }) {
     this.showPaymentScreen.set(false);
     
@@ -654,7 +639,6 @@ async onDeposit() {
     this.showDepositResponse.set(true);
   }
 
-  // Handle payment screen error - show as error in modal or as pending
   onPaymentError(event: string) {
     this.showPaymentScreen.set(false);
     this.errorHandler.showErrorToast(event);
@@ -662,7 +646,6 @@ async onDeposit() {
     setTimeout(() => this.router.navigate(['/wallet']), 1500);
   }
 
-  // Pending deposit modal handlers
   onPendingDepositClose() {
     this.showPendingDeposit.set(false);
     this.pendingDepositInvoiceUrl.set('');
@@ -679,5 +662,4 @@ async onDeposit() {
     this.justCopied.set(true);
     setTimeout(() => this.justCopied.set(false), 2000);
   }
-
 }

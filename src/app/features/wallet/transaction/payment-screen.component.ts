@@ -165,6 +165,8 @@ export class PaymentScreenComponent {
 
   currencyLabel = computed(() => this.currency() === 'Paypal' ? 'USD' : 'COP');
 
+  isColombianMethod = computed(() => ['Nequi', 'Daviplata', 'BRE-B'].includes(this.currency()));
+
 private methodMap: Record<string, number> = {
     'Crypto': 0,
     'Nequi': 1,
@@ -212,14 +214,30 @@ async onConfirm() {
       }
 
       this.isProcessing.set(true);
+      
+      // --- INICIO DE LA MODIFICACIÓN ---
+      console.log('[PaymentScreen] INICIANDO onConfirm');
+      console.log('[PaymentScreen] Moneda:', this.currency());
+      console.log('[PaymentScreen] Es Colombiano?:', this.isColombianMethod());
+      
+      const originalAmount = this.amount();
+      const payloadAmount = this.isColombianMethod() ? originalAmount / 1000 : originalAmount;
 
-    const result = await this.walletService.addDeposit({
-      amountUSD: this.amount(),
-      method: this.methodMap[this.currency()] ?? 0,
-      token,
-      uid: user.id,
-      transactionId: this.reference(),
-    });
+      console.log('[PaymentScreen] Monto Original:', originalAmount);
+      console.log('[PaymentScreen] Monto para Payload:', payloadAmount);
+      
+      const payload = {
+        amountUSD: payloadAmount,
+        method: this.methodMap[this.currency()] ?? 0,
+        token,
+        uid: user.id,
+        transactionId: this.reference(),
+      };
+
+      console.log('[PaymentScreen] Payload a Enviar:', payload);
+      // --- FIN DE LA MODIFICACIÓN ---
+
+    const result = await this.walletService.addDeposit(payload);
 
       this.isProcessing.set(false);
 

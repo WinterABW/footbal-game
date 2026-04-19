@@ -487,7 +487,13 @@ export class WalletComponent implements OnInit {
     if (!this.isSheetOpen()) {
       this.selectedDeposit.set(item);
       if (item.title === 'Colombia') this.sheetContent.set('colombia');
-      else if (item.title === 'Cryptos') this.sheetContent.set(tab === 'retirar' ? 'cryptos-withdraw' : 'cryptos');
+        else if (item.title === 'Cryptos') {
+          if (tab === 'depositar') {
+            this.navigateToTransaction('USDT', tab);
+          } else {
+            this.sheetContent.set(tab === 'retirar' ? 'cryptos-withdraw' : 'cryptos'); // Keep crypto selection for withdrawals for now
+          }
+        }
       else this.sheetContent.set('default');
       this.isSheetOpen.set(true);
     } else {

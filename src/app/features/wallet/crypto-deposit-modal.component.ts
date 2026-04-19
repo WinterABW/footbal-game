@@ -25,7 +25,7 @@ import { NgOptimizedImage } from '@angular/common';
           <h2 class="text-base font-semibold text-white tracking-tight uppercase text-center leading-tight">
             {{ displayName() }}
           </h2>
-          <span class="text-[6px] font-medium text-white/15 uppercase tracking-[0.2em] mt-0.5">Recarga de Activo Digital</span>
+          <span class="text-[6px] font-medium text-white/15 uppercase tracking-[0.2em] mt-0.5">Crypto</span>
         </div>
 
         <!-- Info pills -->
@@ -168,10 +168,7 @@ export class CryptoDepositModalComponent {
 
   showCopiedMessage = signal(false);
 
-  displayName = computed(() => {
-    const names: Record<string, string> = { 'USDT': 'Tether USDT', 'BTC': 'Bitcoin', 'TRX': 'TRON TRX', 'BNB': 'Binance Coin' };
-    return names[this.currency()] || this.currency();
-  });
+  displayName = computed(() => 'CRYPTO');
 
   onClose() { this.close.emit(); }
   onBackdropClick(event: MouseEvent) { if ((event.target as HTMLElement).classList.contains('fixed')) this.onClose(); }
