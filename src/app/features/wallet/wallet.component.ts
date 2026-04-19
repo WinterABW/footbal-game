@@ -176,7 +176,7 @@ interface Deposit {
                     style="background: linear-gradient(to right, rgba(239,68,68,0.20) 0%, rgba(239,68,68,0.18) 25%, rgba(239,68,68,0.08) 55%, transparent 75%); border-color: rgba(239,68,68,0.30);">
                     <div class="flex items-center gap-4">
                       <div class="w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden bg-white/5 flex items-center justify-center">
-                        <img ngSrc="wallet/colombia/daviplata.png" alt="Daviplata" width="32" height="32" class="w-8 h-8 object-contain drop-shadow-lg group-hover:scale-110 transition-transform">
+                        <img ngSrc="wallet/colombia/daviplata.webp" alt="Daviplata" width="32" height="32" class="w-8 h-8 object-contain drop-shadow-lg group-hover:scale-110 transition-transform">
                       </div>
                       <div>
                         <h3 class="text-[12px] font-black text-white tracking-widest uppercase mb-1">Daviplata</h3>
