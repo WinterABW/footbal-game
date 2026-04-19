@@ -91,21 +91,21 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
 
                 <!-- Network Metrics Expanded Grid -->
                 <div class="grid grid-cols-2 gap-3">
-                  <div class="lg-module-card p-3">
+                  <div class="lg-module-card lg-module-card--highlight-emerald p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Total</span>
-                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ referInfo()?.total ?? '--' }}</span>
+                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.total ?? '--' }}</span>
                   </div>
-                  <div class="lg-module-card p-3 border-emerald-500/30 accent-emerald">
+                  <div class="lg-module-card lg-module-card--highlight-emerald p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Hoy</span>
                     <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.today ?? '--' }}</span>
                   </div>
-                  <div class="lg-module-card p-3">
+                  <div class="lg-module-card lg-module-card--highlight-emerald p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Último mes</span>
-                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ referInfo()?.lastMonth ?? '--' }}</span>
+                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.lastMonth ?? '--' }}</span>
                   </div>
-                  <div class="lg-module-card p-3">
+                  <div class="lg-module-card lg-module-card--highlight-emerald p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Última semana</span>
-                    <span class="block text-lg font-black text-white tracking-tighter text-glow mt-1">{{ referInfo()?.lastWeek ?? '--' }}</span>
+                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.lastWeek ?? '--' }}</span>
                   </div>
                 </div>
 
