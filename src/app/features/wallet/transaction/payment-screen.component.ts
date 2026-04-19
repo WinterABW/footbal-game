@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal, inject } from '@angular/core';
 import { WalletService } from '../../../core/services/wallet.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-payment-screen',
@@ -142,6 +143,7 @@ import { AuthService } from '../../../core/services/auth.service';
 export class PaymentScreenComponent {
   private walletService = inject(WalletService);
   private authService = inject(AuthService);
+  private errorHandler = inject(ErrorHandlerService);
 
   currency = input.required<string>();
   amount = input.required<number>();
@@ -188,9 +190,14 @@ async onCopy() {
     async onPaste() {
       try {
         const text = await navigator.clipboard.readText();
-        this.reference.set(text);
-      } catch {
-        // Silent fail for paste
+        if (text) {
+          this.reference.set(text);
+        } else {
+          this.errorHandler.showToast('No hay texto para pegar.', 'info');
+        }
+      } catch (err) {
+        console.error('Error al leer el portapapeles:', err);
+        this.errorHandler.showErrorToast('No se pudo pegar. Revisa los permisos.');
       }
     }
 
