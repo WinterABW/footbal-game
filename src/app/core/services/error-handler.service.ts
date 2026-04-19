@@ -32,6 +32,13 @@ const USER_MESSAGES: Record<string, string> = {
   'players_load_failed': 'No se pudieron cargar los jugadores.',
   'add_investment_failed': 'No se pudo agregar la inversión.',
 
+  // Sync-specific (Cycle 5 UX de confianza)
+  'sync_in_progress': 'Sincronización en progreso. Espera un momento...',
+  'sync_pending': 'Tienes operaciones pendientes. Espera a que completen.',
+  'sync_error': 'Error de sincronización. Intenta de nuevo.',
+  'sync_retrying': 'Reintentando sincronización...',
+  'sync_blocked': 'Operación bloqueada. Espera a que la sincronización complete.',
+
   // Fallback
   'unknown': 'Ocurrió un error inesperado. Intenta de nuevo.',
 };

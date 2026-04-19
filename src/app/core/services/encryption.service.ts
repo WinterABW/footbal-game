@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class EncryptionService {
-  private readonly secretKey = environment.tapSecretKey;
+  // SECURITY FIX: Removed secretKey from client - server validates via session
 
   /**
    * Computes SHA256 hash of the input string.
@@ -24,19 +24,13 @@ export class EncryptionService {
 
   /**
    * Generates a unique anti-automation token.
-   * Format: SHA256(userId:timestamp:secretKey)
+   * Format: SHA256(userId:timestamp) - no secret in client
    */
   async generateUniqueToken(userId: string | number): Promise<{ token: string; timestamp: number }> {
     const timestamp = Date.now();
-    const payload = `${userId}:${timestamp}:${this.secretKey}`;
+    // SECURITY FIX: Remove secret from client
+    const payload = `${userId}:${timestamp}`;
     const token = await this.sha256(payload);
     return { token, timestamp };
-  }
-
-  /**
-   * Gets the secret key (for backend verification if needed).
-   */
-  getSecretKey(): string {
-    return this.secretKey;
   }
 }

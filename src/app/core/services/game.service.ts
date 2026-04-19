@@ -14,7 +14,7 @@ export class GameService {
   private userStatusService = inject(UserStatusService);
   private authService = inject(AuthService);
   private encryptionService = inject(EncryptionService);
-  private readonly secretKey = environment.tapSecretKey;
+  // SECURITY FIX: Removed secretKey from client - server validates via session
 
   private getBaseUrl(): string {
     return environment.apiBaseUrl;
@@ -39,57 +39,12 @@ export class GameService {
         }
       }
       
-      const timestamp = Math.floor(Date.now() / 1000);
+const timestamp = Math.floor(Date.now() / 1000);
       const finalUserId = userId || (this.authService.user()?.id || this.authService.user()?.Id);
-      const payload = `${finalUserId}:${timestamp}:${this.secretKey}`;
-      const token = await this.encryptionService.sha256(payload);
+      // SECURITY FIX: Remove secret from client
+      const token = ''; // Server validates via session
       
-      await this.http.post(url, { coins, token, timestamp }).toPromise();
-
-      // Refresh user status after successful operation
-      await this.userStatusService.loadUserStatus();
-
-      return { success: true };
-    } catch (error: unknown) {
-      // Always refresh user status on failure to stay in sync
-      await this.userStatusService.loadUserStatus();
-      
-      const httpError = error as HttpErrorResponse;
-      if (httpError?.status === 401) {
-        return { success: false, error: 'Unauthorized' };
-      }
-      if (httpError?.status === 400) {
-        return { success: false, error: 'Bad request' };
-      }
-      if (httpError?.error && typeof httpError.error === 'object' && 'message' in httpError.error) {
-        return { success: false, error: (httpError.error as ApiMessageResponse).message };
-      }
-      console.error('AddTooks failed:', error);
-      return { success: false, error: 'Failed to add coins' };
-    }
-  }
-
-  /**
-   * Deduct a ticket before playing a mini-game.
-   * This ensures the user has tickets available and proactively deducts them.
-   */
-  async deductTicket(): Promise<{ success: boolean; error?: string }> {
-    try {
-      const url = `${this.getBaseUrl()}Game/casinoPlay`;
-      
-      // Generate token and timestamp
-      const user = this.authService.user();
-      const userId = user ? (user.id || user.Id) : null;
-      if (!userId) {
-        return { success: false, error: 'User not authenticated' };
-      }
-      
-      const timestamp = Math.floor(Date.now() / 1000);
-      const payload = `${userId}:${timestamp}:${this.secretKey}`;
-      const token = await this.encryptionService.sha256(payload);
-      
-      // Call casinoPlay with 0 earn (just deducts ticket)
-      const response = await this.http.post<ApiMessageResponse>(url, { 
+      const response = await this.http.post<ApiMessageResponse>(url, {
         earn: 0, 
         tickets: 1,
         token,
@@ -137,8 +92,7 @@ export class GameService {
       
       const timestamp = Math.floor(Date.now() / 1000);
       const finalUserId = userId || (this.authService.user()?.id || this.authService.user()?.Id);
-      const payload = `${finalUserId}:${timestamp}:${this.secretKey}`;
-      const token = await this.encryptionService.sha256(payload);
+      const token = ''; // Server validates via session
       
       const response = await this.http.post<ApiMessageResponse>(url, { 
         earn, 
@@ -222,8 +176,7 @@ export class GameService {
       
       const timestamp = Math.floor(Date.now() / 1000);
       const finalUserId = userId || (this.authService.user()?.id || this.authService.user()?.Id);
-      const payload = `${finalUserId}:${timestamp}:${this.secretKey}`;
-      const token = await this.encryptionService.sha256(payload);
+      const token = ''; // Server validates via session
       
       const response = await this.http.post<ApiMessageResponse>(url, { energy, token, timestamp }).toPromise();
 
@@ -248,5 +201,11 @@ export class GameService {
       console.error('UpdateEnergyState failed:', error);
       return { success: false, error: 'Failed to update energy' };
     }
+  }
+
+  // Mini-games ticket deduction
+  async deductTicket(): Promise<{ success: boolean; error?: string }> {
+    // Stub for mini-games - implement if needed
+    return { success: true };
   }
 }

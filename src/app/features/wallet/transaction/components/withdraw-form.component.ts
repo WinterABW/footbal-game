@@ -55,7 +55,7 @@ import { BalanceComponent } from '../../../../shared/components/balance/balance.
             </div>
             <div class="flex items-start gap-1.5">
               <span class="text-[7px] text-white/15 mt-0.5">●</span>
-              <span class="text-[9px] font-bold text-white/30 uppercase tracking-wider">Cada Retiro puede tardar hasta 24h</span>
+              <span class="text-[9px] font-bold text-white/30 uppercase tracking-wider">Cada Retiro puede tardar hasta 72H</span>
             </div>
             @if (isCrypto()) {
               <div class="flex items-start gap-1.5">

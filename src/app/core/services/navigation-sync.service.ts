@@ -70,8 +70,8 @@ export class NavigationSyncService {
     if (pendingCount > 0) {
       console.log(`[DEBUG] NavigationSyncService: Syncing ${pendingCount} pending taps on route change...`);
       
-      // Flush pending taps to backend
-      await this.tapService.flushPendingTaps();
+      // Flush pending taps to backend - use forceFlush for immediate sync
+      await this.tapService.forceFlush();
       
       console.log('[DEBUG] NavigationSyncService: Pending taps sent, sync complete.');
     } else {

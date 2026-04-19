@@ -185,9 +185,8 @@ export class UserInfoService {
     localStorage.setItem(`audit_log_${Date.now()}`, JSON.stringify({ action: 'purchaseSkill', params: { skillId, userId }, time: Date.now() }));
 
     try {
-      const timestamp = Math.floor(Date.now() / 1000); // Use seconds as per tap.service.ts
-      const payload = `${userId}:${timestamp}:${this.encryptionService.getSecretKey()}`;
-      const token = await this.encryptionService.sha256(payload);
+      const timestamp = Math.floor(Date.now() / 1000);
+      const token = ''; // Server validates via session
 
       const url = `${this.getBaseUrl()}Game/upgradeSkills`;
       const body = { skillId, timestamp, token };

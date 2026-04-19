@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, computed } from '@angular/core';
 import { NgOptimizedImage, DecimalPipe } from '@angular/common';
 import { TapService } from '../../../core/services/tap.service';
+import { ProjectedStateService } from '../../../core/services/projected-state.service';
 
 @Component({
   selector: 'app-balance',
@@ -11,7 +12,7 @@ import { TapService } from '../../../core/services/tap.service';
          <img ngSrc="shared/balance/coin.webp" alt="coin" class="w-full h-full object-contain" width="48" height="48">
       </div>
       <p class="text-4xl font-black text-white tracking-tighter text-glow-amber">
-        {{ coins() | number:'1.0-0' }}
+        {{ projectedCoins() | number:'1.0-0' }}
       </p>
     </section>
   `,
@@ -23,5 +24,8 @@ import { TapService } from '../../../core/services/tap.service';
 })
 export class BalanceComponent {
   private tapSvc = inject(TapService);
-  protected readonly coins = this.tapSvc.coins;
+  private projectedState = inject(ProjectedStateService);
+
+  // Use projected balance for instant UI updates (optimistic)
+  protected readonly projectedCoins = this.projectedState.projectedBalance;
 }

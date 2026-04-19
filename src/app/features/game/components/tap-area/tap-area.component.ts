@@ -5,6 +5,7 @@ import { TapService } from '../../../../core/services/tap.service';
 import { UserStatusService } from '../../../../core/services/user-status.service';
 import { EnergyService } from '../../../../core/services/energy.service';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
+import { ProjectedStateService } from '../../../../core/services/projected-state.service';
 
 interface FloatingNumber {
   id: number; value: number; x: number; y: number;
@@ -86,6 +87,7 @@ export class TapAreaComponent {
   private energySvc = inject(EnergyService);
   private errorHandler = inject(ErrorHandlerService);
   private router = inject(Router);
+  private projectedState = inject(ProjectedStateService);
 
   floatingNumbers = signal<FloatingNumber[]>([]);
   private floatingNumberIdCounter = 0;
@@ -118,8 +120,8 @@ export class TapAreaComponent {
   }
 
   tap(event: MouseEvent) {
-    // SEGURIDAD: Verificar energía ANTES de cualquier acción
-    const energia = this.energySvc.energy() ?? 0;
+    // SEGURIDAD: Verificar energía ANTES de cualquier acción (using projected state for instant feedback)
+    const energia = this.projectedState.projectedEnergy() ?? 0;
     if (energia <= 0) {
       this.errorHandler.showToast('⚡ Sin energía', 'error');
       return;
@@ -129,7 +131,7 @@ export class TapAreaComponent {
 
     const earnedCoins = this.tapValue();
     this.tapSvc.addTap(1);
-    // Energy se resta automáticamente: wallet.energy - pendingTaps
+    // Energy se resta automáticamente: projectedEnergy = serverEnergy - pendingTaps
 
     // Ball interaction (fluid 3D spring effect)
     if (this.ballImage) {

@@ -3,15 +3,17 @@ import { NgOptimizedImage } from '@angular/common';
 import { PerHourEarningsComponent } from '../per-hour-earnings/per-hour-earnings.component';
 import { LevelMenuComponent } from '../level-menu/level-menu.component';
 import { SettingsComponent } from '../settings/settings.component';
+import { SyncIndicatorComponent } from '../../../../shared/components/sync-indicator/sync-indicator.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserStatusService } from '../../../../core/services/user-status.service';
 import { UserInfoService } from '../../../../core/services/user-info.service';
 import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
+import { ProjectedStateService } from '../../../../core/services/projected-state.service';
 import { SupportChatComponent } from '../../../wallet/support-chat.component';
 
 @Component({
   selector: 'app-header',
-  imports: [PerHourEarningsComponent, NgOptimizedImage, LevelMenuComponent, SettingsComponent, SupportChatComponent],
+  imports: [PerHourEarningsComponent, NgOptimizedImage, LevelMenuComponent, SettingsComponent, SupportChatComponent, SyncIndicatorComponent],
   template: `
     <header class="w-full h-fit flex flex-col justify-center items-center bg-transparent relative z-20 pt-safe-top px-4 pb-2 animate-slide-down">
       <div class="w-full mt-1.5 mb-1 liquid-glass-card bg-white/[0.03] border-white/5 rounded-[36px] flex flex-row justify-between items-center p-2 min-h-[60px]">
@@ -46,6 +48,8 @@ import { SupportChatComponent } from '../../../wallet/support-chat.component';
 
         <div class="flex items-center gap-2">
           <app-per-hour-earnings />
+          <!-- Sync Status Indicator -->
+          <app-sync-indicator />
           <!-- Settings Trigger Button -->
           <button data-tutorial-id="header-settings"
             class="w-[44px] h-[44px] rounded-full liquid-glass-card bg-white/[0.03] border-violet-500/30 flex items-center justify-center active:scale-90 transition-all group overflow-hidden mr-1 accent-violet"
@@ -85,6 +89,7 @@ export class HeaderComponent {
   private userStatusService = inject(UserStatusService);
   private userInfo = inject(UserInfoService);
   private errorHandler = inject(ErrorHandlerService);
+  private projectedState = inject(ProjectedStateService);
 
   showLevelMenu = signal(false);
   showSettings = signal(false);
@@ -92,8 +97,9 @@ export class HeaderComponent {
   vibrationEnabled = computed(() => this.userStatusService.settings()?.vibration ?? true);
   language = computed(() => this.userStatusService.settings()?.language ?? 'es');
 
-  readonly level = computed(() => this.userStatusService.level());
-  readonly levelInfo = computed(() => this.userStatusService.levelInfo());
+  // Use projected state for instant level updates (includes pending taps)
+  readonly level = computed(() => this.projectedState.projectedLevel());
+  readonly levelInfo = computed(() => this.projectedState.projectedLevelInfo());
 
   toggleLevelMenu() { this.showLevelMenu.update(v => !v); }
   closeLevelMenu() { this.showLevelMenu.set(false); }

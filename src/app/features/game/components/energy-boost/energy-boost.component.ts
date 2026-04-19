@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { NgOptimizedImage, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { EnergyService } from '../../../../core/services/energy.service';
+import { ProjectedStateService } from '../../../../core/services/projected-state.service';
 
 @Component({
   selector: 'app-energy-boost',
@@ -19,7 +20,7 @@ import { EnergyService } from '../../../../core/services/energy.service';
         <div class="flex flex-col min-w-0 pb-0.5">
           <span class="text-[9px] font-bold text-white/50 capitalize tracking-wide leading-none mb-1">Energía</span>
           <p class="text-[14px] font-black text-white tracking-wide leading-none text-glow-emerald">
-            {{ energy() | number:'1.0-0' }}<span class="text-[10px] text-white/40 font-semibold ml-0.5">/ {{ maxEnergy() | number:'1.0-0' }}</span>
+            {{ projectedEnergy() | number:'1.0-0' }}<span class="text-[10px] text-white/40 font-semibold ml-0.5">/ {{ maxEnergy() | number:'1.0-0' }}</span>
           </p>
         </div>
       </article>
@@ -105,8 +106,11 @@ import { EnergyService } from '../../../../core/services/energy.service';
 })
 export class EnergyBoostComponent {
   private energySvc = inject(EnergyService);
+  private projectedState = inject(ProjectedStateService);
   private router = inject(Router);
-  energy = this.energySvc.energy;
+
+  // Use projected energy for instant UI updates
+  projectedEnergy = this.projectedState.projectedEnergy;
   maxEnergy = this.energySvc.maxEnergy;
 
   goToBoost() { this.router.navigate(['/main/boost']); }

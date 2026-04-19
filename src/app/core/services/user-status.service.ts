@@ -1,6 +1,8 @@
 import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { UserInfoService, UserStatusResponse, SettingsInfo } from './user-info.service';
 
+export type { UserStatusResponse } from './user-info.service';
+
 // Tap configuration (default values)
 const TAP_CONFIG = {
     baseValue: 1,
@@ -44,7 +46,10 @@ export class UserStatusService {
   readonly error = signal<string | null>(null);
 
   // Individual data signals for granular reactivity
-  readonly referrealId = signal<string | null>(null);
+  // FIX: Corrected typo from referrealId to referralId (and add alias for backward compat)
+  readonly referralId = signal<string | null>(null);
+  // Alias for backward compatibility with existing code
+  readonly referrealId = this.referralId;
   readonly wallet = signal<UserStatusResponse['wallet'] | null>(null);
   readonly settings = signal<UserStatusResponse['settings'] | null>(null);
   readonly actualInversion = signal<UserStatusResponse['actualInversion'] | null>(null);
@@ -53,7 +58,7 @@ export class UserStatusService {
   readonly totalTooks = computed(() => this.wallet()?.totalTooks ?? 0);
 
   // Computed signals
-  readonly hasReferralId = computed(() => this.referrealId() !== null && this.referrealId() !== '');
+  readonly hasReferralId = computed(() => this.referralId() !== null && this.referralId() !== '');
   readonly isAuthenticated = computed(() => this.userStatus() !== null);
   
   // Level computed from totalTooks
@@ -104,16 +109,46 @@ export class UserStatusService {
         this.levelUp.set({ oldLevel: previous, newLevel: current });
       }
       this._previousLevel.set(current);
-    });
+    }, { allowSignalWrites: true });
   }
 
-  async loadUserStatus(pendingTaps?: number): Promise<void> {
-    // Evitar llamadas concurrentes
-    if (this.isLoading()) return;
-    
+  // ============================================
+  // COALESCING LOGIC (Cycle 1 fix)
+  // ============================================
+  private _loadPromise: Promise<void> | null = null;
+  private _lastRefreshReason: 'periodic' | 'manual' | 'auth-restore' | null = null;
+
+  async loadUserStatus(pendingTaps?: number, refreshReason?: 'periodic' | 'manual' | 'auth-restore'): Promise<void> {
+    // COALESCING: Si ya hay una carga en progreso, esperar a que termine y luego ejecutar la nueva
+    if (this.isLoading()) {
+      console.log('[SYNC] loadUserStatus coalescing: esperando carga activa...');
+      if (this._loadPromise) {
+        await this._loadPromise;
+      }
+      // Después de esperar, ejecutar una nueva carga
+      return this.loadUserStatus(pendingTaps, refreshReason);
+    }
+
+    // Track refresh reason for observability
+    if (refreshReason) {
+      this._lastRefreshReason = refreshReason;
+      console.log(`[SYNC] loadUserStatus iniciando por: ${refreshReason}`);
+    }
+
     this.isLoading.set(true);
     this.error.set(null);
 
+    // Crear promise para coalescing
+    this._loadPromise = this._executeLoad(pendingTaps);
+
+    try {
+      await this._loadPromise;
+    } finally {
+      this._loadPromise = null;
+    }
+  }
+
+  private async _executeLoad(pendingTaps?: number): Promise<void> {
     const result = await this.userInfoService.getUserStatus(pendingTaps);
 
     if (result.success && result.data) {
@@ -134,7 +169,8 @@ export class UserStatusService {
       }
 
       this.userStatus.set(data);
-      this.referrealId.set(data.referrealId);
+      // Map backend field name to corrected frontend name
+      this.referralId.set(data.referrealId ?? null);
       this.wallet.set(data.wallet);
       this.settings.set(data.settings);
       this.actualInversion.set(data.actualInversion);
@@ -150,13 +186,18 @@ export class UserStatusService {
     this.isLoading.set(false);
   }
 
+  // Getter para observabilidad (para tests)
+  get lastRefreshReason(): 'periodic' | 'manual' | 'auth-restore' | null {
+    return this._lastRefreshReason;
+  }
+
   setSettings(newSettings: Partial<SettingsInfo>): void {
     this.settings.update(current => current ? { ...current, ...newSettings } : null);
   }
 
   clearUserStatus(): void {
     this.userStatus.set(null);
-    this.referrealId.set(null);
+    this.referralId.set(null);
     this.wallet.set(null);
     this.settings.set(null);
     this.actualInversion.set(null);

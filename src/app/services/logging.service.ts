@@ -7,8 +7,8 @@ interface ExtendedEnvironment {
   production: boolean;
   apiBaseUrl: string;
   apiTimeout: number;
-  tapSecretKey: string;
-  cryptoDepositAddress: string;
+  // SECURITY: Removed tapSecretKey - server validates via session
+  cryptoDepositAddress?: string;
 
   analyticsKey?: string;
   enableLogging?: boolean;

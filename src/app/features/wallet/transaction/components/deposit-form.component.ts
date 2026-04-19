@@ -114,8 +114,8 @@ import { PaymentScreenComponent } from '../payment-screen.component';
           <svg class="w-6 h-6 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
         </button>
         <div class="flex flex-col items-center">
-          <span class="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-1">Recarga</span>
-          <h1 class="text-2xl font-black text-white tracking-tight text-glow uppercase">Depósito</h1>
+          <span class="text-[10px] font-medium text-white/20 uppercase tracking-[0.3em] mb-1">Recarga</span>
+          <h1 class="text-2xl font-semibold text-white tracking-tight text-glow uppercase">Depósito</h1>
         </div>
         @if (methodLogo()) {
           <img [src]="methodLogo()!" alt="logo" width="48" height="48" class="w-12 h-12 object-contain drop-shadow-lg" />
@@ -139,18 +139,18 @@ import { PaymentScreenComponent } from '../payment-screen.component';
              />
            </div>
            
-           <div class="grid grid-cols-3 gap-3 w-full">
-             @for (preset of presetValues(); track preset) {
-               <button (click)="setAmount(preset)" class="px-2 py-3 lg-btn-outline !border-white/10 !rounded-2xl text-[10px] font-black text-white/50 hover:text-white hover:bg-white/5 transition-all outline-none">
-                 {{ preset | number: (['BTC', 'BNB'].includes(selectedMethod()) ? '1.1-6' : '1.0-2') }}
-               </button>
-             }
-           </div>
-        </div>
+<div class="grid grid-cols-3 gap-2 w-full">
+              @for (preset of presetValues(); track preset) {
+                <button (click)="setAmount(preset)" class="px-2 py-2 lg-btn-outline !border-white/10 !rounded-xl text-[9px] font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all outline-none">
+                  {{ preset | number: (['BTC', 'BNB'].includes(selectedMethod()) ? '1.1-6' : '1.0-2') }}
+                </button>
+              }
+            </div>
+         </div>
 
         <!-- Canal de Pago -->
-        <div class="flex flex-col gap-3">
-          <span class="text-[9px] font-black text-white/20 uppercase tracking-widest px-1">
+        <div class="flex flex-col gap-2.5">
+          <span class="text-[8px] font-medium text-white/20 uppercase tracking-wider px-1">
             {{ isUSDT() ? 'Selecciona la Red' : 'Canal de Pago' }}
           </span>
 
@@ -216,22 +216,22 @@ import { PaymentScreenComponent } from '../payment-screen.component';
             </div>
           } @else {
             <!-- Other methods: single full-width card with logo -->
-            <div class="relative flex items-center justify-between p-5 rounded-2xl border backdrop-blur-2xl overflow-hidden"
+            <div class="relative flex items-center justify-between p-4 rounded-xl border backdrop-blur-2xl overflow-hidden"
               style="background: linear-gradient(to right, rgba(20,184,166,0.20) 0%, rgba(20,184,166,0.18) 25%, rgba(20,184,166,0.08) 55%, transparent 75%);
                      border-color: rgba(20,184,166,0.35);
-                     box-shadow: 0 0 20px rgba(20,184,166,0.12), 0 0 40px rgba(20,184,166,0.06);">
-              <div class="flex flex-col gap-1">
-                <span class="text-[8px] font-black text-teal-400/70 uppercase tracking-[0.25em]">Método activo</span>
-                <span class="text-sm font-black text-white uppercase tracking-widest">{{ selectedMethod() }}</span>
+                     box-shadow: 0 0 15px rgba(20,184,166,0.1), 0 0 30px rgba(20,184,166,0.05);">
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[7px] font-semibold text-teal-400/70 uppercase tracking-[0.2em]">Método activo</span>
+                <span class="text-sm font-semibold text-white uppercase tracking-wider">{{ selectedMethod() }}</span>
               </div>
               @if (methodLogo()) {
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center"
                   style="background: rgba(20,184,166,0.12); border: 1px solid rgba(20,184,166,0.25);">
-                  <img [src]="methodLogo()!" alt="logo" width="32" height="32" class="w-8 h-8 object-contain drop-shadow-lg" />
+                  <img [src]="methodLogo()!" alt="logo" width="28" height="28" class="w-7 h-7 object-contain drop-shadow-lg" />
                 </div>
               }
               <!-- Glow dot -->
-              <span class="absolute top-3 right-3 w-2 h-2 rounded-full bg-teal-400 shadow-[0_0_8px_rgba(20,184,166,0.9)]"></span>
+              <span class="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-teal-400 shadow-[0_0_6px_rgba(20,184,166,0.8)]"></span>
             </div>
           }
 
@@ -268,24 +268,24 @@ import { PaymentScreenComponent } from '../payment-screen.component';
         </div>
       </main>
 
-      <footer class="fixed bottom-0 left-0 right-0 px-6 pb-10 pt-8 z-50 bg-gradient-to-t from-[#010208] via-[#010208]/90 to-transparent">
+      <footer class="fixed bottom-0 left-0 right-0 px-5 pb-8 pt-6 z-50 bg-gradient-to-t from-[#010208] via-[#010208]/90 to-transparent">
         <button (click)="onDeposit()"
-          class="relative w-full overflow-hidden flex items-center justify-center gap-3 py-5 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 active:scale-[0.97] text-white btn-glass-cta">
+          class="relative w-full overflow-hidden flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 active:scale-[0.97] text-white btn-glass-cta">
           <!-- Top highlight line -->
           <span class="absolute top-0 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none"></span>
           <!-- Shimmer sweep -->
           <span class="absolute inset-0 shimmer-anim pointer-events-none"></span>
           <!-- Lock icon -->
-          <svg class="relative z-10 w-5 h-5 opacity-70 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <svg class="relative z-10 w-4 h-4 opacity-70 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
           <span class="relative z-10">Confirmar Depósito</span>
           <!-- Arrow -->
-          <svg class="relative z-10 w-5 h-5 opacity-60 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <svg class="relative z-10 w-4 h-4 opacity-60 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
         </button>
-        <p class="text-center text-[8px] text-white/15 font-black uppercase tracking-widest mt-3">
+        <p class="text-center text-[7px] text-white/15 font-medium uppercase tracking-wider mt-2">
           🔒 Transacción segura y encriptada
         </p>
       </footer>
