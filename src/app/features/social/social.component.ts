@@ -34,7 +34,7 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
               </div>
               <div class="space-y-0.5">
                 <h3 class="text-[12px] font-black text-white tracking-tight uppercase">Bono Amigo</h3>
-                <p class="text-[8px] font-bold text-white/30 uppercase tracking-widest leading-none">Gana con cada referido</p>
+                 <p class="text-[8px] font-bold text-white/60 uppercase tracking-widest leading-none">Gana con cada referido</p>
               </div>
             </div>
             <div class="flex flex-col items-center justify-center pr-1 leading-tight">
@@ -81,30 +81,30 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
               <div class="lg-card-panel p-5 flex flex-col gap-4">
                 <!-- Section Header -->
                 <div class="flex flex-col gap-2 px-1">
-                  <div class="lg-status-badge !py-1 !px-3 !text-[8px] w-fit">
-                    <span class="lg-dot-active"></span>
-                    PANEL
-                  </div>
+                    <div class="lg-status-badge !py-1 !px-3 !text-[8px] w-fit">
+                      <span class="lg-dot-active"></span>
+                      <span class="text-white/60">PANEL</span>
+                    </div>
                   <h2 class="text-xl font-black text-white tracking-tight text-glow uppercase">Mis Referidos</h2>
-                  <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest leading-relaxed">Comparte tu enlace y mira como crece tu red.</p>
+                  <p class="text-[10px] font-bold text-white/60 uppercase tracking-widest leading-relaxed">Comparte tu enlace y mira como crece tu red.</p>
                 </div>
 
                 <!-- Network Metrics Expanded Grid -->
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-4">
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3">
-                    <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Total</span>
+                    <span class="text-[8px] font-black text-white/50 uppercase tracking-widest">Total</span>
                     <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.total ?? '--' }}</span>
                   </div>
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3">
-                    <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Hoy</span>
+                    <span class="text-[8px] font-black text-white/50 uppercase tracking-widest">Hoy</span>
                     <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.today ?? '--' }}</span>
                   </div>
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3">
-                    <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Último mes</span>
+                    <span class="text-[8px] font-black text-white/50 uppercase tracking-widest">Último mes</span>
                     <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.lastMonth ?? '--' }}</span>
                   </div>
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3">
-                    <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Última semana</span>
+                    <span class="text-[8px] font-black text-white/50 uppercase tracking-widest">Última semana</span>
                     <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.lastWeek ?? '--' }}</span>
                   </div>
                 </div>
@@ -132,22 +132,22 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
                     <span class="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">Panel</span>
                   </div>
                   <h2 class="text-xl font-black text-white tracking-tight text-glow uppercase">Detalles</h2>
-                  <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest leading-relaxed">Invite a sus amigos a ganar junto a usted.</p>
+                  <p class="text-[10px] font-bold text-white/60 uppercase tracking-widest leading-relaxed">Invite a sus amigos a ganar junto a usted.</p>
                 </div>
 
                 <!-- Commission Levels List -->
                 <div class="flex flex-col gap-2">
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3.5 flex items-center justify-between active:scale-[0.98] transition-transform">
                     <span class="text-[11px] font-black text-emerald-400 tracking-wide uppercase text-glow-emerald">Nivel 1: Gana el 5%</span>
-                    <span class="text-[11px] font-black text-white/20">--</span>
+                    <span class="text-[11px] font-black text-white/50">--</span>
                   </div>
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3.5 flex items-center justify-between active:scale-[0.98] transition-transform">
                     <span class="text-[11px] font-black text-emerald-400 tracking-wide uppercase text-glow-emerald">Nivel 2: Gana el 3%</span>
-                    <span class="text-[11px] font-black text-white/20">--</span>
+                    <span class="text-[11px] font-black text-white/50">--</span>
                   </div>
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3.5 flex items-center justify-between active:scale-[0.98] transition-transform">
                     <span class="text-[11px] font-black text-emerald-400 tracking-wide uppercase text-glow-emerald">Nivel 3: Gana el 1%</span>
-                    <span class="text-[11px] font-black text-white/20">--</span>
+                    <span class="text-[11px] font-black text-white/50">--</span>
                   </div>
                 </div>
               </div>
@@ -158,26 +158,38 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
                 <!-- Section Header -->
                 <div class="flex flex-col gap-1 px-1">
                   <h2 class="text-xl font-black text-white tracking-tight text-glow uppercase">Mis Ganancias</h2>
-                  <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest leading-relaxed text-balance">Visualiza lo que has acumulado y lo que esta en camino.</p>
+                  <p class="text-[10px] font-bold text-white/60 uppercase tracking-widest leading-relaxed text-balance">Visualiza lo que has acumulado y lo que esta en camino.</p>
                 </div>
 
                 <!-- Earnings Metrics 2x2 Grid -->
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-4">
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Total</span>
-                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.earnTotal ?? '--' }}</span>
+                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1 flex items-center">
+                       {{ referInfo()?.earnTotal ?? '--' }}
+                       <img ngSrc="shared/balance/coin.webp" alt="coin" width="16" height="16" class="inline-block align-middle ml-1.5">
+                     </span>
                   </div>
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Hoy</span>
-                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.earnToday ?? '--' }}</span>
+                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1 flex items-center">
+                       {{ referInfo()?.earnToday ?? '--' }}
+                       <img ngSrc="shared/balance/coin.webp" alt="coin" width="16" height="16" class="inline-block align-middle ml-1.5">
+                     </span>
                   </div>
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Último mes</span>
-                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.earnLastMonth ?? '--' }}</span>
+                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1 flex items-center">
+                       {{ referInfo()?.earnLastMonth ?? '--' }}
+                       <img ngSrc="shared/balance/coin.webp" alt="coin" width="16" height="16" class="inline-block align-middle ml-1.5">
+                     </span>
                   </div>
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3">
                     <span class="text-[8px] font-black text-white/20 uppercase tracking-widest">Última semana</span>
-                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1">{{ referInfo()?.earnLastWeek ?? '--' }}</span>
+                    <span class="block text-lg font-black text-emerald-400 tracking-tighter text-glow-emerald mt-1 flex items-center">
+                       {{ referInfo()?.earnLastWeek ?? '--' }}
+                       <img ngSrc="shared/balance/coin.webp" alt="coin" width="16" height="16" class="inline-block align-middle ml-1.5">
+                     </span>
                   </div>
                 </div>
               </div>
