@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, inject } from '@angular/core';
 
 @Component({
   selector: 'app-deposit-response-modal',
@@ -64,20 +64,12 @@ import { ChangeDetectionStrategy, Component, input, output, OnInit, inject } fro
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DepositResponseModalComponent implements OnInit {
+export class DepositResponseModalComponent {
   responseMessage = input<string>('');
   txnId = input<string>('');
   orderNumber = input<string>('');
   invoiceUrl = input<string>('');
   close = output<void>();
-
-  ngOnInit() {
-    // Auto-open invoice URL in new tab
-    const url = this.invoiceUrl();
-    if (url) {
-      window.open(url, '_blank');
-    }
-  }
 
   onClose() {
     this.close.emit();

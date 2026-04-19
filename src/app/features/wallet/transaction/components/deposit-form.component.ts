@@ -454,24 +454,24 @@ methodLogo = computed(() => {
 
   minAmount = computed(() => this.presetValues()[0]);
 
-  async onDeposit() {
+async onDeposit() {
     if (this.amount() < this.minAmount()) {
       const amount = this.isCrypto() ? this.minAmount() : this.minAmount().toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
       this.errorHandler.showToast(`Monto mínimo ${amount} ${this.selectedMethod()}`, 'error');
       return;
     }
 
-    if (['USDT', 'BTC', 'TRX', 'BNB'].includes(this.selectedMethod())) {
-      // Direct API call for crypto - skip modal
+    // CRYPTO: llamar directamente al backend, sin modal de dirección
+    if (this.isCrypto()) {
       this.processCryptoDeposit();
-    } else {
-      this.orderNumber.set(this.resolveOrderNumber());
-      this.qrImage.set(this.resolvedQrImage());
-      this.showPaymentScreen.set(true);
+      return;
     }
-  }
 
-  // Direct crypto deposit process
+    // Otros métodos: mostrar pantalla de pago
+    this.orderNumber.set(this.resolveOrderNumber());
+    this.qrImage.set(this.resolvedQrImage());
+    this.showPaymentScreen.set(true);
+  }
   async processCryptoDeposit() {
     const amount = this.amount();
     if (amount < this.minAmount()) {
@@ -526,7 +526,7 @@ methodLogo = computed(() => {
       this.isSubmitting.set(false);
       if (result.success && result.invoiceUrl) {
         // Successful creation, show the response modal
-        this.depositResponseMessage.set(result.message ?? 'Depósito iniciado');
+        this.depositResponseMessage.set('¡Depósito Enviado! Factura creada exitosamente.');
         this.depositTxnId.set(result.txnId ?? '');
         this.depositOrderNumber.set(result.orderNumber ?? '');
         this.depositInvoiceUrl.set(result.invoiceUrl ?? '');
@@ -603,7 +603,7 @@ methodLogo = computed(() => {
       if (result.success && result.invoiceUrl) {
         // Success, close this modal and show the response modal
         this.showCryptoModal.set(false);
-        this.depositResponseMessage.set(result.message ?? 'Depósito iniciado');
+        this.depositResponseMessage.set('¡Depósito Enviado! Factura creada exitosamente.');
         this.depositTxnId.set(result.txnId ?? '');
         this.depositOrderNumber.set(result.orderNumber ?? '');
         this.depositInvoiceUrl.set(result.invoiceUrl ?? '');

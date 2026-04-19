@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ApiMessageResponse, DepositResponse } from '../../models/user.model';
+import { SyncCoordinatorService } from './sync-coordinator.service';
+import { ErrorHandlerService } from './error-handler.service';
 
 export enum TransactionCoin {
   COINS = 1,
@@ -74,18 +76,30 @@ export interface DepositRequest {
 })
 export class WalletService {
   private http = inject(HttpClient);
+  private syncCoordinator = inject(SyncCoordinatorService, { optional: true });
+  private errorHandler = inject(ErrorHandlerService, { optional: true });
 
   private getBaseUrl(): string {
     return environment.apiBaseUrl;
   }
 
-async addWithdrawal(params: {
+  async addWithdrawal(params: {
     amountCOP: number;
     methodId: number;
     token: string;
     uid: number;
     walletAdress: string;
   }): Promise<{ success: boolean; error?: string; message?: string }> {
+    // SYNC GUARD: Block critical wallet operations if sync is not idle
+    if (this.syncCoordinator && !this.syncCoordinator.canProceedStrict()) {
+      const blockedMessage = 'sync_blocked';
+      this.errorHandler?.showToast(
+        this.errorHandler?.getUserFriendlyMessage(blockedMessage, 'sync') ?? 'Operación bloqueada. Espera a que la sincronización complete.',
+        'error'
+      );
+      return { success: false, error: 'Operación bloqueada. Espera a que la sincronización complete.' };
+    }
+
     try {
       const url = `${this.getBaseUrl()}Wallet/addWithdrawl`;
       const body: WithdrawalRequest = {
@@ -128,6 +142,16 @@ async addWithdrawal(params: {
     uid: number;
     transactionId: string | null;
   }): Promise<{ success: boolean; error?: string; message?: string; invoiceUrl?: string; txnId?: string; orderNumber?: string }> {
+    // SYNC GUARD: Block critical wallet operations if sync is not idle
+    if (this.syncCoordinator && !this.syncCoordinator.canProceedStrict()) {
+      const blockedMessage = 'sync_blocked';
+      this.errorHandler?.showToast(
+        this.errorHandler?.getUserFriendlyMessage(blockedMessage, 'sync') ?? 'Operación bloqueada. Espera a que la sincronización complete.',
+        'error'
+      );
+      return { success: false, error: 'Operación bloqueada. Espera a que la sincronización complete.' };
+    }
+
     try {
       const url = `${this.getBaseUrl()}Wallet/addDeposit`;
       const body: DepositRequest = {
