@@ -629,8 +629,19 @@ resolvedQrImage = computed(() => {
   async onPaymentSuccess(event: { message: string; txnId: string; orderNumber: string; invoiceUrl: string }) {
     this.showPaymentScreen.set(false);
     
-    // Refresh user status before showing modal
+    // Refresh user status
     await this.userStatusService.loadUserStatus();
+    
+    const method = this.selectedMethod();
+    const isColombian = ['Nequi', 'Daviplata', 'BRE-B'].includes(method);
+    const isPaypal = method === 'Paypal';
+
+    // If it's Colombian or Paypal, don't show the response modal, just show success overlay
+    if (isColombian || isPaypal) {
+      this.showSuccess.set(true);
+      setTimeout(() => this.router.navigate(['/wallet']), 1500);
+      return;
+    }
     
     this.depositResponseMessage.set(event.message);
     this.depositTxnId.set(event.txnId);

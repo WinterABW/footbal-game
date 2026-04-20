@@ -116,7 +116,7 @@ export class SyncIndicatorComponent {
 
     switch (status) {
       case 'SYNC_IDLE':
-        return 'Listo';
+        return '';
       case 'SYNC_PENDING':
         return count > 0 ? `${count}` : 'Pend';
       case 'SYNC_IN_PROGRESS':
