@@ -226,7 +226,7 @@ export class SocialComponent implements OnInit {
 
   activeTab = signal<string>('misReferidos');
 
-  private readonly baseUrl = 'https://fifa-empire.com/welcome?referrealId=';
+  private readonly baseUrl = 'https://www.fifaempire.com/welcome?referrealId=';
 
   async ngOnInit(): Promise<void> {
     await this.loadReferInfo();
