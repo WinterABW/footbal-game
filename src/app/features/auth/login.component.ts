@@ -268,6 +268,12 @@ export class LoginComponent {
       return;
     }
 
+    // Validate phone minimum length
+    if (this.phone.length < 8) {
+      this.errorHandler.showToast('El número de teléfono debe tener al menos 8 dígitos', 'error');
+      return;
+    }
+
     // Validate password minimum length
     if (this.pass.length < 8) {
       this.errorHandler.showToast('La contraseña debe tener al menos 8 caracteres', 'error');
