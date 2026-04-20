@@ -209,6 +209,40 @@ export class WalletService {
     }
   }
 
+  async refreshBalance(params: {
+    token: string;
+  }): Promise<{ success: boolean; error?: string; message?: string }> {
+    try {
+      const url = `${this.getBaseUrl()}Wallet/refreshBalance`;
+      const body = {
+        timestamp: Date.now(),
+        token: params.token,
+      };
+
+      const response = await this.http.post(url, body, { responseType: 'text' }).toPromise();
+
+      if (response) {
+        return { success: true, message: response };
+      }
+
+      return { success: false, error: 'No se recibió respuesta del servidor' };
+    } catch (error: unknown) {
+      const httpError = error as HttpErrorResponse;
+
+      if (httpError?.status === 400) {
+        const serverMessage = httpError?.error && typeof httpError.error === 'string'
+          ? httpError.error
+          : 'Solicitud no válida';
+        return { success: false, error: serverMessage };
+      }
+      if (httpError?.status === 401) {
+        return { success: false, error: 'Sesión expirada. Inicia sesión nuevamente.' };
+      }
+      console.error('refreshBalance failed:', error);
+      return { success: false, error: 'No se pudo actualizar el balance. Intenta de nuevo.' };
+    }
+  }
+
   async addTransaction(params: {
     amount: number;
     coin: TransactionCoin;

@@ -1,8 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable, forkJoin, map } from 'rxjs';
+import { Observable, forkJoin, map, from } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { Transaction } from '../models/transaction.model';
+import { AuthService } from '../core/services/auth.service';
+import { generateSignedToken } from '../core/services/encryption.service';
 
 // Assuming FinanceStatus is a number enum based on the user's description
 export enum FinanceStatus {
@@ -15,6 +18,7 @@ export enum FinanceStatus {
 })
 export class WalletService {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
   private getBaseUrl(): string {
     return environment.apiBaseUrl;
@@ -50,6 +54,7 @@ export class WalletService {
           method: this.mapDepositMethod(d.method),
           reference: d.invoiceId || d.transactionId,
           description: d.description,
+          conversionToCOP: d.conversionToCOP,
         }));
 
         const mappedWithdrawals: Transaction[] = withdrawals.map((w: any) => ({
@@ -62,6 +67,7 @@ export class WalletService {
           method: this.mapWithdrawMethod(w.method),
           reference: w.transactionId,
           description: w.description,
+          conversionToCOP: w.conversionToCOP,
         }));
 
         const combined = [...mappedDeposits, ...mappedWithdrawals];
@@ -88,7 +94,8 @@ export class WalletService {
       'Nequi 2',   // 2
       'Nequi 3',   // 3
       'Daviplata', // 4
-      'PayPal'     // 5
+      'PayPal',     // 5
+      'Bre-B'       // 6
     ];
     return methods[method] || 'Unknown';
   }
@@ -107,5 +114,21 @@ export class WalletService {
       'BTC'         // 9
     ];
     return methods[method] || 'Unknown';
+  }
+
+  refreshBalance(): Observable<string> {
+    const url = `${this.getBaseUrl()}Wallet/refreshBalance`;
+    const user = this.authService.user();
+    const userId = user?.id ?? user?.Id;
+
+    return from(
+      (async () => {
+        const timestamp = Math.floor(Date.now() / 1000);
+        const token = await generateSignedToken(userId!, timestamp);
+        return { timestamp, token };
+      })()
+    ).pipe(
+      switchMap(body => this.http.post(url, body, { responseType: 'text' }))
+    );
   }
 }

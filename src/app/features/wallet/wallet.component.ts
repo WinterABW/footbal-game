@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, signal, inject, computed, OnInit, e
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { UserStatusService } from '../../core/services/user-status.service';
+import { AuthService } from '../../core/services/auth.service';
 import { SupportService } from '../../services/support.service';
 import { WalletService } from '../../services/wallet.service';
 import { Transaction } from '../../models/transaction.model';
@@ -156,7 +157,7 @@ interface Deposit {
                       <!-- Amount & Status -->
                       <div class="flex flex-col items-end">
                         <span class="text-base font-black tracking-tighter text-glow" [class.text-emerald-400]="tx.type === 'deposit'" [class.text-red-400]="tx.type === 'withdrawal'">
-                          {{ tx.type === 'deposit' ? '+' : '-' }}{{ tx.amount | number:'1.2-2' }} <span class="text-[9px] opacity-50 uppercase tracking-normal">{{ tx.currency }}</span>
+                          {{ tx.type === 'deposit' ? '+' : '-' }}{{ tx.displayAmount | number:'1.2-2' }} <span class="text-[9px] opacity-50 uppercase tracking-normal">{{ tx.displayCurrency }}</span>
                         </span>
                         <span class="mt-1 px-2 py-0.5 rounded-md text-[7px] font-black uppercase tracking-[0.1em] border"
                             [class.bg-emerald-500/10]="tx.status === 'completed'" [class.text-emerald-400]="tx.status === 'completed'" [class.border-emerald-500/20]="tx.status === 'completed'"
@@ -359,6 +360,7 @@ interface Deposit {
 export class WalletComponent implements OnInit {
   private router = inject(Router);
   private userStatusService = inject(UserStatusService);
+  private authService = inject(AuthService);
   private supportService = inject(SupportService);
   private walletService = inject(WalletService);
 
@@ -425,11 +427,24 @@ export class WalletComponent implements OnInit {
       return t.type === filter;
     });
 
-    return filteredTxs.map(t => ({
-      ...t,
-      statusLabel: this.getStatusLabel(t.status),
-      formattedDate: this.formatDate(t.date),
-    }));
+    return filteredTxs.map(t => {
+      // Convert to COP if conversionToCOP is available
+      let displayAmount = t.amount;
+      let displayCurrency = t.currency;
+
+      if (t.conversionToCOP !== undefined && t.conversionToCOP !== null) {
+        displayAmount = t.amount * t.conversionToCOP;
+        displayCurrency = 'COP';
+      }
+
+      return {
+        ...t,
+        displayAmount,
+        displayCurrency,
+        statusLabel: this.getStatusLabel(t.status),
+        formattedDate: this.formatDate(t.date),
+      };
+    });
   });
 
   selectedDeposit = signal<Deposit | null>(null);
@@ -447,7 +462,20 @@ export class WalletComponent implements OnInit {
     // Check for pending messages on wallet initialization
     console.log('[Wallet] Checking pending messages...');
     this.supportService.checkForPendingMessages();
+    this.refreshBalanceOnEntry();
     this.loadTransactionHistory();
+  }
+
+  private refreshBalanceOnEntry() {
+    this.walletService.refreshBalance().subscribe({
+      next: (response) => {
+        console.log('[Wallet] Balance refreshed:', response);
+        this.userStatusService.loadUserStatus();
+      },
+      error: (err) => {
+        console.error('[Wallet] Failed to refresh balance:', err);
+      }
+    });
   }
 
   loadTransactionHistory() {

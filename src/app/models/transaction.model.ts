@@ -8,4 +8,5 @@ export interface Transaction {
   method?: string;
   reference: string;
   description?: string;
+  conversionToCOP?: number;
 }
