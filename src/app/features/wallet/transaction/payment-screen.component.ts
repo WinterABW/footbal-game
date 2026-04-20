@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output, signal, in
 import { WalletService } from '../../../core/services/wallet.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { ClipboardService } from '../../../core/services/clipboard.service';
 
 @Component({
   selector: 'app-payment-screen',
@@ -144,6 +145,7 @@ export class PaymentScreenComponent {
   private walletService = inject(WalletService);
   private authService = inject(AuthService);
   private errorHandler = inject(ErrorHandlerService);
+  private clipboardService = inject(ClipboardService);
 
   currency = input.required<string>();
   amount = input.required<number>();
@@ -183,39 +185,23 @@ private methodMap: Record<string, number> = {
     this.goBack.emit();
   }
 
-async onCopy() {
-      await navigator.clipboard.writeText(this.orderNumber());
-      this.copied.set(true);
-      setTimeout(() => this.copied.set(false), 2000);
+    async onCopy() {
+      const success = await this.clipboardService.writeText(this.orderNumber());
+      if (success) {
+        this.copied.set(true);
+        setTimeout(() => this.copied.set(false), 2000);
+      }
     }
 
-    async onPaste() {
-      try {
-        const win = window as any;
-        // Primero intentar con la API de Telegram (si estamos en Telegram Mini App)
-        if (typeof win.Telegram !== 'undefined' && win.Telegram?.WebApp) {
-          win.Telegram.WebApp.readTextFromClipboard((text: string | null) => {
-            if (text) {
-              this.reference.set(text);
-              this.errorHandler.showSuccessToast('Referencia pegada');
-            } else {
-              this.errorHandler.showToast('No hay texto para pegar.', 'info');
-            }
-          });
-        } else {
-          // Fallback para navegadores normales
-          const text = await navigator.clipboard.readText();
-          if (text) {
-            this.reference.set(text);
-            this.errorHandler.showSuccessToast('Referencia pegada');
-          } else {
-            this.errorHandler.showToast('No hay texto para pegar.', 'info');
-          }
+    onPaste() {
+      this.clipboardService.readText((text: string | null) => {
+        if (text) {
+          this.reference.set(text);
+          this.errorHandler.showSuccessToast('Referencia pegada');
+        } else if (text === '') {
+          this.errorHandler.showToast('No hay texto para pegar.', 'info');
         }
-      } catch (err) {
-        console.error('Error al leer el portapapeles:', err);
-        this.errorHandler.showErrorToast('No se pudo pegar. Revisa los permisos.');
-      }
+      });
     }
 
 async onConfirm() {

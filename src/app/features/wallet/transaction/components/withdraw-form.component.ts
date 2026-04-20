@@ -7,6 +7,7 @@ import { WalletService } from '../../../../core/services/wallet.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { SuccessOverlayComponent } from './success-overlay.component';
 import { BalanceComponent } from '../../../../shared/components/balance/balance.component';
+import { ClipboardService } from '../../../../core/services/clipboard.service';
 
 @Component({
   selector: 'app-withdraw-form',
@@ -139,6 +140,7 @@ export class WithdrawFormComponent {
   private walletService = inject(WalletService);
   private authService = inject(AuthService);
   private errorHandler = inject(ErrorHandlerService);
+  private clipboardService = inject(ClipboardService);
 
   amountInputField = viewChild<ElementRef<HTMLInputElement>>('amountInputField');
 
@@ -189,31 +191,16 @@ export class WithdrawFormComponent {
   }
   onAccountChange(account: string) { this.selectedAccount.set(account); }
 
-  async pasteAddress(input: HTMLInputElement) {
-    try {
-      const win = window as any;
-      // Primero intentar con la API de Telegram (si estamos en Telegram Mini App)
-      if (typeof win.Telegram !== 'undefined' && win.Telegram?.WebApp) {
-        win.Telegram.WebApp.readTextFromClipboard((text: string | null) => {
-          if (text) {
-            this.selectedAccount.set(text);
-            input.value = text;
-            this.errorHandler.showSuccessToast('Dirección pegada');
-          } else {
-            this.errorHandler.showToast('No hay texto para pegar.', 'info');
-          }
-        });
-      } else {
-        // Fallback para navegadores normales
-        const text = await navigator.clipboard.readText();
+  pasteAddress(input: HTMLInputElement) {
+    this.clipboardService.readText((text: string | null) => {
+      if (text) {
         this.selectedAccount.set(text);
         input.value = text;
         this.errorHandler.showSuccessToast('Dirección pegada');
+      } else if (text === '') {
+        this.errorHandler.showToast('No hay texto para pegar.', 'info');
       }
-    } catch (err) {
-      console.error('Error al leer el portapapeles:', err);
-      this.errorHandler.showErrorToast('No se pudo pegar. Revisa los permisos.');
-    }
+    });
   }
 
   goBack() { this.router.navigate(['/wallet']); }
