@@ -159,6 +159,14 @@ export class BoxComponent {
     } else {
       this.gameState = 'lost';
       this.playAudioSynth('lose');
+
+      // Registrar caja vacía en el backend
+      this.gameService.casinoPlay(0, 1).then(result => {
+        if (!result.success) {
+          this.errorHandler.showErrorToast(result.error || 'Error al registrar jugada');
+        }
+      });
+
       this.errorHandler.showToast('¡Balón vacío! Perdiste', 'error');
     }
   }
