@@ -11,7 +11,7 @@ import { GlassSheetComponent } from '../../../../../shared/ui/glass-sheet/glass-
 
 // Las 3 skills siempre son las mismas
 const SKILLS = [
-    { id: 1, name: 'Energy Plus', description: '+50 energía instantánea', type: 'instant', icon: 'game/energy/thunder.webp' },
+    { id: 1, name: '⚡ Recarga de Energía', description: '+50 energía instantánea', type: 'instant', icon: 'game/energy/thunder.webp' },
     { id: 2, name: 'Max Energy', description: '+100 energía máxima permanente', type: 'permanent', icon: 'game/energy/aumento.png' },
     { id: 3, name: 'Tap Power', description: '+1 valor por toque permanente', type: 'permanent', icon: 'game/energy/touch.webp' },
 ];

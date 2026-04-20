@@ -40,6 +40,28 @@ import { ClipboardService } from '../../../../core/services/clipboard.service';
       </header>
 
       <main class="flex-1 w-full relative z-10 flex flex-col overflow-y-auto no-scrollbar pb-28 px-5 gap-4 animate-slide-up">
+        <!-- Channel Selection (Nequi 1/2/3 or USDT TRC20/BEP20) -->
+        @if (showChannelSelector()) {
+          <div class="lg-card-panel p-4 flex flex-col gap-3">
+            <span class="text-[8px] font-black text-white/20 uppercase tracking-[0.3em] ml-1">
+              {{ currency() === 'Nequi' ? 'Selecciona el canal Nequi' : 'Selecciona la red USDT' }}
+            </span>
+            <div class="flex gap-2">
+              @for (channel of channelOptions(); track channel) {
+                <button
+                  (click)="selectChannel(channel)"
+                  class="flex-1 py-3 px-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all"
+                  [class]="selectedChannel() === channel 
+                    ? 'bg-indigo-500/20 border border-indigo-500/60 text-white' 
+                    : 'bg-white/[0.03] border border-white/[0.08] text-white/40 hover:border-white/20'"
+                >
+                  {{ channel }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
         <!-- Balance + Info side by side -->
         <div class="flex gap-3 pt-2">
           <div class="flex-1">
@@ -154,23 +176,72 @@ export class WithdrawFormComponent {
   selectedAccount = signal('');
   readonly balance = computed(() => this.userStatusService.wallet()?.principalBalance ?? 0);
 
-  isCrypto = computed(() => ['USDT', 'BTC', 'TRX', 'BNB'].includes(this.currency()));
-  currencyLogo = computed(() => {
-    const logoMap: Record<string, string> = {
-      'Nequi': 'wallet/colombia/nequi.webp', 'Daviplata': 'wallet/colombia/daviplata.webp',
-      'Plin': 'wallet/peru/plin.png', 'Yape': 'wallet/peru/yape.png',
-      'Paypal': 'wallet/main/paypal.webp',
-      'USDT': 'wallet/crypto/usdt.png', 'TRX': 'wallet/crypto/trx.png',
-      'BNB': 'wallet/crypto/bnb.png', 'BTC': 'wallet/crypto/btc.png',
-    };
-    return logoMap[this.currency()] || null;
+  // Channel selection: show for Nequi (0-2) and USDT (5-6)
+  showChannelSelector = computed(() => {
+    const c = this.currency();
+    return c === 'Nequi' || c === 'USDT';
   });
 
+  channelOptions = computed(() => {
+    const c = this.currency();
+    if (c === 'Nequi') return ['Nequi-1', 'Nequi-2', 'Nequi-3'];
+    if (c === 'USDT') return ['TRC20', 'BEP20'];
+    return [];
+  });
+
+  isCrypto = computed(() => ['USDT', 'BTC', 'TRX', 'BNB'].includes(this.currency()));
+
+  currencyLogo = computed(() => this.logoMap[this.currency()] || null);
+
+  // === Channel selection for withdrawal methods ===
+  // Nequi: 0=Nequi1, 1=Nequi2, 2=Nequi3
+  // USDT: 5=TRC20, 6=BEP20
+  selectedChannel = signal<string>('');
+
+  getMethodId(): number {
+    const currency = this.currency();
+    const channel = this.selectedChannel();
+
+    // Nequi channels
+    if (currency === 'Nequi') {
+      if (channel === 'Nequi-2') return 1;
+      if (channel === 'Nequi-3') return 2;
+      return 0; // Nequi-1 default
+    }
+
+    // USDT channels
+    if (currency === 'USDT') {
+      if (channel === 'BEP20') return 6;
+      return 5; // TRC20 default
+    }
+
+    // Other methods use the static map
+    return this.methodMap[currency] ?? 0;
+  }
+
+  // Withdrawal method IDs for https://fifabanket.shop/Wallet/addWithdrawl
+  // 0: Nequi 1, 1: Nequi 2, 2: Nequi 3, 3: Daviplata, 4: PayPal
+  // 5: USDT TRC20, 6: USDT BEP20, 7: TRX, 8: BNB, 9: BTC
   private methodMap: Record<string, number> = {
-    'Crypto': 0,
-    'Nequi': 1,
-    'Daviplata': 4,
-    'Paypal': 5,
+    'Nequi': 0,
+    'Daviplata': 3,
+    'Paypal': 4,
+    'USDT': 5,
+    'TRX': 7,
+    'BNB': 8,
+    'BTC': 9,
+  };
+
+  private logoMap: Record<string, string> = {
+    'Nequi': 'wallet/colombia/nequi.webp',
+    'Daviplata': 'wallet/colombia/daviplata.webp',
+    'Plin': 'wallet/peru/plin.png',
+    'Yape': 'wallet/peru/yape.png',
+    'Paypal': 'wallet/main/paypal.webp',
+    'USDT': 'wallet/crypto/usdt.png',
+    'TRX': 'wallet/crypto/trx.png',
+    'BNB': 'wallet/crypto/bnb.png',
+    'BTC': 'wallet/crypto/btc.png',
   };
 
   presetAmounts = computed(() => {
@@ -190,6 +261,8 @@ export class WithdrawFormComponent {
     if (inputEl) inputEl.nativeElement.value = String(newAmount);
   }
   onAccountChange(account: string) { this.selectedAccount.set(account); }
+
+  selectChannel(channel: string) { this.selectedChannel.set(channel); }
 
   pasteAddress(input: HTMLInputElement) {
     this.clipboardService.readText((text: string | null) => {
@@ -231,7 +304,7 @@ export class WithdrawFormComponent {
 
     const result = await this.walletService.addWithdrawal({
       amountCOP: amount,
-      methodId: this.methodMap[this.currency()] ?? 0,
+      methodId: this.getMethodId(),
       token,
       uid: user.id,
       walletAdress: this.selectedAccount(),
