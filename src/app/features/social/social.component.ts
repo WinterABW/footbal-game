@@ -139,15 +139,15 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
                 <div class="flex flex-col gap-2">
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3.5 flex items-center justify-between active:scale-[0.98] transition-transform">
                     <span class="text-[11px] font-black text-emerald-400 tracking-wide uppercase text-glow-emerald">Nivel 1: Gana el 5%</span>
-                    <span class="text-[11px] font-black text-white/50">--</span>
+                    <span class="text-[11px] font-black text-white/50">{{ referInfo()?.lvl1 ?? '--' }}</span>
                   </div>
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3.5 flex items-center justify-between active:scale-[0.98] transition-transform">
                     <span class="text-[11px] font-black text-emerald-400 tracking-wide uppercase text-glow-emerald">Nivel 2: Gana el 3%</span>
-                    <span class="text-[11px] font-black text-white/50">--</span>
+                    <span class="text-[11px] font-black text-white/50">{{ referInfo()?.lvl2 ?? '--' }}</span>
                   </div>
                   <div class="lg-module-card lg-module-card--highlight-emerald p-3.5 flex items-center justify-between active:scale-[0.98] transition-transform">
                     <span class="text-[11px] font-black text-emerald-400 tracking-wide uppercase text-glow-emerald">Nivel 3: Gana el 1%</span>
-                    <span class="text-[11px] font-black text-white/50">--</span>
+                    <span class="text-[11px] font-black text-white/50">{{ referInfo()?.lvl3 ?? '--' }}</span>
                   </div>
                 </div>
               </div>

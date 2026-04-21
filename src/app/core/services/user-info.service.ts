@@ -13,6 +13,9 @@ export interface ReferInfoResponse {
   lastWeek: number;
   today: number;
   total: number;
+  lvl1: number;
+  lvl2: number;
+  lvl3: number;
 }
 
 export interface ActualInversion {
