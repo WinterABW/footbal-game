@@ -24,7 +24,7 @@ import { map, filter } from 'rxjs';
       </div>
 
       @for (nav of navItems; track nav.id) {
-        <button [routerLink]="nav.route" routerLinkActive="active" [routerLinkActiveOptions]="{exact: nav.id === 'Social'}"
+        <button [routerLink]="nav.route" routerLinkActive="active" [routerLinkActiveOptions]="{exact: nav.id === 'Amigos'}"
           [attr.data-tutorial-id]="nav.tutorialId"
           class="nav-btn group relative z-10" [attr.aria-label]="nav.id">
           <div class="nav-content">
@@ -69,8 +69,8 @@ export class BottomNavComponent {
   private router = inject(Router);
 
   navItems = [
-    { id: 'Social', route: '/social', icon: 'shared/navigation/friends.webp', tutorialId: 'nav-social' },
-    { id: 'Retos', route: '/mociones', icon: 'shared/navigation/mociones.webp', tutorialId: 'nav-retos' },
+    { id: 'Amigos', route: '/social', icon: 'shared/navigation/friends.webp', tutorialId: 'nav-social' },
+    { id: 'Misiones', route: '/mociones', icon: 'shared/navigation/mociones.webp', tutorialId: 'nav-retos' },
     { id: 'Jugar', route: '/main', icon: 'shared/navigation/home.webp', tutorialId: 'nav-jugar' },
     { id: 'Fichajes', route: '/mining', icon: 'shared/navigation/inversion.webp', tutorialId: 'nav-fichajes' },
     { id: 'Banco', route: '/wallet', icon: 'shared/navigation/cartera.webp', tutorialId: 'nav-banco' }
