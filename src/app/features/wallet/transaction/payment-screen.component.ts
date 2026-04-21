@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output, signal, in
 import { WalletService } from '../../../core/services/wallet.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { generateSignedToken } from '../../../core/services/encryption.service';
 
 @Component({
   selector: 'app-payment-screen',
@@ -228,11 +229,10 @@ private methodMap: Record<string, number> = {
     }
 
 async onConfirm() {
-     if (!this.isValidReference()) return;
+      if (!this.isValidReference()) return;
 
       const user = this.authService.user();
-      const token = this.authService.authToken();
-      if (!user?.id || !token) {
+      if (!user?.id) {
         this.depositError.emit('Sesión expirada');
         return;
       }
@@ -249,6 +249,9 @@ async onConfirm() {
 
       console.log('[PaymentScreen] Monto Original:', originalAmount);
       console.log('[PaymentScreen] Monto para Payload:', payloadAmount);
+
+      const timestamp = Math.floor(Date.now() / 1000);
+      const token = await generateSignedToken(user.id, timestamp);
       
       const payload = {
         amountUSD: payloadAmount,
@@ -260,8 +263,8 @@ async onConfirm() {
 
       console.log('[PaymentScreen] Payload a Enviar:', payload);
       // --- FIN DE LA MODIFICACIÓN ---
-
-    const result = await this.walletService.addDeposit(payload);
+      
+      const result = await this.walletService.addDeposit(payload);
 
       this.isProcessing.set(false);
 

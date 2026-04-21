@@ -11,6 +11,7 @@ import { InvestService } from '../../core/services/invest.service';
 import { AuthService } from '../../core/services/auth.service';
 import { UserStatusService } from '../../core/services/user-status.service';
 import { ErrorHandlerService } from '../../core/services/error-handler.service';
+import { generateSignedToken } from '../../core/services/encryption.service';
 
 @Component({
   selector: 'app-invest-layout',
@@ -189,10 +190,9 @@ export class InvestLayoutComponent {
   async confirmPurchase(player: InvestApiPlayer) {
     if (this.isPurchasing()) return;
 
-    const token = this.authService.authToken();
     const uid = this.userStatusService.userStatus()?.id;
 
-    if (!token || !uid) {
+    if (!uid) {
       this.errorHandler.showToast('Sesión no válida. Inicia sesión nuevamente.', 'error');
       this.closeDetailsModal();
       return;
@@ -200,7 +200,10 @@ export class InvestLayoutComponent {
 
     this.isPurchasing.set(true);
 
-    const result = await this.investService.buyPlayer(player.id, Date.now(), token, uid);
+    const timestamp = Math.floor(Date.now() / 1000);
+    const token = await generateSignedToken(uid, timestamp);
+
+    const result = await this.investService.buyPlayer(player.id, timestamp, token, uid);
 
     this.isPurchasing.set(false);
 

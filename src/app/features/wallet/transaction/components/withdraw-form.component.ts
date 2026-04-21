@@ -8,6 +8,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { SuccessOverlayComponent } from './success-overlay.component';
 import { BalanceComponent } from '../../../../shared/components/balance/balance.component';
 import { ClipboardService } from '../../../../core/services/clipboard.service';
+import { generateSignedToken } from '../../../../core/services/encryption.service';
 
 @Component({
   selector: 'app-withdraw-form',
@@ -294,13 +295,15 @@ export class WithdrawFormComponent {
     }
 
     const user = this.authService.user();
-    const token = this.authService.authToken();
-    if (!user?.id || !token) {
+    if (!user?.id) {
       this.errorHandler.showErrorToast('Sesión expirada');
       return;
     }
 
     this.isProcessing.set(true);
+
+    const timestamp = Math.floor(Date.now() / 1000);
+    const token = await generateSignedToken(user.id, timestamp);
 
     const result = await this.walletService.addWithdrawal({
       amountCOP: amount,
