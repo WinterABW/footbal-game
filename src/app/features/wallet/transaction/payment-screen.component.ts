@@ -245,7 +245,7 @@ async onConfirm() {
       console.log('[PaymentScreen] Es Colombiano?:', this.isColombianMethod());
       
       const originalAmount = this.amount();
-      const payloadAmount = this.isColombianMethod() ? originalAmount / 1000 : originalAmount;
+      const payloadAmount = this.isColombianMethod() ? originalAmount / 3600 : originalAmount;
 
       console.log('[PaymentScreen] Monto Original:', originalAmount);
       console.log('[PaymentScreen] Monto para Payload:', payloadAmount);
