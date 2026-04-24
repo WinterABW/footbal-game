@@ -438,7 +438,7 @@ export class DepositFormComponent {
       const logoMap: Record<string, string> = {
         'Nequi': 'wallet/colombia/nequi.webp', 'Daviplata': 'wallet/colombia/daviplata.webp',
         'BRE-B': 'wallet/colombia/bre-b.webp',
-        'Plin': 'wallet/peru/plin.png', 'Yape': 'wallet/peru/yape.png',
+        'Plin': 'wallet/peru/plin.webp', 'Yape': 'wallet/peru/yape.png',
         'Paypal': 'wallet/main/paypal.webp',
       };
       return logoMap[this.selectedMethod()] || null;

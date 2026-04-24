@@ -239,7 +239,7 @@ export class WithdrawFormComponent {
   private logoMap: Record<string, string> = {
     'Nequi': 'wallet/colombia/nequi.webp',
     'Daviplata': 'wallet/colombia/daviplata.webp',
-    'Plin': 'wallet/peru/plin.png',
+    'Plin': 'wallet/peru/plin.webp',
     'Yape': 'wallet/peru/yape.png',
     'Paypal': 'wallet/main/paypal.webp',
     'USDT': 'wallet/crypto/usdt.png',

@@ -252,7 +252,7 @@ interface Deposit {
                     style="background: linear-gradient(to right, rgba(6,182,212,0.20) 0%, rgba(6,182,212,0.18) 25%, rgba(6,182,212,0.08) 55%, transparent 75%); border-color: rgba(6,182,212,0.30);">
                     <div class="flex items-center gap-4">
                       <div class="w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden bg-white/5 flex items-center justify-center">
-                        <img ngSrc="wallet/peru/plin.png" alt="Plin" width="32" height="32" class="w-8 h-8 object-contain drop-shadow-lg group-hover:scale-110 transition-transform">
+                        <img ngSrc="wallet/peru/plin.webp" alt="Plin" width="32" height="32" class="w-8 h-8 object-contain drop-shadow-lg group-hover:scale-110 transition-transform">
                       </div>
                       <div>
                         <h3 class="text-[12px] font-black text-white tracking-widest uppercase mb-1">Plin</h3>

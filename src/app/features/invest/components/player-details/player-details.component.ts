@@ -222,7 +222,7 @@ export class PlayerDetailsComponent {
   modalWrapper = viewChild.required<ElementRef>('modalWrapper');
   closeBtn = viewChild.required<ElementRef>('closeBtn');
 
-  age = computed(() => this.player().age);
+age = computed(() => this.player().age);
   
   // Ganancias por hora: (interest/100 * price) / 24
   hourlyEarnings = computed(() => {
