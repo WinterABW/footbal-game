@@ -291,7 +291,7 @@ interface Deposit {
               <div class="flex flex-col gap-4">
                 <p class="text-[10px] text-white/50 font-black uppercase tracking-widest px-2 mb-1">Selecciona la moneda</p>
                 <div class="grid grid-cols-1 gap-3">
-                  @for (coin of ['USDT', 'TRX', 'BNB', 'BTC']; track coin) {
+                  @for (coin of ['USDT']; track coin) {
                     <article (click)="onSheetItemClick({title: coin, desc: '', icon: ''})"
                       class="lg-module-card p-4 flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer backdrop-blur-2xl rounded-2xl"
                       style="background: linear-gradient(to right, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.18) 25%, rgba(245,158,11,0.08) 55%, transparent 75%); border-color: rgba(245,158,11,0.30);">
@@ -318,7 +318,7 @@ interface Deposit {
               <div class="flex flex-col gap-4">
                 <p class="text-[10px] text-white/50 font-black uppercase tracking-widest px-2 mb-1">Selecciona la moneda a retirar</p>
                 <div class="grid grid-cols-1 gap-3">
-                  @for (coin of ['USDT', 'TRX', 'BNB', 'BTC']; track coin) {
+                  @for (coin of ['USDT']; track coin) {
                     <article (click)="onSheetItemClick({title: coin, desc: '', icon: ''})"
                       class="lg-module-card p-4 flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer backdrop-blur-2xl rounded-2xl"
                       style="background: linear-gradient(to right, rgba(245,158,11,0.20) 0%, rgba(245,158,11,0.18) 25%, rgba(245,158,11,0.08) 55%, transparent 75%); border-color: rgba(245,158,11,0.30);">
@@ -382,8 +382,7 @@ export class WalletComponent implements OnInit {
     { title: 'Colombia', desc: 'Depósitos instantáneos', icon: 'wallet/main/col.webp' },
     { title: 'Peru', desc: 'Depósitos instantáneos', icon: 'wallet/main/peru.png' },
     { title: 'Paypal', desc: 'Depósitos instantáneos', icon: 'wallet/main/paypal.webp' },
-    // TODO: Re-habilitar cuando se confirme la conversión de crypto
-    // { title: 'Cryptos', desc: 'Depósitos vía criptomonedas', icon: 'wallet/main/bynance.png' },
+    { title: 'Cryptos', desc: 'Depósitos vía criptomonedas', icon: 'wallet/main/bynance.png' },
   ];
 
   deposits = computed(() => this.depositMethods);
