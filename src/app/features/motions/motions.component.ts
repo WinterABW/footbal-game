@@ -4,7 +4,6 @@ import { NgOptimizedImage, DecimalPipe, DatePipe } from '@angular/common';
 import { GlassModalComponent, GlassTabBarComponent, GlassTab } from '../../shared/ui';
 import { MotionsService, MissionHistoryItem, CompletedMission, BonoDiario } from './motions.service';
 import { AudioService } from '../../services/audio.service';
-import { ConfettiService } from '../../services/confetti.service';
 import { ErrorHandlerService } from '../../core/services/error-handler.service';
 import { Mission } from '../../models/mision.model';
 
@@ -551,7 +550,7 @@ export class MotionsComponent implements AfterViewInit, OnDestroy {
 
    private readonly motionsService = inject(MotionsService);
    private readonly audioService = inject(AudioService);
-   private readonly confettiService = inject(ConfettiService);
+   
    private readonly errorHandler = inject(ErrorHandlerService);
 
   constructor() {
@@ -599,15 +598,13 @@ export class MotionsComponent implements AfterViewInit, OnDestroy {
       switch (event.type) {
         case 'missionClaimed':
           this.audioService.playSuccess();
-          this.confettiService.fire('win');
           break;
         case 'missionFailed':
           this.audioService.playError();
           break;
         case 'dailyRewardCollected':
           this.audioService.playSuccess();
-          this.confettiService.fire('daily');
-          break;
+                    break;
       }
     });
 

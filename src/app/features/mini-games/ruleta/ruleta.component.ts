@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
-import confetti from 'canvas-confetti';
 import { UserStatusService } from '../../../core/services/user-status.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { GameService } from '../../../core/services/game.service';
@@ -456,7 +455,7 @@ export class RuletaComponent implements OnDestroy {
         this.currentPrizeIndex.set(winningIndex);
         this.isSpinning.set(false);
         this.playAudio(this.spinEndAudio);
-        this.triggerConfetti();
+        
         
         // Llamar al backend para registrar la ganancia (ticket ya fue deducido)
         const prizeValue = this.parsePrizeValue(this.prizes[winningIndex].amount);
@@ -479,33 +478,7 @@ export class RuletaComponent implements OnDestroy {
     return match ? parseInt(match[1], 10) : 0;
   }
 
-  private triggerConfetti(): void {
-    const colors = ['#ffd060', '#00d4ff', '#22c55e'];
-    
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.5 },
-      colors
-    });
-
-    window.setTimeout(() => {
-      confetti({
-        particleCount: 50,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors
-      });
-      confetti({
-        particleCount: 50,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors
-      });
-    }, 250);
-  }
+  
 
   private createAudio(src: string, volume: number): HTMLAudioElement {
     const audio = new Audio(src);

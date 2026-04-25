@@ -154,7 +154,7 @@ export class BoxComponent {
       });
       
       this.playAudioSynth('win');
-      this.triggerConfetti();
+      
       this.errorHandler.showSuccessToast(`¡GANASTE ${box.prizeValue} COP!`);
     } else {
       this.gameState = 'lost';
@@ -212,20 +212,5 @@ export class BoxComponent {
     }
   }
 
-  triggerConfetti() {
-    const colors = ['#00ffcc', '#ff00ff', '#00ff80', '#ffffff'];
-    for (let i = 0; i < 50; i++) {
-      const particle = document.createElement('div');
-      particle.classList.add('confetti-particle');
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const left = Math.random() * 100 + 'vw';
-      const duration = Math.random() * 1.5 + 1 + 's';
-      particle.style.backgroundColor = color;
-      particle.style.left = left;
-      particle.style.top = '-10px';
-      particle.style.animationDuration = duration;
-      document.body.appendChild(particle);
-      setTimeout(() => particle.remove(), 3000);
-    }
-  }
+  
 }

@@ -6,7 +6,7 @@ import {
   inject,
 } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
-import { ConfettiService } from '../../../services/confetti.service';
+
 
 @Component({
   selector: 'app-bonus-claim',
@@ -14,18 +14,7 @@ import { ConfettiService } from '../../../services/confetti.service';
   template: `
     @if (isVisible()) {
       <div class="bonus-overlay">
-        <!-- Background particles -->
-        <div class="particles-layer">
-          @for (particle of particles; track particle.id) {
-            <div 
-              class="particle"
-              [style.left.%]="particle.x"
-              [style.top.%]="particle.y"
-              [style.--particle-delay]="particle.delay + 's'"
-              [style.--particle-size]="particle.size + 'px'"
-            ></div>
-          }
-        </div>
+        
 
         <!-- Backdrop -->
         <div class="bonus-backdrop" (click)="onBackdropClick($event)"></div>
@@ -130,42 +119,7 @@ import { ConfettiService } from '../../../services/confetti.service';
       -webkit-backdrop-filter: blur(8px);
     }
 
-    /* ═══════════ Particles ═══════════ */
-    .particles-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .particle {
-      position: absolute;
-      width: var(--particle-size);
-      height: var(--particle-size);
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 208, 96, 0.4) 0%, transparent 70%);
-      animation: particle-float 8s ease-in-out infinite;
-      animation-delay: var(--particle-delay);
-    }
-
-    @keyframes particle-float {
-      0%, 100% { 
-        transform: translateY(0) translateX(0); 
-        opacity: 0.3;
-      }
-      25% { 
-        transform: translateY(-20px) translateX(5px); 
-        opacity: 0.6;
-      }
-      50% { 
-        transform: translateY(-10px) translateX(-5px); 
-        opacity: 0.4;
-      }
-      75% { 
-        transform: translateY(-30px) translateX(3px); 
-        opacity: 0.5;
-      }
-    }
+    
 
     /* ═══════════ Card ═══════════ */
     .bonus-card {
@@ -556,25 +510,17 @@ import { ConfettiService } from '../../../services/confetti.service';
 export class BonusClaimComponent {
   isVisible = signal(true);
   isClaiming = signal(false);
-  private confettiService = inject(ConfettiService);
+  
 
   claimed = output<void>();
 
-  // Background particles - subtle floating dots
-  readonly particles = Array.from({ length: 12 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: 4 + Math.random() * 6,
-    delay: Math.random() * 4,
-  }));
+  
 
   claimBonus(): void {
     if (this.isClaiming()) return;
     this.isClaiming.set(true);
 
-    // Fire confetti
-    this.confettiService.fire('win');
+    
 
     // Premium exit animation
     this.triggerExit();

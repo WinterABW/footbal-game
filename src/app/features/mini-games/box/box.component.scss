@@ -148,17 +148,7 @@
   }
 }
 
-::ng-deep .confetti-particle {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  pointer-events: none;
-  z-index: 999;
-  animation: fall 2s linear forwards;
-}
-@keyframes fall {
-  to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-}
+
 
 .hide-nav ::ng-deep bottom-navigation,
 .hide-nav ::ng-deep nav,

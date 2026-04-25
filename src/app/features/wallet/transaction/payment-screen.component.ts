@@ -60,16 +60,27 @@ import { generateSignedToken } from '../../../core/services/encryption.service';
           <!-- Divider -->
           <div class="mx-5 h-px bg-white/[0.04]"></div>
 
-          <!-- Section 2: QR -->
-          <div class="flex flex-col items-center px-5 py-4 gap-3">
-            <div class="relative w-[240px] h-[240px] bg-white/[0.03] border border-white/[0.08] rounded-2xl flex items-center justify-center p-3">
-              <div class="absolute inset-0 bg-white rounded-[14px]"></div>
-              <img [src]="qrImage()" alt="QR Code" width="240" height="240" class="relative z-10 w-full h-full object-contain" />
-            </div>
-            <p class="text-[7px] font-black text-white/20 uppercase tracking-[0.2em] text-center">
-              Escanea desde tu app para pagar
-            </p>
-          </div>
+<!-- Section 2: QR -->
+<div class="flex flex-col items-center px-5 py-4 gap-3">
+@if (isPeruvianMethod()) {
+<div class="relative w-[240px] h-[240px] bg-white/[0.03] border border-white/[0.08] rounded-2xl flex items-center justify-center p-3">
+<div class="w-full h-full flex flex-col items-center justify-center gap-4 bg-white rounded-[14px]">
+<svg class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="#020311" stroke-width="2">
+<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+</svg>
+<span class="text-lg font-black uppercase tracking-widest" style="color: #020311 !important;">Próximamente</span>
+</div>
+</div>
+} @else {
+<div class="relative w-[240px] h-[240px] bg-white/[0.03] border border-white/[0.08] rounded-2xl flex items-center justify-center p-3">
+<div class="absolute inset-0 bg-white rounded-[14px]"></div>
+<img [src]="qrImage()" alt="QR Code" width="240" height="240" class="relative z-10 w-full h-full object-contain" />
+</div>
+}
+<p class="text-[7px] font-black text-white/20 uppercase tracking-[0.2em] text-center">
+Escanea desde tu app para pagar
+</p>
+</div>
 
           <!-- Divider -->
           <div class="mx-5 h-px bg-white/[0.04]"></div>
@@ -138,18 +149,26 @@ import { generateSignedToken } from '../../../core/services/encryption.service';
         </div>
       </main>
 
-      <!-- Footer Action -->
-      <footer class="fixed bottom-0 left-0 right-0 px-5 pb-8 pt-5 z-50 bg-gradient-to-t from-[#010208] via-[#010208]/90 to-transparent">
-        <button (click)="onConfirm()"
-          [disabled]="!isValidForm()"
-          class="relative w-full overflow-hidden flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl font-black text-[13px] uppercase tracking-widest transition-all duration-300 active:scale-[0.97] text-white disabled:opacity-30 disabled:grayscale btn-glass-confirm">
-          <span class="absolute top-0 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none"></span>
-          <span class="relative z-10">Confirmar Depósito</span>
-          <svg class="relative z-10 w-4 h-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
-        </button>
-      </footer>
+<!-- Footer Action -->
+<footer class="fixed bottom-0 left-0 right-0 px-5 pb-8 pt-5 z-50 bg-gradient-to-t from-[#010208] via-[#010208]/90 to-transparent">
+@if (isPeruvianMethod()) {
+<button disabled
+class="relative w-full overflow-hidden flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl font-black text-[13px] uppercase tracking-widest transition-all duration-300 text-white/50 opacity-60 cursor-not-allowed btn-glass-confirm">
+<span class="absolute top-0 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none"></span>
+<span class="relative z-10">Próximamente</span>
+</button>
+} @else {
+<button (click)="onConfirm()"
+[disabled]="!isValidForm()"
+class="relative w-full overflow-hidden flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl font-black text-[13px] uppercase tracking-widest transition-all duration-300 active:scale-[0.97] text-white disabled:opacity-30 disabled:grayscale btn-glass-confirm">
+<span class="absolute top-0 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none"></span>
+<span class="relative z-10">Confirmar Depósito</span>
+<svg class="relative z-10 w-4 h-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+<path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+</svg>
+</button>
+}
+</footer>
     </section>
   `,
   styles: [`
