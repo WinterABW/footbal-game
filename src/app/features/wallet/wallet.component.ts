@@ -5,10 +5,11 @@ import { UserStatusService } from '../../core/services/user-status.service';
 import { AuthService } from '../../core/services/auth.service';
 import { SupportService } from '../../services/support.service';
 import { WalletService } from '../../services/wallet.service';
+import { WalletService as CoreWalletService } from '../../core/services/wallet.service';
 import { Transaction } from '../../models/transaction.model';
 import { SupportChatComponent } from './support-chat.component';
 import { BalanceWalletComponent } from '../../shared/components/balance-wallet/balance-wallet.component';
-import { GlassTabBarComponent, GlassTab, GlassSheetComponent } from '../../shared/ui';
+import { GlassTab, GlassSheetComponent } from '../../shared/ui';
 
 interface Deposit {
   title: string;
@@ -18,7 +19,7 @@ interface Deposit {
 
 @Component({
   selector: 'app-wallet',
-  imports: [NgOptimizedImage, CommonModule, SupportChatComponent, BalanceWalletComponent, GlassSheetComponent],
+  imports: [CommonModule, NgOptimizedImage, SupportChatComponent, BalanceWalletComponent, GlassSheetComponent],
   template: `
     <section class="h-dvh flex flex-col relative w-full overflow-hidden bg-transparent">
 
@@ -154,11 +155,11 @@ interface Deposit {
                           <span class="text-[8px] text-white/40 font-semibold uppercase tracking-[0.1em] mt-0.5 block">{{ tx.formattedDate }}</span>
                         </div>
                       </div>
-                      <!-- Amount & Status -->
-                      <div class="flex flex-col items-end">
-                        <span class="text-base font-black tracking-tighter text-glow" [class.text-emerald-400]="tx.type === 'deposit'" [class.text-red-400]="tx.type === 'withdrawal'">
-                          {{ tx.type === 'deposit' ? '+' : '-' }}{{ tx.displayAmount | number:'1.2-2' }} <span class="text-[9px] opacity-50 uppercase tracking-normal">{{ tx.displayCurrency }}</span>
-                        </span>
+        <!-- Amount & Status -->
+        <div class="flex flex-col items-end">
+          <span class="text-base font-black tracking-tighter text-glow" [class.text-emerald-400]="tx.type === 'deposit'" [class.text-red-400]="tx.type === 'withdrawal'">
+            {{ tx.type === 'deposit' ? '+' : '-' }}{{ tx.displayAmount | number: tx.displayCurrency === 'COP' ? '1.0-0' : '1.2-2' }} <span class="text-[9px] opacity-50 uppercase tracking-normal">{{ tx.displayCurrency === 'COP' ? 'COP' : tx.displayCurrency }}</span>
+          </span>
                         <span class="mt-1 px-2 py-0.5 rounded-md text-[7px] font-black uppercase tracking-[0.1em] border"
                             [class.bg-emerald-500/10]="tx.status === 'completed'" [class.text-emerald-400]="tx.status === 'completed'" [class.border-emerald-500/20]="tx.status === 'completed'"
                             [class.bg-amber-500/10]="tx.status === 'pending'" [class.text-amber-400]="tx.status === 'pending'" [class.border-amber-500/20]="tx.status === 'pending'"
@@ -363,6 +364,7 @@ export class WalletComponent implements OnInit {
   private authService = inject(AuthService);
   private supportService = inject(SupportService);
   private walletService = inject(WalletService);
+  private coreWallet = inject(CoreWalletService);
 
   readonly walletTabs: GlassTab[] = [
     { id: 'depositar', label: 'Depositar' },
@@ -432,24 +434,66 @@ export class WalletComponent implements OnInit {
     });
 
     return filteredTxs.map(t => {
-      // Convert to COP if conversionToCOP is available
-      let displayAmount = t.amount;
-      let displayCurrency = t.currency;
-
-      if (t.conversionToCOP !== undefined && t.conversionToCOP !== null) {
-        displayAmount = t.amount * t.conversionToCOP;
-        displayCurrency = 'COP';
-      }
+      // Convert COP amount back to original currency based on methodId
+      const conversion = this.getMethodConversion(t.type, t.methodId);
+      const displayAmount = t.amount / conversion.factor;
+      const displayCurrency = conversion.currency;
+      const displaySymbol = conversion.symbol;
 
       return {
         ...t,
         displayAmount,
         displayCurrency,
+        displaySymbol,
         statusLabel: this.getStatusLabel(t.status),
         formattedDate: this.formatDate(t.date),
       };
     });
   });
+
+  // Conversion configuration for displaying original amounts
+  // DEPOSIT IDs (FinanceMethod enum): 0=Crypto, 1=Nequi1, 2=Nequi2, 3=Nequi3, 4=Daviplata, 5=PayPal, 6=BRE-B, 7=Plin, 8=Yape
+  // WITHDRAWAL IDs (methodId): 0=Nequi1, 1=Nequi2, 2=Nequi3, 3=Daviplata, 4=PayPal, 5=USDT-TRC20, 6=USDT-BEP20, 7=TRX, 8=BNB, 9=BTC, 10=Plin, 11=Yape
+  private getMethodConversion(
+    type: string,
+    methodId?: number
+  ): { factor: number; currency: string; symbol: string } {
+    if (methodId == null) {
+      return { factor: 1, currency: 'COP', symbol: '$' };
+    }
+
+    const rates = this.coreWallet.conversionRates();
+
+    // DEPOSIT methods (0-8 from FinanceMethod enum)
+    if (type === 'deposit') {
+      switch (methodId) {
+        case 0: return { factor: rates.usdToCOP, currency: 'USD', symbol: '$' }; // Crypto → USD
+        case 1: case 2: case 3: return { factor: 1, currency: 'COP', symbol: '$' }; // Nequi
+        case 4: return { factor: 1, currency: 'COP', symbol: '$' }; // Daviplata
+        case 5: return { factor: rates.usdToCOP, currency: 'USD', symbol: '$' }; // PayPal
+        case 6: return { factor: 1, currency: 'COP', symbol: '$' }; // BRE-B
+        case 7: case 8: return { factor: rates.usdToSoles, currency: 'PEN', symbol: 'S/' }; // Plin/Yape
+        default: return { factor: 1, currency: 'COP', symbol: '$' };
+      }
+    }
+
+    // WITHDRAWAL methods (0-11 from withdraw-form methodId)
+    switch (methodId) {
+      case 0: case 1: case 2: return { factor: 1, currency: 'COP', symbol: '$' }; // Nequi
+      case 3: return { factor: 1, currency: 'COP', symbol: '$' }; // Daviplata
+      case 4: return { factor: rates.usdToCOP, currency: 'USD', symbol: '$' }; // PayPal
+      case 5: case 6:                       // USDT TRC20 / BEP20
+      case 7:                               // TRX
+      case 8:                               // BNB
+      case 9: return { factor: rates.usdToCOP, currency: 'USD', symbol: '$' }; // BTC
+      case 10: case 11: return { factor: rates.usdToSoles, currency: 'PEN', symbol: 'S/' }; // Plin/Yape
+      default: return { factor: 1, currency: 'COP', symbol: '$' };
+    }
+  }
+
+  private loadConversions() {
+    this.coreWallet.loadConversions();
+  }
 
   selectedDeposit = signal<Deposit | null>(null);
   isSheetOpen = signal(false);
@@ -468,6 +512,7 @@ export class WalletComponent implements OnInit {
     this.supportService.checkForPendingMessages();
     this.refreshBalanceOnEntry();
     this.loadTransactionHistory();
+    this.loadConversions();
   }
 
   private refreshBalanceOnEntry() {

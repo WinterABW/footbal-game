@@ -143,7 +143,7 @@ import { PaymentScreenComponent } from '../payment-screen.component';
 <div class="grid grid-cols-3 gap-2 w-full">
               @for (preset of presetValues(); track preset) {
                 <button (click)="setAmount(preset)" class="px-2 py-2 lg-btn-outline !border-white/10 !rounded-xl text-[9px] font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all outline-none">
-                  {{ preset | number: (['BTC', 'BNB'].includes(selectedMethod()) ? '1.1-6' : '1.0-2') }}
+                  {{ preset | number: '1.0-0' }}
                 </button>
               }
             </div>
@@ -370,19 +370,19 @@ export class DepositFormComponent {
     ];
   });
 
-   presetValues = computed(() => {
-     const m = this.selectedMethod();
-     switch (m) {
-       case 'USDT': return [5, 15, 30, 80, 350, 500];
-       case 'TRX': return [20, 50, 100, 300, 600, 900];
-       case 'BNB': return [0.0095, 0.015, 0.03, 0.05, 0.08, 0.1];
-       case 'BTC': return [0.00015, 0.0003, 0.0008, 0.0015, 0.002, 0.005];
-       case 'Paypal': return [10, 25, 50, 80, 150, 400];
-       case 'Plin':
-       case 'Yape': return [30, 50, 80, 100, 150, 200];
-       default: return [30000, 50000, 100000, 200000, 300000, 500000];
-     }
-    });
+    presetValues = computed(() => {
+      const m = this.selectedMethod();
+      switch (m) {
+        case 'USDT':
+        case 'TRX':
+        case 'BNB':
+        case 'BTC': return [5, 10, 25, 50, 100, 200]; // USD
+        case 'Paypal': return [10, 25, 50, 80, 150, 400];
+        case 'Plin':
+        case 'Yape': return [30, 50, 80, 100, 150, 200];
+        default: return [30000, 50000, 100000, 200000, 300000, 500000];
+      }
+     });
   showSuccess = signal(false);
   showCryptoModal = signal(false);
   showPaymentScreen = signal(false);
@@ -516,11 +516,13 @@ export class DepositFormComponent {
       financeMethod = FinanceMethod.CRYPTO; // Fallback, though isCrypto should cover it for selected methods
     }
 
+    const rates = this.walletService.conversionRates();
+
     this.isSubmitting.set(true);
 
-    // Call addDeposit directly
+    // Call addDeposit directly — user enters USD, backend receives COP
     this.walletService.addDeposit({
-      amountUSD: amount,
+      amountUSD: amount * rates.usdToCOP,
       method: financeMethod,
       token: token,
       uid: user.id,
@@ -600,9 +602,11 @@ export class DepositFormComponent {
     const timestamp = Math.floor(Date.now() / 1000);
     const token = await generateSignedToken(user.id, timestamp);
 
-    // Phase 3.4: Call WalletService.addDeposit with transactionId as null
+    const rates = this.walletService.conversionRates();
+
+    // Phase 3.4: Call WalletService.addDeposit — user enters USD, backend receives COP
     this.walletService.addDeposit({
-      amountUSD: this.amount(),
+      amountUSD: this.amount() * rates.usdToCOP,
       method: financeMethod,
       token: token,
       uid: user.id,

@@ -245,11 +245,13 @@ async onConfirm() {
       const timestamp = Math.floor(Date.now() / 1000);
       const token = await generateSignedToken(user.id, timestamp);
 
+      const rates = this.walletService.conversionRates();
+
       let payloadAmount = this.amount();
       if (this.isPeruvianMethod()) {
-        payloadAmount = payloadAmount * 1030;
+        payloadAmount = payloadAmount * rates.usdToSoles;
       } else if (!this.isColombianMethod()) {
-        payloadAmount = payloadAmount * 3600;
+        payloadAmount = payloadAmount * rates.usdToCOP;
       }
 
       const payload = {

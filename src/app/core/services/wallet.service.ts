@@ -1,9 +1,14 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ApiMessageResponse, DepositResponse } from '../../models/user.model';
 import { SyncCoordinatorService } from './sync-coordinator.service';
 import { ErrorHandlerService } from './error-handler.service';
+
+export interface ConversionRates {
+  usdToCOP: number;
+  usdToSoles: number;
+}
 
 export enum TransactionCoin {
   COINS = 1,
@@ -82,6 +87,16 @@ export class WalletService {
   private http = inject(HttpClient);
   private syncCoordinator = inject(SyncCoordinatorService, { optional: true });
   private errorHandler = inject(ErrorHandlerService, { optional: true });
+
+  readonly conversionRates = signal<ConversionRates>({ usdToCOP: 3600, usdToSoles: 1030 });
+
+  loadConversions() {
+    this.http.post<ConversionRates>(`${environment.apiBaseUrl}Wallet/GetConversions`, {})
+      .subscribe({
+        next: (rates) => this.conversionRates.set(rates),
+        error: () => console.warn('[WalletService] Failed to load conversion rates, using defaults')
+      });
+  }
 
   private getBaseUrl(): string {
     return environment.apiBaseUrl;

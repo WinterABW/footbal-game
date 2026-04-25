@@ -44,31 +44,33 @@ export class WalletService {
     }).pipe(
       map(({ deposits, withdrawals }) => {
         
-        const mappedDeposits: Transaction[] = deposits.map((d: any) => ({
-          id: d.id,
-          type: 'deposit',
-          amount: d.amount,
-          currency: 'USD', // Default currency
-          status: this.mapStatus(d.status),
-          date: d.created,
-          method: this.mapDepositMethod(d.method),
-          reference: d.invoiceId || d.transactionId,
-          description: d.description,
-          conversionToCOP: d.conversionToCOP,
-        }));
+      const mappedDeposits: Transaction[] = deposits.map((d: any) => ({
+        id: d.id,
+        type: 'deposit',
+        amount: d.amount, // Amount always comes in COP from backend
+        currency: 'COP', // Default currency is COP
+        status: this.mapStatus(d.status),
+        date: d.created,
+        method: this.mapDepositMethod(d.method),
+        methodId: d.method, // Store numeric method ID for conversion
+        reference: d.invoiceId || d.transactionId,
+        description: d.description,
+        conversionToCOP: d.conversionToCOP,
+      }));
 
-        const mappedWithdrawals: Transaction[] = withdrawals.map((w: any) => ({
-          id: w.id,
-          type: 'withdrawal',
-          amount: w.amount,
-          currency: 'USD', // Default currency
-          status: this.mapStatus(w.status),
-          date: w.created,
-          method: this.mapWithdrawMethod(w.method),
-          reference: w.transactionId,
-          description: w.description,
-          conversionToCOP: w.conversionToCOP,
-        }));
+      const mappedWithdrawals: Transaction[] = withdrawals.map((w: any) => ({
+        id: w.id,
+        type: 'withdrawal',
+        amount: w.amount, // Amount always comes in COP from backend
+        currency: 'COP', // Default currency is COP
+        status: this.mapStatus(w.status),
+        date: w.created,
+        method: this.mapWithdrawMethod(w.method),
+        methodId: w.method, // Store numeric method ID for conversion
+        reference: w.transactionId,
+        description: w.description,
+        conversionToCOP: w.conversionToCOP,
+      }));
 
         const combined = [...mappedDeposits, ...mappedWithdrawals];
         

@@ -250,10 +250,7 @@ export class WithdrawFormComponent {
 
   presetAmounts = computed(() => {
     const curr = this.currency();
-    if (curr === 'USDT') return [10, 15, 25, 50, 100, 200];
-    if (curr === 'TRX') return [30000, 50000, 80000, 100000, 200000, 500000];
-    if (curr === 'BNB') return [0.02, 0.045, 0.08, 0.15, 0.3, 0.5];
-    if (curr === 'BTC') return [0.0002, 0.0004, 0.0008, 0.0015, 0.003, 0.005];
+    if (curr === 'USDT' || curr === 'TRX' || curr === 'BNB' || curr === 'BTC') return [10, 25, 50, 100, 200, 500]; // USD
     if (curr === 'Plin' || curr === 'Yape') return [30, 50, 80, 100, 150, 200];
     return [30000, 50000, 80000, 100000, 200000, 500000];
   });
@@ -308,13 +305,14 @@ export class WithdrawFormComponent {
     const timestamp = Math.floor(Date.now() / 1000);
     const token = await generateSignedToken(user.id, timestamp);
 
-    // Convert non-COP currencies to COP
+    // Convert non-COP currencies to COP using API rates
+    const rates = this.walletService.conversionRates();
     const currency = this.currency();
     let amountCOP = amount;
-    if (currency === 'Paypal' || currency === 'USDT') {
-      amountCOP = amount * 3600;
+    if (currency === 'Paypal' || currency === 'USDT' || currency === 'TRX' || currency === 'BNB' || currency === 'BTC') {
+      amountCOP = amount * rates.usdToCOP;
     } else if (currency === 'Plin' || currency === 'Yape') {
-      amountCOP = amount * 1030;
+      amountCOP = amount * rates.usdToSoles;
     }
 
     const result = await this.walletService.addWithdrawal({
