@@ -406,7 +406,7 @@ export class DepositFormComponent {
     const peruvian = ['Plin', 'Yape'];
     const crypto = ['USDT', 'BTC', 'TRX', 'BNB'];
     if (colombian.includes(c)) return 'COP';
-    if (peruvian.includes(c)) return 'PEN';
+    if (peruvian.includes(c)) return 'SOL';
     return 'USD';
   });
 

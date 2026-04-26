@@ -197,7 +197,7 @@ export class WithdrawFormComponent {
     const colombian = ['Nequi', 'Daviplata', 'BRE-B'];
     const peruvian = ['Plin', 'Yape'];
     if (colombian.includes(c)) return 'COP';
-    if (peruvian.includes(c)) return 'PEN';
+    if (peruvian.includes(c)) return 'SOL';
     return 'USD'; // PayPal & crypto
   });
 
