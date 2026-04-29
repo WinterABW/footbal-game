@@ -14,10 +14,10 @@ import { ProjectedStateService } from '../../../core/services/projected-state.se
         <span class="text-[11px] font-black text-white tracking-wide text-glow-amber">{{ formattedCop() }}</span>
       </div>
 
-      <!-- USDT Balance -->
-      <div class="flex items-center gap-2.5 py-1 px-1.5 pr-4 rounded-full liquid-glass-card border-teal-500/30 shadow-lg accent-teal">
-        <img ngSrc="wallet/crypto/usdt.png" alt="USDT" width="24" height="24" class="object-contain" />
-        <span class="text-[11px] font-black text-white tracking-wide text-glow-cyan">{{ formattedUsdt() }}</span>
+      <!-- PEN Balance -->
+      <div class="flex items-center gap-2.5 py-1 px-1.5 pr-4 rounded-full liquid-glass-card border-emerald-500/30 shadow-lg accent-emerald">
+        <img ngSrc="wallet/balnce-wallet.webp" alt="PEN" width="32" height="32" class="object-contain" />
+        <span class="text-[11px] font-black text-white tracking-wide text-glow-emerald">{{ formattedPen() }}</span>
       </div>
 
     </section>
@@ -32,6 +32,9 @@ import { ProjectedStateService } from '../../../core/services/projected-state.se
     .text-glow-cyan { 
       text-shadow: 0 0 8px rgba(6, 182, 212, 0.4), 0 0 16px rgba(6, 182, 212, 0.2), 0 2px 4px rgba(0,0,0,0.3); 
     }
+    .text-glow-emerald { 
+      text-shadow: 0 0 8px rgba(52, 211, 153, 0.4), 0 0 16px rgba(52, 211, 153, 0.2), 0 2px 4px rgba(0,0,0,0.3); 
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -40,8 +43,8 @@ export class BalanceWalletComponent {
 
   // Same optimistic balance as balance/ component
   protected readonly copBalance = this.projectedState.projectedBalance;
-  protected readonly usdtBalance = computed(() => Math.floor(this.copBalance() / 4000));
+  protected readonly penBalance = computed(() => Math.floor(this.copBalance() / 1030));
 
   protected readonly formattedCop = computed(() => this.copBalance().toLocaleString('es-CO'));
-  protected readonly formattedUsdt = computed(() => this.usdtBalance().toLocaleString('es-CO'));
+  protected readonly formattedPen = computed(() => this.penBalance().toLocaleString('es-CO'));
 }
